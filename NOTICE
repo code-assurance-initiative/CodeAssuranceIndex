@@ -1,0 +1,25 @@
+The Code Assurance Index (CAI)
+Copyright 2026 The Code Assurance Initiative
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+This product includes software developed at Canine Development, which created and
+published the standard in 2026 and contributed it to the Code Assurance Initiative.
+
+---
+
+A NOTE ON THIS FILE, while the Initiative is being formed.
+
+The Code Assurance Initiative is not yet an incorporated body. It is the organisation
+this standard is published under, and the steering group that will govern it is being
+assembled — see docs/GOVERNANCE.md, which states plainly what is and is not true today.
+
+Until incorporation, "The Code Assurance Initiative" in this file names the project
+rather than a legal person, and the copyright in contributions remains with the parties
+who made them, licensed to everyone under Apache-2.0 on the terms in LICENSE. That is
+the ordinary arrangement for a young standard, and it is written down here rather than
+left to be inferred, because a reader deciding whether to depend on CAI is entitled to
+know exactly whose work they are relying on and under what terms.
+
+If the Initiative incorporates, or if a contributor agreement is adopted, this file
+changes and the change is recorded in CHANGELOG.md.

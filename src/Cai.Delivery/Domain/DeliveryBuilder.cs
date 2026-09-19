@@ -22,8 +22,16 @@ public sealed record DeliveryBuildRequest
     /// <summary>Measurement-scale provenance; derived from the evidence when omitted.</summary>
     public DeliveryMeasurement? Measurement { get; init; }
 
-    /// <summary>The issuer name stamped into the payload (defaults to cai).</summary>
-    public string IssuerName { get; init; } = "codeassuranceindex.info";
+    /// <summary>The standard's own issuer identity — the name stamped into a payload this build mints.
+    /// <para>★ NAMED, because more than one thing has to agree on it: the builder stamps it, and the tool that
+    /// regenerates the published example reads it from here rather than repeating the string. It moved once
+    /// already, when the standard left the company's domain for its own, and the example kept the old value for
+    /// weeks because it was written down twice. A package signed under a previous name keeps verifying — the
+    /// verifier checks the signature and the MAJOR, never this.</para></summary>
+    public const string DefaultIssuerName = "codeassuranceindex.info";
+
+    /// <summary>The issuer name stamped into the payload (defaults to <see cref="DefaultIssuerName"/>).</summary>
+    public string IssuerName { get; init; } = DefaultIssuerName;
 
 }
 

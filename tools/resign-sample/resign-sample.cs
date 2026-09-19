@@ -44,12 +44,25 @@ var pair = new DeliveryKeyPair
     PrivateKey = Base64Url.Encode(key.Export(KeyBlobFormat.RawPrivateKey)),
 };
 
-// 2. Re-sign the existing sample payload verbatim — only the signature and its key id change.
+// 2. Re-sign the existing sample payload — the evidence and the verdict are kept verbatim, because
+//    the sample's job is to be a REAL package whose headline reproduces from its own evidence.
+//
+//    ★ THE ISSUER NAME IS REFRESHED, and that is not cosmetic. The sample was minted when the
+//      standard was served from cai.canine.dev, and it still named that host as its issuer long
+//      after the standard moved onto its own domain and out of the company's. An example package
+//      is the first artefact anyone reads to learn the format, so an issuer it no longer has is a
+//      claim about who stands behind a score. DeliveryBuilder already defaults to the current
+//      identity; this takes it from the same place rather than repeating the string here.
+//
+//      Packages signed under the OLD issuer keep verifying: the verifier checks the signature and
+//      the MAJOR, never the issuer name (see DeliveryPackage.SchemaId).
 var samplePath = Path.Combine(examples, "cai-delivery.sample.json");
 var existing = DeliveryPackage.Parse(File.ReadAllText(samplePath));
+var currentIssuer = DeliveryBuildRequest.DefaultIssuerName;
+var payload = existing.Payload with { Issuer = existing.Payload.Issuer with { Name = currentIssuer } };
 
 using var signer = new DeliverySigner(pair);
-var resigned = signer.SignPackage(existing.Payload);
+var resigned = signer.SignPackage(payload);
 
 File.WriteAllText(samplePath, resigned.ToJson() + "\n");
 

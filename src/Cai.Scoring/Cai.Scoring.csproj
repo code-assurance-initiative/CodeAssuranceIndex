@@ -19,8 +19,9 @@
     <!-- Keep in lockstep with Cai.Delivery: the two ship as one reference implementation of the same rubric
          generation, and a consumer that mixes versions can recompute a different number. -->
     <Version>0.2.0</Version>
-    <Authors>Canine Development</Authors>
-    <Company>Canine Development</Company>
+    <Authors>The Code Assurance Initiative</Authors>
+    <Copyright>Copyright 2026 The Code Assurance Initiative</Copyright>
+    <Company>The Code Assurance Initiative</Company>
     <Description>The CAI (Code Assurance Index) open reference scorer: folds an evidence bundle (per-dimension scores + meta-dimensions + surface metrics) through the rubric — confidence-weighted categories, worst-first OWA lenses, the architecture surface floor, quality-bar bands, critical gating and the coherence cap — into the 0–100 headline and ten lens scores. Deterministic and reproducible: same evidence + same rubric ⇒ the same number.</Description>
     <PackageProjectUrl>https://codeassuranceindex.info</PackageProjectUrl>
     <RepositoryUrl>https://github.com/code-assurance-initiative/CodeAssuranceIndex</RepositoryUrl>
@@ -43,6 +44,9 @@
     <!-- Ship the licence text inside the package, not just as an SPDX expression, so an offline consumer
          auditing the reference implementation has the terms in hand. -->
     <None Include="..\..\LICENSE" Pack="true" PackagePath="\" />
+    <!-- NOTICE travels with LICENSE: Apache-2.0 §4(d) requires it to be carried with any
+         distribution, and it is where this package says who holds the copyright. -->
+    <None Include="..\..\NOTICE" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

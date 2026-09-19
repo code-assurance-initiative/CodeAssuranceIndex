@@ -4,7 +4,7 @@
     "deliveryId": "cd_acme_checkout-api_3f9a1c2",
     "issuedAt": "2026-07-01T10:32:04Z",
     "issuer": {
-      "name": "cai.canine.dev",
+      "name": "codeassuranceindex.info",
       "keyId": "cai-ed25519-sample"
     },
     "producer": {
@@ -306,6 +306,6 @@
     "alg": "Ed25519",
     "keyId": "cai-ed25519-sample",
     "canon": "RFC8785-json",
-    "value": "O46oXYUH5HVbwTPJJ9aBCT6cFgYJ19PiXQtb9sqx3cl0OPDXDZ1scVchZdK17rCBQ3xbJ_G6VEG0MObeHWD0Dw"
+    "value": "e-HoUlohNqbxzaj1oNonh8qiNm-Y_TVM3mB0SUbkWo58fs9h1f3VzpNut2irhNbeA-hEAsBZksB9xnWecQ4oCw"
   }
 }

@@ -1,0 +1,12 @@
+# Every change is reviewed by the Initiative until a steering group exists (docs/GOVERNANCE.md).
+# When that group is named, this file is where its areas of responsibility get written down.
+*       @CanineCC
+
+# The standard itself — the rules that move a published number. These are the files where a
+# review is a governance act rather than a code review, and they are listed separately so that
+# stays visible when there is more than one reviewer.
+/rubrics/            @CanineCC
+/schemas/            @CanineCC
+/docs/adr/           @CanineCC
+/docs/spec/          @CanineCC
+/src/Cai.Scoring/    @CanineCC
