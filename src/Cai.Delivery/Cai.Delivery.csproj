@@ -44,7 +44,7 @@
 
   <ItemGroup>
     <PackageReference Include="NSec.Cryptography" Version="26.4.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
