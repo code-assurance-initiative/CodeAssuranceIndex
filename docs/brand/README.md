@@ -3,9 +3,11 @@
 The band under the glass. The five-band scale is the mark's only colour and its dominant
 element; the magnifying glass lifts off it as a callout, showing the reading — the pin at
 the yellow/green boundary — magnified. An independent inspection (the reader's glass:
-"verify it yourself") of the standard's own scale. Deliberately at arm's length from the
-Canine Development identity: no shared glyphs, and the instrument itself carries no brand
-colour at all.
+"verify it yourself") of the standard's own scale. The mark carries no organisational identity at all: no
+studio glyphs, and the instrument itself carries no brand colour. That was first done to
+hold it at arm's length from the studio that created it, and it survives the move to the
+Initiative for a better reason — a standard anyone may implement should not look like it
+belongs to whoever publishes it.
 
 - `cai-mark.svg` — the master. Ring, handle and pin outline are drawn in `currentColor`,
   so ONE file is black on a light ground and white on a dark one; the band is the only
