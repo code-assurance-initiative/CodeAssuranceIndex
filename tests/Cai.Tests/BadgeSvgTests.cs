@@ -82,3 +82,34 @@ public sealed class BadgeSvgTests
     private static int Width(string svg) =>
         int.Parse(System.Text.RegularExpressions.Regex.Match(svg, @"width=""(\d+)""").Groups[1].Value);
 }
+
+/// <summary>
+/// The badge's ADDRESS. owner/name is a display pair, not an identity — the same pair can name different
+/// repositories on different hosts — so the host is part of the URL.
+/// </summary>
+public sealed class BadgeAddressTests(RegistryUnconfiguredFixture fx) : IClassFixture<RegistryUnconfiguredFixture>
+{
+    private static CancellationToken Ct => TestContext.Current.CancellationToken;
+
+    [Fact]
+    public async Task An_unknown_git_host_is_refused_rather_than_guessed()
+    {
+        // A badge that quietly picked a host would be wrong in exactly the cases nobody checks.
+        using var client = fx.Client(token: null);
+        var res = await client.GetAsync("/api/badge/nosuchhost/acme/widgets.svg", Ct);
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, res.StatusCode);
+    }
+
+    [Fact]
+    public async Task The_old_hostless_address_is_gone()
+    {
+        // /api/badge/{owner}/{repo}.svg no longer routes: it could not say which project it meant. What matters
+        // is that it does not serve a badge — the exact status is the API's default-deny fallback for an unmatched
+        // /api path (401), not something this endpoint chooses.
+        using var client = fx.Client(token: null);
+        var res = await client.GetAsync("/api/badge/acme/widgets.svg", Ct);
+
+        Assert.NotEqual(System.Net.HttpStatusCode.OK, res.StatusCode);
+        Assert.NotEqual("image/svg+xml", res.Content.Headers.ContentType?.MediaType);
+    }
+}

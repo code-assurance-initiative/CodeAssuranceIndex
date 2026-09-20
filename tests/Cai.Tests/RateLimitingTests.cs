@@ -121,7 +121,7 @@ public sealed class RateLimitingTests(RateLimitingFixture fx) : IClassFixture<Ra
 
         for (var i = 0; i < 4; i++)
         {
-            var res = await client.GetAsync($"/api/badge/an-owner/a-repo-{i}.svg", Ct);
+            var res = await client.GetAsync($"/api/badge/github/an-owner/a-repo-{i}.svg", Ct);
             Assert.NotEqual(HttpStatusCode.TooManyRequests, res.StatusCode);
         }
     }

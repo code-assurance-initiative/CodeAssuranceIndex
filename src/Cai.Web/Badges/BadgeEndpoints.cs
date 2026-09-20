@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Cai.Web.Badges;
 
 /// <summary>
-/// <c>GET /api/badge/{owner}/{repo}.svg</c> — the CAI badge, issued by the standard on behalf of a surveyor.
+/// <c>GET /api/badge/{provider}/{owner}/{repo}.svg</c> — the CAI badge, issued by the standard on behalf of a surveyor.
 /// </summary>
 /// <remarks>
 /// <para>WHY THE STANDARD SERVES THIS AT ALL. A badge asserts a score and a score has an issuer, so the reflex is to
@@ -16,6 +16,11 @@ namespace Cai.Web.Badges;
 /// this repository's own reference scorer under the rubric the bundle names. So the badge states a number the
 /// standard computed, which anybody can reproduce from the same public bundle — rather than a figure taken on trust
 /// from the party being measured. It also means a badge cannot disagree with the scorer: they are the same code.</para>
+/// <para>THE HOST IS PART OF THE ADDRESS. <c>acme/widgets</c> on GitHub and <c>acme/widgets</c> on GitLab are
+/// different repositories, so an owner/name pair is a display name, not an identity, and a badge URL built from
+/// one alone cannot say which project it is about. The provider segment is first because that is the order the
+/// standard's own survey pages already use (<c>/surveys/github/{owner}/{repo}/</c>), and it is REQUIRED rather
+/// than optional: a badge that silently picked a host would be wrong in exactly the cases nobody checks.</para>
 /// <para>ONLY PUBLISHED REPOSITORIES. If the issuer does not publish evidence for the repository, this 404s. It
 /// deliberately does not fall back to a zero or an "unknown" badge: a badge reading 0% for a repository nobody
 /// measured is not a missing answer, it is a wrong one, and it renders in the reader's README as a real verdict.</para>
@@ -28,7 +33,8 @@ internal static class BadgeEndpoints
 
     public static void MapBadgeEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/api/badge/{owner}/{repo}.svg", [AllowAnonymous] async (
+        app.MapGet("/api/badge/{provider}/{owner}/{repo}.svg", [AllowAnonymous] async (
+            string provider,
             string owner,
             string repo,
             string? issuer,
@@ -54,7 +60,12 @@ internal static class BadgeEndpoints
                 });
             }
 
-            var key = $"badge:{chosen.Id}:{owner}:{repo}";
+            if (!GitHost.IsKnown(provider))
+            {
+                return Results.BadRequest(new { error = $"unknown git host '{provider}'", hosts = GitHost.Known });
+            }
+
+            var key = $"badge:{chosen.Id}:{provider}:{owner}:{repo}";
             if (cache.TryGetValue(key, out string? cached) && cached is not null)
             {
                 return Svg(cached);
@@ -66,7 +77,10 @@ internal static class BadgeEndpoints
                 var client = clients.CreateClient("watchdog");
                 // Only ever the issuer's published-corpus route, composed here from an allowlisted origin and the
                 // route values — never a URL the caller supplied.
-                var url = $"{chosen.BaseUrl.TrimEnd('/')}/api/public/oss/{Uri.EscapeDataString(owner)}/{Uri.EscapeDataString(repo)}/evidence";
+                // The host travels to the issuer too. Without it the issuer resolves the pair its own way, and a
+                // badge that named a host in its URL would be free to show another one's score.
+                var url = $"{chosen.BaseUrl.TrimEnd('/')}/api/public/oss/{Uri.EscapeDataString(owner)}/{Uri.EscapeDataString(repo)}/evidence"
+                        + $"?provider={Uri.EscapeDataString(GitHost.Canonical(provider))}";
                 using var res = await client.GetAsync(url, ct);
                 if (!res.IsSuccessStatusCode)
                 {
