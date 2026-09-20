@@ -41,6 +41,21 @@ internal enum ApiTrafficClass
     /// <para>★ The PAGE at <c>/noise/rate</c> is unaffected either way: it renders server-side and its form
     /// posts to the page, not to <c>/api</c>. This budget is for API-driven raters.</para>
     /// </remarks>
+    /// <summary>
+    /// Anonymous traffic to the CAI badge (<c>/api/badge/*</c>).
+    /// </summary>
+    /// <remarks>
+    /// ★★ THE OPEN BUDGET WOULD BREAK EVERY BADGE IT SERVES, and not on our own pages — in other people's READMEs,
+    /// where the failure shows up as a broken image beside their score and looks like the standard is down. A badge
+    /// is not fetched by the reader's browser: GitHub proxies README images through camo, so the whole world's badge
+    /// traffic arrives from a small set of proxy addresses. On a PER-IP budget of 15/day that is fifteen README views
+    /// across all repositories before everybody's badge breaks at once.
+    /// <para>★ The budget can be generous because a hit is cheap and bounded: the rendered SVG is cached, so a hit
+    /// costs no outbound fetch, no parse and no fold, and a MISS is bounded by the number of distinct repositories
+    /// times the cache TTL — not by request volume. The ceiling here is a flood fuse, not a quota.</para>
+    /// </remarks>
+    Badge,
+
     Crowd,
 
     /// <summary>
@@ -132,9 +147,16 @@ internal static class ApiRateLimiting
     /// </remarks>
     public static readonly string[] PublishedReadPaths = ["/api/noise/published", "/api/noise/method"];
 
+    /// <summary>The badge endpoint — see <see cref="ApiTrafficClass.Badge"/>.</summary>
+    public static readonly string[] BadgePaths = ["/api/badge"];
+
     /// <summary>The per-IP budget for first-party browser reads: 120/min. A page view costs two calls (the version
     /// list, then one catalog), so this is roughly a reader opening the catalogue once a second all minute.</summary>
     public const int SiteReaderPermitsPerMinute = 120;
+
+    /// <summary>Per-IP badge budget. Sized for a shared proxy address, not for one reader — see
+    /// <see cref="ApiTrafficClass.Badge"/>.</summary>
+    public const int BadgePermitsPerMinute = 600;
 
     private static readonly object CacheKey = new();
 
@@ -221,6 +243,13 @@ internal static class ApiRateLimiting
         if (SelfServiceVerifyPaths.Any(p => path.StartsWithSegments(p)))
         {
             return new(ApiTrafficClass.SelfServiceVerify, clientIp);
+        }
+
+        // ★★ The badge, on its own budget — see ApiTrafficClass.Badge. It is classified BEFORE the generic
+        //    fall-through because its traffic arrives from README proxies, not from readers.
+        if (BadgePaths.Any(p => path.StartsWithSegments(p)))
+        {
+            return new(ApiTrafficClass.Badge, clientIp);
         }
 
         // ★★ The documents the standard publishes, on their own budget — see ApiTrafficClass.PublishedRead.

@@ -172,6 +172,10 @@ builder.Services.AddRateLimiter(options =>
             ApiRateLimiting.CrowdPermitsPerMinute, TimeSpan.FromMinutes(1))),
         PartitionedRateLimiter.Create<HttpContext, string>(ctx => Window(ctx, ApiTrafficClass.Crowd, "cd",
             ApiRateLimiting.CrowdPermitsPerDay, TimeSpan.FromDays(1))),
+        // ★★ The badge's own budget: it is served into other people's READMEs through image proxies, so the
+        //    per-IP partition is a shared proxy, never a reader.
+        PartitionedRateLimiter.Create<HttpContext, string>(ctx => Window(ctx, ApiTrafficClass.Badge, "bd",
+            ApiRateLimiting.BadgePermitsPerMinute, TimeSpan.FromMinutes(1))),
         PartitionedRateLimiter.Create<HttpContext, string>(ctx => Window(ctx, ApiTrafficClass.SiteReader, "b",
             ApiRateLimiting.SiteReaderPermitsPerMinute, TimeSpan.FromMinutes(1))),
         PartitionedRateLimiter.Create<HttpContext, string>(ctx => Window(ctx, ApiTrafficClass.PublishedRead, "p",

@@ -107,6 +107,26 @@ public sealed class RateLimitingTests(RateLimitingFixture fx) : IClassFixture<Ra
     }
 
     [Fact]
+    public async Task STAR_The_BADGE_Is_Not_On_The_Fifteen_A_Day_Budget()
+    {
+        // ★★ THE FAILURE THIS PREVENTS IS INVISIBLE FROM HERE. A badge is not fetched by the reader's browser:
+        // GitHub proxies README images through camo, so the whole world's badge traffic arrives from a small set
+        // of proxy addresses. On the open per-IP budget of 1/s, 3/min, 15/day that is fifteen README views across
+        // ALL repositories before every badge breaks at once — in other people's READMEs, beside their score,
+        // looking like the standard is down.
+        //
+        // Four requests in a row is already past the open budget's minute window, so this fails if the badge ever
+        // falls back into ApiTrafficClass.Public.
+        using var client = fx.Client(token: null, ip: "203.0.113.91");
+
+        for (var i = 0; i < 4; i++)
+        {
+            var res = await client.GetAsync($"/api/badge/an-owner/a-repo-{i}.svg", Ct);
+            Assert.NotEqual(HttpStatusCode.TooManyRequests, res.StatusCode);
+        }
+    }
+
+    [Fact]
     public async Task STAR_The_PUBLISHED_Documents_Are_Not_On_The_Fifteen_A_Day_Budget()
     {
         // ★★ THE BUDGET AND THE NO-CACHE RULE WERE INCOMPATIBLE, and the collision only shows in production.
