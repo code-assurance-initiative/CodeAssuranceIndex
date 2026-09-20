@@ -4,6 +4,7 @@ using System.Threading.RateLimiting;
 using Cai.Delivery;
 using Cai.Scoring;
 using Cai.Web;
+using Cai.Web.Badges;
 using Cai.Web.Components;
 using Cai.Web.Noise;
 using Cai.Web.Registry;
@@ -41,6 +42,11 @@ builder.Services.AddHttpClient("watchdog").AddStandardResilienceHandler(o =>
 var rubricsRoot = builder.Configuration["Rubrics:Root"]
     ?? Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", "rubrics"));
 builder.Services.AddSingleton(new RubricCatalogStore(rubricsRoot));
+
+// The CAI badge (/api/badge/{owner}/{repo}.svg). The standard renders it so that "a CAI badge" means one thing across
+// every implementation; the issuers it will fetch published evidence from are an allowlist, never a query parameter.
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<Cai.Web.Badges.IssuerCatalog>();
 
 // ── Observability (P2): ILogger is on by default; add OpenTelemetry tracing + metrics and a readiness health check so
 // the app is diagnosable in production. The OTLP exporter only activates when OTEL_EXPORTER_OTLP_ENDPOINT is set, so an
@@ -597,6 +603,8 @@ foreach (var (from, to) in new[]
 // calculator page were not valid input — they omitted the category and put meta-dimensions among the deterministic
 // ones — so every bundle written from them was rejected. An example you can fetch and POST straight back cannot drift
 // from what the scorer accepts, and CalculatorSampleTests folds it on every build.
+app.MapBadgeEndpoints();
+
 app.MapGet("/api/score/example", [AllowAnonymous] (HttpContext http) =>
 {
     ApiAccess.EnsureAllowed(http);
