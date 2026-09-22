@@ -327,14 +327,34 @@ somebody says otherwise.
 
 **Done when:** the owner has seen the diff summary, and any non-zero cell is explained.
 
-**Step 1 has begun for the survey portrait** (CAI `0de5319`, golden kennel `68f48f5ce`). It found two
-defects a reading of the code did not — the About section ported with a lower-case appearance and no
-anchor, and the stat band's language cell simply missing — and one difference that changes a
-published number (peak vs latest, above). Everything else matches: sections in order with their
-appearances, islands and their tags, the rest of the stat band, the address and the title.
+**STEP 1 IS DONE for all three families.** Three goldens frozen in the producer's own repository
+(`68f48f5ce`, `2119cf12b`, `d1b85ed16`) and diffed in CAI (`0de5319`, `23b058e`, `0083d15`).
 
-Still to diff: the surveys index, the field guides, and the corpus family. The aggregate pages are
-not pixel-comparable and are verified by node diff over a frozen dataset only.
+What it found, none of which a reading of the code had:
+
+| Family | Finding | Outcome |
+|---|---|---|
+| portrait | "About this page" ported as `Section("note", null, …)` — an appearance the theme does not style, and no anchor to link to | fixed |
+| portrait | the stat band's language cell missing entirely | fixed |
+| portrait | headline is the PEAK in the producer, the LATEST in the standard | **open — owner** |
+| index | corpus count read "measured codebases" where the producer says "**published** measured codebases" | fixed |
+| guide | producer says "projects" in the title and stat band where its own index says "codebases" | deliberate: the standard says codebases throughout, named in a test |
+| sheet | `masthead`, §6 `elsewhere` and the `about` note all missing | fixed |
+| sheet | §5 handed `cai-trend` a `heading` prop the island does not read, and put the movements in a band beside it instead of in its `figures` row | fixed |
+
+Everything else matches: the nine corpus addresses, the sections in order with their appearances, the
+islands and their tags, the trend island's props name for name, the rest of every stat band, the
+addresses and the titles.
+
+★ The aggregate pages' FIGURES are deliberately not diffed, and the reason is in the data rather than
+the effort: the producer folds its sheet from its own metrics database over every repository it has
+ever surveyed, and the standard folds it from the published deliveries it holds. Those are different
+populations by construction, so a figure-for-figure diff would report the difference between two
+corpora and call it a defect in a page.
+
+**Step 2 (pixel) has NOT begun, and needs something only the owner can give:** a preprod CMS token
+and site id for CAI's `Syndication` section, so the sweep can publish into preprod and the same
+capture matrix can be re-run. Nothing here should point a publisher at a live site on its own.
 
 ### Phase 7 — close the door
 
