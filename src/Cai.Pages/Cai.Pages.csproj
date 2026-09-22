@@ -23,6 +23,8 @@
          the STANDARD composes, and publishing it would invite exactly the coupling this move removes. The
          tests see it because they are the standard's own. -->
     <InternalsVisibleTo Include="Cai.Tests" />
+    <!-- And the registry, which runs the sweep that publishes what this project composes. -->
+    <InternalsVisibleTo Include="Cai.Web.Registry" />
   </ItemGroup>
 
   <ItemGroup>

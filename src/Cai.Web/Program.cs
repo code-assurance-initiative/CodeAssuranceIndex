@@ -120,6 +120,22 @@ builder.Services.AddSingleton<IRegistryStore, SqliteRegistryStore>();
 builder.Services.AddSingleton<TrustedKeyProvider>();
 builder.Services.AddHealthChecks().AddCheck<RegistryHealthCheck>("registry");
 
+// ── The standard's own pages: composed here from the published deliveries, and swept onto the site that
+//    serves them (docs/plans/cai-owns-its-pages.md).
+//
+//    ★ FAIL-CLOSED, AND THERE IS NO "ENABLED" FLAG. The sweep is registered only when it has a site, a site
+//    id and a token; a half-configured environment is INERT rather than half-publishing, and a missing token
+//    means "do not publish" rather than "publish anonymously".
+builder.Services.Configure<SyndicationOptions>(builder.Configuration.GetSection(SyndicationOptions.Section));
+var syndication = builder.Configuration.GetSection(SyndicationOptions.Section).Get<SyndicationOptions>()
+    ?? new SyndicationOptions();
+if (syndication.IsConfigured)
+{
+    builder.Services.AddHttpClient<ISiteSyndication, HttpSiteSyndication>(HttpSiteSyndication.ClientName);
+    builder.Services.AddScoped<SitePublishService>();
+    builder.Services.AddHostedService<SitePublishHostedService>();
+}
+
 // ── The Noise Standard (ADR-0011): its store, the roles that store fills, and its readiness check. The host asks
 // for the standard; which database the submission register and the verdict record live in is that project's own
 // decision. Same database file as the registry — one thing to back up.

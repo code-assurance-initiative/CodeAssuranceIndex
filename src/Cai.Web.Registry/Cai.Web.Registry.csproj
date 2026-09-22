@@ -30,6 +30,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Cai.Scoring\Cai.Scoring.csproj" />
     <ProjectReference Include="..\Cai.Delivery\Cai.Delivery.csproj" />
+    <!-- The standard composes its own pages; the registry is where the deliveries and the site client live, so
+         this is the seam between what was measured and what is published about it. -->
+    <ProjectReference Include="..\Cai.Pages\Cai.Pages.csproj" />
   </ItemGroup>
   <!-- The registry validates inbound deliveries against the VERSIONED package schema. The schema ships INSIDE the
        binary (embedded resource) so a deployed registry validates against exactly the schema revision it was built
