@@ -34,6 +34,8 @@ public sealed class SurveyPageProducerNeutralityTests
         var a = SurveyPageBuilder.Build(first);
         var b = SurveyPageBuilder.Build(second);
 
+        Assert.NotNull(a);
+        Assert.NotNull(b);
         Assert.Equal(a.Path, b.Path);
         Assert.Equal(a.Title, b.Title);
         Assert.Equal(a.MetaDescription, b.MetaDescription);
@@ -45,6 +47,7 @@ public sealed class SurveyPageProducerNeutralityTests
     {
         var page = SurveyPageBuilder.Build(Record("watchdog.canine.dev", "watchdog-surveyor", "3.1.0"));
 
+        Assert.NotNull(page);
         Assert.StartsWith(SurveyPageBuilder.Root + "/", page.Path, StringComparison.Ordinal);
         Assert.Contains("checkout-api", page.Path, StringComparison.Ordinal);
         Assert.DoesNotContain("watchdog", page.Path, StringComparison.OrdinalIgnoreCase);
@@ -59,7 +62,22 @@ public sealed class SurveyPageProducerNeutralityTests
     {
         var page = SurveyPageBuilder.Build(Record("assay.example.org", "other-surveyor", "0.9.2"));
 
+        Assert.NotNull(page);
         Assert.Contains("assay.example.org", Json(page.Node), StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// ★ A SUBJECT THAT CANNOT BE ADDRESSED GETS NO PAGE, rather than one at a guessed address. An
+    /// uploaded project has no forge, and inventing a segment for it would publish a page nothing can
+    /// read back to a source — and would collide the first time two of them guessed alike.
+    /// </summary>
+    [Fact]
+    public void A_subject_with_no_forge_gets_no_page()
+    {
+        var hostless = SurveyRecord.From([Payload(
+            "watchdog.canine.dev", "watchdog-surveyor", "3.1.0", "2026-07-01T10:32:04Z", 7.5, host: null)]);
+
+        Assert.Null(SurveyPageBuilder.Build(hostless));
     }
 
     // ---------------------------------------------------------------- fixtures
@@ -74,7 +92,8 @@ public sealed class SurveyPageProducerNeutralityTests
     }
 
     private static DeliveryPayload Payload(
-        string producer, string scanner, string scannerVersion, string issuedAt, double codeHealth)
+        string producer, string scanner, string scannerVersion, string issuedAt, double codeHealth,
+        string? host = "github.com")
     {
         var evidence = new EvidenceBundle
         {
@@ -97,7 +116,7 @@ public sealed class SurveyPageProducerNeutralityTests
         {
             DeliveryId = $"cd_{producer}_{issuedAt}",
             IssuedAt = issuedAt,
-            Subject = new DeliverySubject { Repository = Subject, Commit = "3f9a1c2", Host = "github.com" },
+            Subject = new DeliverySubject { Repository = Subject, Commit = "3f9a1c2", Host = host },
             Producer = new DeliveryProducer { Name = producer, Scanner = scanner, ScannerVersion = scannerVersion },
         };
 
