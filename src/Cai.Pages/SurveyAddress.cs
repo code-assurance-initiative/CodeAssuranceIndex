@@ -64,7 +64,15 @@ internal static class SurveyAddress
         return labels.Length >= 2 ? labels[^2] : labels.FirstOrDefault();
     }
 
-    private static string? Segment(string? raw)
+    /// <summary>
+    /// A path segment from arbitrary text, or null when nothing survives.
+    /// </summary>
+    /// <remarks>
+    /// ★ ONE SLUGIFIER FOR EVERY ADDRESS THE STANDARD PUBLISHES. A language whose guide is addressed by one
+    /// rule and linked by another is the same class of defect as a guide gated by two conditions: the two
+    /// agree until an input arrives that they read differently, and the first anyone hears of it is a 404.
+    /// </remarks>
+    internal static string? Segment(string? raw)
     {
         if (string.IsNullOrWhiteSpace(raw))
         {

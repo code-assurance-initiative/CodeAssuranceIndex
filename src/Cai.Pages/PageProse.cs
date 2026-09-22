@@ -84,7 +84,7 @@ internal static class PageProse
     /// — 4,065, then 4,075, then 4,078 — each stamped with the same day and nothing else, while the corpus
     /// index beside it rebuilds once a night. A reader holding two such figures cannot order them and a
     /// citation of either cannot be resolved back to the reading it came from. The minute is what makes the
-    /// figure citable. See <see cref="Kennel.SharedKernel.Publishing.Figure.Provenance"/>, which states the
+    /// figure citable. See <c>Figure.Provenance</c>, which states the
     /// same instant in the note at the foot of the page.
     /// </remarks>
     public static string DayAndTime(DateTimeOffset at) =>
