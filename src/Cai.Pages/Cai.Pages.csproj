@@ -19,6 +19,13 @@
        delivery; the standard decides what a page about it says. See docs/plans/cai-owns-its-pages.md. -->
 
   <ItemGroup>
+    <!-- ★ INTERNAL, DELIBERATELY. A producer sends a signed delivery, never a node; the vocabulary is how
+         the STANDARD composes, and publishing it would invite exactly the coupling this move removes. The
+         tests see it because they are the standard's own. -->
+    <InternalsVisibleTo Include="Cai.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Cai.Delivery\Cai.Delivery.csproj" />
   </ItemGroup>
 </Project>

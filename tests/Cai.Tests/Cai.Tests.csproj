@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\src\Cai.Pages\Cai.Pages.csproj" />
     <ProjectReference Include="..\..\src\Cai.Web\Cai.Web.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Goldens\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

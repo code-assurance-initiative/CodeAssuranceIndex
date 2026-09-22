@@ -1,0 +1,95 @@
+{
+  "section": {
+    "type": "section",
+    "children": [
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Measured codebases"
+      }
+    ]
+  },
+  "section-appearance-anchor": {
+    "type": "section",
+    "children": [
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "By language"
+      }
+    ],
+    "appearance": "stat-band",
+    "anchor": "masthead"
+  },
+  "grid": {
+    "type": "grid",
+    "minItemPx": 220,
+    "children": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "level": 4,
+            "text": "One"
+          }
+        ]
+      }
+    ]
+  },
+  "stack": {
+    "type": "stack",
+    "children": [
+      {
+        "type": "heading",
+        "level": 4,
+        "text": "Cell"
+      }
+    ]
+  },
+  "heading": {
+    "type": "heading",
+    "level": 2,
+    "text": "Two medians"
+  },
+  "richtext": {
+    "type": "richtext",
+    "html": "\u003Cp\u003EA paragraph with \u003Cstrong\u003Eweight\u003C/strong\u003E.\u003C/p\u003E"
+  },
+  "eyebrow": {
+    "type": "richtext",
+    "html": "\u003Cp\u003E\u003Cstrong\u003E\u00A72 Findings\u003C/strong\u003E\u003C/p\u003E"
+  },
+  "stat": {
+    "type": "stack",
+    "children": [
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "6,276"
+      },
+      {
+        "type": "richtext",
+        "html": "\u003Cp\u003Epublished measured codebases\u003C/p\u003E"
+      }
+    ]
+  },
+  "widget": {
+    "type": "widget",
+    "tag": "cai-score-card",
+    "props": {
+      "api-base": "https://app.watchdog.canine.dev",
+      "owner": "acme"
+    }
+  },
+  "button": {
+    "type": "button",
+    "label": "Read the survey",
+    "href": "/surveys/github/acme/api/"
+  },
+  "marker": {
+    "lead": "55.4",
+    "label": "median across published measured codebases",
+    "tip": "The middle of the codebases themselves."
+  }
+}
