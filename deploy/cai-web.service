@@ -13,6 +13,16 @@ Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=ASPNETCORE_URLS=http://0.0.0.0:8090
 Environment=HOME=/home/jimmy
 Environment=Rubrics__Root=/home/jimmy/apps/cai-web/rubrics
+# ★★ THE SITE THE STANDARD PUBLISHES ITS OWN PAGES TO. The id is the CAI site in the CMS; the token is NOT
+#    here and never will be — it is discovered on this host from the running imprint colour's own authoring
+#    settings and written to the file below by the deploy. Committing a credential to a repository that
+#    publishes its own evidence would be the one thing this project cannot afford to do casually.
+Environment=Syndication__SiteBaseUrl=https://app.imprint.canine.dev
+Environment=Syndication__SiteId=c3236bdf87db403ebc06379649f7a2d8
+# ★ THE LEADING "-" MAKES IT OPTIONAL, WHICH IS THE FAIL-CLOSED HALF. A host with no token file boots
+#   normally and simply does not publish — SyndicationOptions.IsConfigured is false, the sweep is never
+#   registered, and nothing points a publisher at a live site by accident.
+EnvironmentFile=-/home/jimmy/apps/cai-web/syndication.env
 ExecStart=/usr/bin/dotnet /home/jimmy/apps/cai-web/app/Cai.Web.dll
 Restart=on-failure
 RestartSec=5

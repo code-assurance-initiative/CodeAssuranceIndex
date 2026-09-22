@@ -46,6 +46,11 @@ Environment=Registry__DbPath=/home/jimmy/apps/cai-web-preprod/registry-data/cai-
 #   signing key — would let the preprod register accept production-signed deliveries, which is the same
 #   confusion pointed the other way. See deploy/PREPROD.md.
 Environment=Registry__KeysPath=/home/jimmy/apps/cai-web-preprod/registry-data/trusted-keys.json
+# ★★ NO Syndication__* HERE, AND THE ABSENCE IS THE POINT RATHER THAN AN OVERSIGHT. Preprod holds a restore
+#    of production's registry; a publisher configured here would sweep preprod's corpus onto the LIVE site
+#    and withdraw whatever the live sweep had published that this copy does not know about. Rehearsing the
+#    sweep needs a preprod CMS site of its own, and until one exists this tier does not publish at all —
+#    which SyndicationOptions.IsConfigured enforces by refusing to register the loop.
 ExecStart=/usr/bin/dotnet /home/jimmy/apps/cai-web-preprod/app/Cai.Web.dll
 Restart=on-failure
 RestartSec=5

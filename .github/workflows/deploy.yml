@@ -131,6 +131,40 @@ jobs:
           mv /home/jimmy/apps/cai-web/app.next /home/jimmy/apps/cai-web/app
           sudo systemctl restart cai-web.service
 
+      # ★★ THE SITE PUBLISHER'S CREDENTIAL IS DISCOVERED, NOT CONFIGURED. The authoring token lives in the
+      #    running imprint colour's own settings on this host; reading it there means no secret is typed, held
+      #    in a repository secret, or pasted into a unit file. This is the same discovery the producer's
+      #    promote.sh did for the publisher that used to live there — carried over with the publisher.
+      #
+      # ★ FAIL-CLOSED AND SAID OUT LOUD. No running imprint colour with a token ⇒ the env file is removed and
+      #   the sweep stays inert, with a warning in the run. A publisher that cannot authenticate must not
+      #   start and retry every tick against a live site.
+      - name: Point the site publisher at the CMS
+        run: |
+          set -euo pipefail
+          env_file=/home/jimmy/apps/cai-web/syndication.env
+          # ★ ASKED OF SYSTEMD, NEVER GUESSED FROM A PATH. Imprint runs blue/green, so which directory holds
+          #   the live settings changes on its cutovers; querying the ACTIVE unit's WorkingDirectory means a
+          #   cutover there needs no bookkeeping here. A glob would work until the day it silently did not,
+          #   and the symptom would be a publisher that quietly stopped publishing.
+          token=""
+          for unit in imprint-green imprint-blue; do
+            systemctl is-active --quiet "$unit.service" || continue
+            dir=$(systemctl show -p WorkingDirectory --value "$unit.service" 2>/dev/null || true)
+            [ -n "$dir" ] && [ -f "$dir/appsettings.Authoring.json" ] || continue
+            token=$(jq -r '.Imprint.Authoring.Token // empty' "$dir/appsettings.Authoring.json" 2>/dev/null || true)
+            [ -n "$token" ] && { echo "authoring token read from $unit"; break; }
+          done
+          if [ -n "$token" ]; then
+            umask 077
+            printf 'Syndication__Token=%s\n' "$token" > "$env_file"
+            echo "site publisher: ON"
+          else
+            rm -f "$env_file"
+            echo "::warning::no running imprint colour with an authoring token — the site publisher stays inert"
+          fi
+          sudo systemctl restart cai-web.service
+
       - name: Health check (roll back on failure)
         run: |
           set -euo pipefail
