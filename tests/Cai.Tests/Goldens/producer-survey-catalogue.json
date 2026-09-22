@@ -1,0 +1,257 @@
+{
+  "index": {
+    "Path": "surveys",
+    "Title": "Measured codebases",
+    "MetaDescription": "10 codebases measured against the Codebase Assurance Index, with their surveys published.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "Measured codebases"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003E10 published measured codebases.\u003C/strong\u003E Every one was assessed against the \u003Ca href=\u0022https://codeassuranceindex.info/spec/\u0022\u003ECodebase Assurance Index\u003C/a\u003E at a pinned commit, under the same rubric and applied the same way, whether or not its source is public. The index is an open standard, so any of these numbers can be re-derived from its \u003Ca href=\u0022https://codeassuranceindex.info/verify/\u0022\u003Esurvey\u003C/a\u003E\u0027s evidence. Each language below shows the spread of its codebases\u0027 scores rather than one number, next to how much of each codebase the survey actually reached. A score means one thing when the survey resolved a dozen dimensions and another when it resolved two dozen.\u003C/p\u003E"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "grid",
+              "minItemPx": 240,
+              "children": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "10"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Epublished measured codebases\u003C/p\u003E"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "1"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Elanguage with a field guide\u003C/p\u003E"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "62.5"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Emedian across language with a field guide\u003C/p\u003E"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "60.5"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Emedian across published measured codebases\u003C/p\u003E"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "minItemPx": 240,
+              "children": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "18"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Edimensions resolved, median across the corpus\u003C/p\u003E"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "appearance": "StatBand",
+          "anchor": "corpus"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 2,
+              "text": "Two medians, and they are not the same statistic"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003E62.5 across 1 language with a field guide\u003C/strong\u003E is the middle of the per-language medians: every language counts once, whether its field holds four hundred codebases or five.\u003C/p\u003E\u003Cp\u003E\u003Cstrong\u003E60.5 across 10 published measured codebases\u003C/strong\u003E is the middle of the codebases themselves, so the largest fields pull it hardest.\u003C/p\u003E\u003Cp\u003EBoth are true of the same corpus and they will not agree. A median quoted without the population it was taken over is one a reader cannot check, so each of these carries its own: 10 published measured codebases, measured 22 September 2026 at 00:00 UTC.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "medians"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-language-board",
+              "props": {
+                "heading": "By language",
+                "languages": "[{\u0022name\u0022:\u0022C#\u0022,\u0022count\u0022:6,\u0022median\u0022:62.5,\u0022low\u0022:61.2,\u0022high\u0022:63.8,\u0022dist\u0022:[0,0,0,0,0,0,6,0,0,0],\u0022depth\u0022:18,\u0022depthOf\u0022:6,\u0022href\u0022:\u0022/surveys/lang/csharp/\u0022}]",
+                "ungrouped": "{\u0022count\u0022:4}",
+                "depth-note": "Depth is how many of the index\u0027s dimensions actually resolved on a codebase, taken as the median across the language\u0027s codebases and read from each one\u0027s most recent survey. It measures how much of the codebase the survey reached, never how good the code is.",
+                "empty-text": "No measured language matches that."
+              }
+            }
+          ],
+          "anchor": "languages"
+        }
+      ]
+    }
+  },
+  "guide-csharp": {
+    "Path": "surveys/lang/csharp",
+    "Title": "C# projects, measured",
+    "MetaDescription": "6 C# projects measured against the Codebase Assurance Index, median score 62.5.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "C# projects, measured"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EC# \u00B7 6 measured projects.\u003C/strong\u003E The median score across them is 62.5, with half of them between 61.3 and 63.8. Each was measured at a pinned commit, and every page below carries the date its score was taken. Entries are removed after three months with nothing newly published.\u003C/p\u003E"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "grid",
+              "minItemPx": 240,
+              "children": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "6"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Emeasured projects\u003C/p\u003E"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "62.5"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Emedian CAI \u00B7 half between 61.3 and 63.8\u003C/p\u003E"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "18"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Edimensions resolved, typically\u003C/p\u003E"
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "level": 2,
+                      "text": "9k"
+                    },
+                    {
+                      "type": "richtext",
+                      "html": "\u003Cp\u003Elines in total\u003C/p\u003E"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "appearance": "StatBand",
+          "anchor": "field"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-survey-list",
+              "props": {
+                "heading": "The projects",
+                "projects": "[{\u0022owner\u0022:\u0022acme\u0022,\u0022name\u0022:\u0022service-5\u0022,\u0022score\u0022:65,\u0022loc\u0022:1500,\u0022day\u0022:\u002230 August 2026\u0022,\u0022at\u0022:\u00222026-08-30T09:00:00.0000000Z\u0022,\u0022href\u0022:\u0022/surveys/github/acme/service-5/\u0022,\u0022source\u0022:\u0022open\u0022,\u0022lastPublished\u0022:\u002230 August 2026\u0022},{\u0022owner\u0022:\u0022acme\u0022,\u0022name\u0022:\u0022service-4\u0022,\u0022score\u0022:64,\u0022loc\u0022:1500,\u0022day\u0022:\u002230 August 2026\u0022,\u0022at\u0022:\u00222026-08-30T09:00:00.0000000Z\u0022,\u0022href\u0022:\u0022/surveys/github/acme/service-4/\u0022,\u0022source\u0022:\u0022open\u0022,\u0022lastPublished\u0022:\u002230 August 2026\u0022},{\u0022owner\u0022:\u0022acme\u0022,\u0022name\u0022:\u0022service-3\u0022,\u0022score\u0022:63,\u0022loc\u0022:1500,\u0022day\u0022:\u002230 August 2026\u0022,\u0022at\u0022:\u00222026-08-30T09:00:00.0000000Z\u0022,\u0022href\u0022:\u0022/surveys/github/acme/service-3/\u0022,\u0022source\u0022:\u0022open\u0022,\u0022lastPublished\u0022:\u002230 August 2026\u0022},{\u0022owner\u0022:\u0022acme\u0022,\u0022name\u0022:\u0022service-2\u0022,\u0022score\u0022:62,\u0022loc\u0022:1500,\u0022day\u0022:\u002230 August 2026\u0022,\u0022at\u0022:\u00222026-08-30T09:00:00.0000000Z\u0022,\u0022href\u0022:\u0022/surveys/github/acme/service-2/\u0022,\u0022source\u0022:\u0022open\u0022,\u0022lastPublished\u0022:\u002230 August 2026\u0022},{\u0022owner\u0022:\u0022acme\u0022,\u0022name\u0022:\u0022service-1\u0022,\u0022score\u0022:61,\u0022loc\u0022:1500,\u0022day\u0022:\u002230 August 2026\u0022,\u0022at\u0022:\u00222026-08-30T09:00:00.0000000Z\u0022,\u0022href\u0022:\u0022/surveys/github/acme/service-1/\u0022,\u0022source\u0022:\u0022open\u0022,\u0022lastPublished\u0022:\u002230 August 2026\u0022},{\u0022owner\u0022:\u0022acme\u0022,\u0022name\u0022:\u0022service-0\u0022,\u0022score\u0022:60,\u0022loc\u0022:1500,\u0022day\u0022:\u002230 August 2026\u0022,\u0022at\u0022:\u00222026-08-30T09:00:00.0000000Z\u0022,\u0022href\u0022:\u0022/surveys/github/acme/service-0/\u0022,\u0022source\u0022:\u0022open\u0022,\u0022lastPublished\u0022:\u002230 August 2026\u0022}]",
+                "empty-text": "No C# project here matches that."
+              }
+            }
+          ],
+          "anchor": "projects"
+        }
+      ]
+    }
+  },
+  "guide-go-below-the-gate": null
+}

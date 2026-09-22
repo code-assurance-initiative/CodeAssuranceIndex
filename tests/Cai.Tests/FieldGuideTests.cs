@@ -85,7 +85,7 @@ public sealed class FieldGuideTests
         var json = Json(SurveyIndexBuilder.Build(records, TakenAt));
 
         Assert.Contains("median across languages with a field guide", json, StringComparison.Ordinal);
-        Assert.Contains("median across measured codebases", json, StringComparison.Ordinal);
+        Assert.Contains("median across published measured codebases", json, StringComparison.Ordinal);
         Assert.Contains("60.0", json, StringComparison.Ordinal);
         Assert.Contains("90.0", json, StringComparison.Ordinal);
     }
@@ -134,7 +134,7 @@ public sealed class FieldGuideTests
 
         Assert.Equal(["csharp"], fields.Select(f => f.Language));
         // Still part of the corpus: the count the index leads with is every measured codebase.
-        Assert.Contains("8 measured codebases", Json(SurveyIndexBuilder.Build(records, TakenAt)), StringComparison.Ordinal);
+        Assert.Contains("8 published measured codebases", Json(SurveyIndexBuilder.Build(records, TakenAt)), StringComparison.Ordinal);
     }
 
     // ---------------------------------------------------------------- fixtures

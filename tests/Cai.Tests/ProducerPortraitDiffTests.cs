@@ -28,14 +28,14 @@ public sealed class ProducerPortraitDiffTests
     [Fact]
     public void The_standard_composes_the_same_sections_in_the_same_order()
     {
-        Assert.Equal(Anchors(Producer()), Anchors(Standard()));
+        Assert.Equal(PageShape.Sections(Producer()), PageShape.Sections(Standard()));
     }
 
     /// <summary>★ The same islands, with the same tags — a widget is a contract with the site's theme.</summary>
     [Fact]
     public void The_standard_composes_the_same_islands()
     {
-        Assert.Equal(Widgets(Producer()), Widgets(Standard()));
+        Assert.Equal(PageShape.Widgets(Producer()), PageShape.Widgets(Standard()));
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public sealed class ProducerPortraitDiffTests
     public void The_standard_states_the_same_figures_in_the_stat_band()
     {
         // Every cell but the headline, which differs for a reason the owner must rule on — see below.
-        Assert.Equal(Stats(Producer()).Skip(1), Stats(Standard()).Skip(1));
+        Assert.Equal(PageShape.Stats(Producer()).Skip(1), PageShape.Stats(Standard()).Skip(1));
     }
 
     /// <summary>
@@ -64,8 +64,8 @@ public sealed class ProducerPortraitDiffTests
     [Fact]
     public void The_headline_differs_because_the_producer_publishes_the_peak_and_the_standard_the_latest()
     {
-        var producer = Stats(Producer())[0];
-        var standard = Stats(Standard())[0];
+        var producer = PageShape.Stats(Producer())[0];
+        var standard = PageShape.Stats(Standard())[0];
 
         Assert.StartsWith("72.4 |", producer, StringComparison.Ordinal);
         Assert.StartsWith("71 |", standard, StringComparison.Ordinal);
@@ -86,103 +86,6 @@ public sealed class ProducerPortraitDiffTests
         Assert.Equal(producer.GetProperty("Path").GetString(), Page().Path);
         Assert.Equal(producer.GetProperty("Title").GetString(), Page().Title);
     }
-
-    // ---------------------------------------------------------------- readers
-
-    /// <summary>Every section's anchor, in document order — null for an unanchored one.</summary>
-    private static List<string> Anchors(JsonElement page) => Sections(Node(page));
-
-    private static List<string> Sections(JsonElement node)
-    {
-        var found = new List<string>();
-        Walk(node, n =>
-        {
-            if (n.TryGetProperty("type", out var t) && t.GetString() == "section")
-            {
-                // ★ THE APPEARANCE TOO, NOT ONLY THE ANCHOR. An appearance is what the theme styles the
-                //   section BY, so a section carrying the right anchor and the wrong appearance is an
-                //   unstyled block at the right address — invisible to a test that reads only anchors, and
-                //   exactly what a hand port gets wrong.
-                var anchor = n.TryGetProperty("anchor", out var a) && a.ValueKind == JsonValueKind.String
-                    ? a.GetString()!
-                    : "-";
-                var appearance = n.TryGetProperty("appearance", out var ap) && ap.ValueKind == JsonValueKind.String
-                    ? ap.GetString()!
-                    : "-";
-                found.Add($"{appearance}/{anchor}");
-            }
-        });
-        return found;
-    }
-
-    private static List<string> Widgets(JsonElement page)
-    {
-        var found = new List<string>();
-        Walk(Node(page), n =>
-        {
-            if (n.TryGetProperty("type", out var t) && t.GetString() == "widget"
-                && n.TryGetProperty("tag", out var tag))
-            {
-                found.Add(tag.GetString()!);
-            }
-        });
-        return found;
-    }
-
-    /// <summary>The stat band's cells, as the pairs a reader sees: the figure and the line beneath it.</summary>
-    private static List<string> Stats(JsonElement page)
-    {
-        var found = new List<string>();
-        Walk(Node(page), n =>
-        {
-            if (!n.TryGetProperty("type", out var t) || t.GetString() != "stack")
-            {
-                return;
-            }
-
-            string? figure = null;
-            string? label = null;
-            foreach (var child in n.GetProperty("children").EnumerateArray())
-            {
-                var kind = child.GetProperty("type").GetString();
-                if (kind == "heading")
-                {
-                    figure = child.GetProperty("text").GetString();
-                }
-                else if (kind == "richtext")
-                {
-                    label = child.GetProperty("html").GetString();
-                }
-            }
-
-            if (figure is not null)
-            {
-                found.Add($"{figure} | {label}");
-            }
-        });
-        return found;
-    }
-
-    private static void Walk(JsonElement node, Action<JsonElement> visit)
-    {
-        if (node.ValueKind == JsonValueKind.Object)
-        {
-            visit(node);
-            foreach (var property in node.EnumerateObject())
-            {
-                Walk(property.Value, visit);
-            }
-        }
-        else if (node.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var item in node.EnumerateArray())
-            {
-                Walk(item, visit);
-            }
-        }
-    }
-
-    private static JsonElement Node(JsonElement page) => page.GetProperty("Node");
 
     // ---------------------------------------------------------------- fixtures
 

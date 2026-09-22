@@ -21,8 +21,18 @@ namespace Cai.Pages;
 /// </remarks>
 public static class SurveyIndexBuilder
 {
-    /// <summary>What the corpus count is a count of.</summary>
-    internal static readonly Basis CodebasesBasis = Basis.Of("measured codebase", "measured codebases");
+    /// <summary>
+    /// What the corpus count is a count of.
+    /// </summary>
+    /// <remarks>
+    /// ★ "PUBLISHED", AND IT IS NOT DECORATION. The population is the codebases whose owners chose to
+    /// publish them, not every codebase ever measured — those are different numbers, and a reader comparing
+    /// this index against anything else needs to know which one it is. Adopted from the producer's own
+    /// basis, which said so first and which the phase-6 diff caught this one dropping.
+    /// </remarks>
+    internal static readonly Basis CodebasesBasis = Basis.Of(
+        "published measured codebase",
+        "published measured codebases");
 
     /// <summary>
     /// The population the OTHER median is taken over.
