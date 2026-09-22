@@ -124,7 +124,7 @@ one standard. One holder of the sequence, one derivation.
 
 Each phase states a DONE that is an observation or a command, never a report.
 
-### Phase 1 — the acceptance test, written first
+### Phase 1 — the acceptance test, written first  ·  **DONE 2026-09-22 (CAI `65569a5`), RED as intended**
 
 A test in CAI that publishes **two deliveries for the same subject from two different producers** and
 asserts the generated node trees are identical except for attribution.
@@ -139,21 +139,38 @@ move is measured against it rather than declared against it.
 ★★ Required by the owner: *verify with Playwright that the updated result is pixel-perfect the same
 as before.*
 
-Capture from prod, today, before a line moves:
+**DONE 2026-09-22.** 25 pages · 150 captures · 0 failures · 90 MiB. Script `tests/visual/capture.mjs`,
+manifest `tests/visual/baseline-manifest.json`, images at
+`~/Hentet/kennel/cai-owns-its-pages/baseline/` (outside the repository; the manifest records each
+file's sha256).
 
-- every distinct page SHAPE under `/surveys/**` and `/state-of-the-corpus/**` — index, per-repo
-  portrait, language field guide, corpus index, corpus language page, advisory page
-- 3 real repositories per shape, chosen to differ: one with a long history, one single-scan, one
-  with a missing lens
-- widths 1280 / 820 / 390, **both themes**
-- full-page PNG, after scrolling to force every lazy island to hydrate
+★★ **TEN SHAPES, NOT THE SIX THIS PLAN FIRST NAMED.** The sitemap has `survey-index`,
+`survey-language`, `survey-portrait` (6,271), `survey-portrait-deep` (nested forge groups, 5),
+`corpus-index`, `corpus-language` (20), `corpus-advisory` (2,916), `corpus-package` (811),
+`corpus-country` (42) and `corpus-listing` (4). Three of those were not on the list this plan was
+written from, which is the baseline earning its keep before a line of the move was written.
 
-**Done when:** the baseline set is committed under `tests/visual/baseline/` with the delivery ids and
-commit shas that produced it recorded beside it.
+The sample is seeded and recorded rather than "a few pages I happened to open", and the three
+portraits are chosen to DIFFER — 31.3 to 97.6, Weak through Exemplary, 4 to 24 readings, three
+different rubric versions. A baseline of three healthy six-lens repositories would pass a builder
+that silently drops a missing lens or cannot draw a one-reading trajectory.
 
-★ THE COMPARISON NEEDS A FROZEN INPUT. Pages change because scans change, so a before/after diff of
-live pages proves nothing. The baseline records WHICH deliveries produced it, and Phase 6 replays
-exactly those.
+★★ **AND NOT EVERY SHAPE CAN BE PIXEL-COMPARED — say it here rather than discover it as a wall of
+red in phase 6.** A survey portrait is pinned to a commit and a rubric version, both recorded, so the
+same inputs replay and the render compares pixel for pixel. An AGGREGATE page — corpus index,
+language, package, country, advisory — is a reading over the whole corpus on the day it was taken,
+and the corpus changes daily: those will differ between any two captures for reasons that have
+nothing to do with who composed them. They are verified by the node-tree diff over a frozen dataset.
+Six of the twenty-five pages are pixel-comparable; the manifest's `comparability` block names which
+and why.
+
+★ Two attempts at recording the facts were wrong before the third was right, and both failed
+SILENTLY. "CAI 97.6" is not how a page writes its score; "Where 97.6 sits on the scale" is on the
+page but inside an island's shadow root, which `innerText` does not pierce. The score is read
+structurally from the stat band, whose level-2 headings ARE the figures, each paired with its label —
+and there is deliberately no "first figure" fallback, because that one reported the surveys index as
+`cai=6,276`, which is a count of codebases. A manifest that labels a population as a score is not a
+weaker record, it is a false one.
 
 ### Phase 3 — move the vocabulary
 
@@ -161,7 +178,17 @@ exactly those.
 publisher"; `internal` to Kennel today, which is exactly what forces a second producer to reimplement
 them.
 
-**Done when:** `grep -rn "PageNodes\|PageProse" kennel/src` returns nothing.
+**Done when:** CAI's vocabulary reproduces the golden captured from the producer's copy, byte for
+byte.
+
+★ THE PLAN FIRST SAID "done when `grep PageNodes kennel/src` is empty", AND THAT WAS WRONG: the
+producer's builders still call it until phase 5, so the deletion belongs there. A phase whose exit
+condition cannot be met until a later phase is a phase that never closes.
+
+**DONE 2026-09-22** (CAI `d9aba92`, kennel golden alongside it). `Figure`, `FigureKind`, `FigureLead`,
+`FigureSplit` and `Basis` moved with it, which this plan did not anticipate: "a number together with
+what it is a number OF — the population it was taken over" is the STANDARD's concept, not a
+producer's, and it is what `CLAUDE.md`'s *never select on the outcome* rests on.
 
 ### Phase 4 — move the builders
 

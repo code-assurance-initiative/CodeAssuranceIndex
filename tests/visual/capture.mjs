@@ -90,14 +90,15 @@ for (const [shape, all] of [...byShape].sort()) {
 console.log(`shapes ${byShape.size} · pages ${sample.length} · captures ${sample.length * WIDTHS.length * THEMES.length}`);
 fs.mkdirSync(outDir, { recursive: true });
 
+const factsOnly = process.argv.includes('--facts-only');
 const browser = await chromium.launch();
 const entries = [];
 let done = 0;
 
 for (const { shape, path: pagePath } of sample) {
   const facts = {};
-  for (const theme of THEMES) {
-    for (const width of WIDTHS) {
+  for (const theme of factsOnly ? [THEMES[0]] : THEMES) {
+    for (const width of factsOnly ? [WIDTHS[0]] : WIDTHS) {
       const ctx = await browser.newContext({
         viewport: { width, height: 1000 },
         colorScheme: theme,
@@ -124,6 +125,7 @@ for (const { shape, path: pagePath } of sample) {
 
         const name = `${shape}__${slug(pagePath)}__${width}__${theme}.png`;
         const file = path.join(outDir, name);
+        if (factsOnly) { await ctx.close(); continue; }
         await page.screenshot({ path: file, fullPage: true });
         const bytes = fs.readFileSync(file);
         entries.push({
@@ -144,22 +146,63 @@ for (const { shape, path: pagePath } of sample) {
 
 await browser.close();
 
-/** The facts the page ASSERTS about its own inputs — what Phase 6 must be able to reproduce. */
+/**
+ * The facts the page ASSERTS about its own inputs — what Phase 6 must be able to reproduce.
+ *
+ * ★★ THE FIRST VERSION LOOKED FOR "CAI 97.6" AND FOUND NOTHING, on every portrait, because the score is
+ *    rendered as a bare stat figure and the label sits beneath it. A manifest whose most important field
+ *    is silently null is worse than no manifest: it reads as "this page has no score" rather than "I did
+ *    not look in the right place". Each field below is now read from a phrase the PAGE actually writes,
+ *    and `missing` says out loud which ones did not resolve.
+ */
 async function pageFacts(page) {
   return page.evaluate(() => {
     const text = document.body.innerText;
     const grab = re => (text.match(re) ?? [])[1] ?? null;
-    return {
+
+    const facts = {
       title: document.title,
       canonical: document.querySelector('link[rel=canonical]')?.getAttribute('href') ?? null,
-      rubricVersion: grab(/(rubric-\d{4}\.\d{2}\.\d{2})/),
-      cai: grab(/\bCAI\s+(\d{1,3})\b/),
+      // ★★ READ STRUCTURALLY, NOT BY PHRASE. Two attempts failed here: "CAI 97.6" is not how the page
+      //    writes it, and "Where 97.6 sits on the scale" IS on the page but lives inside an island's
+      //    shadow root, which innerText does not pierce. What the light DOM has is a stat band whose
+      //    level-2 headings ARE the figures, each paired with the label beneath it — so the figures are
+      //    read from there, with their labels, and nothing is inferred from prose that may move.
+      stats: [...document.querySelectorAll('.ip-ap-stat-band')].flatMap(band => {
+        const figures = [...band.querySelectorAll('h2')].map(h => h.textContent.trim());
+        const labels = [...band.querySelectorAll('p')].map(e => e.textContent.trim()).filter(Boolean);
+        return figures.map((figure, i) => ({ figure, label: labels[i] ?? null }));
+      }),
       band: grab(/\b(Exemplary|Strong|Adequate|Weak|Critical)\b/),
-      measured: grab(/(\d{1,2}\s+\w+\s+20\d\d)/),
+      rubricVersion: grab(/(rubric-\d{4}\.\d{2}\.\d{2})/),
+      // "Measured at commit 658c7b49f7" — the exact code a score is about, which is what makes a
+      // reading reproducible at all.
+      commit: grab(/commit\s+([0-9a-f]{6,40})\b/i),
+      measuredAt: grab(/taken on (\d{1,2}\s+\w+\s+20\d\d)/) ?? grab(/(\d{1,2}\s+\w+\s+20\d\d)/),
+      // The trend's own caption is inside the island too, so the reading COUNT comes from the stat
+      // band's third figure — the one labelled "measurements over time".
+      readings: null,
       widgets: [...new Set([...document.querySelectorAll('*')]
         .map(e => e.tagName.toLowerCase()).filter(t => t.includes('-')))].sort(),
       elements: document.querySelectorAll('*').length,
     };
+
+    // The score and the reading count, named off the labels the page itself prints beside them.
+    const labelled = re => facts.stats.find(s => s.label && re.test(s.label))?.figure ?? null;
+    // ★ NO "FIRST FIGURE" FALLBACK. It made the surveys index report cai=6,276 — which is the count of
+    //   published codebases, not a score — and a language page report cai=325. A manifest that labels a
+    //   population as a CAI is not a weaker record, it is a false one, and Phase 6 would be comparing
+    //   against a lie. A figure is the score only when the page's own label names a band beside it.
+    facts.cai = labelled(/Exemplary|Strong|Adequate|Weak|Critical/);
+    facts.readings = labelled(/measurements over time/);
+
+    // ★ Say which ones did not resolve, rather than leaving a null to be read as an absence in the
+    //   data. A manifest whose most important field is silently null reads as "this page has no
+    //   score" when it means "I did not look in the right place" — which is what happened twice.
+    facts.missing = Object.entries(facts)
+      .filter(([k, v]) => v === null && k !== 'canonical')
+      .map(([k]) => k);
+    return facts;
   });
 }
 

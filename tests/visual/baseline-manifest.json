@@ -1,0 +1,2197 @@
+{
+  "capturedAt": "2026-09-22T15:47:05.294Z",
+  "origin": "https://codeassuranceindex.info",
+  "seed": 20260922,
+  "widths": [
+    1280,
+    820,
+    390
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "note": "Baseline for docs/plans/cai-owns-its-pages.md Phase 2. Images live outside the repository, at ~/Hentet/kennel/cai-owns-its-pages/baseline/ (89 MiB) \u2014 this manifest is the committed artefact and records the sha256 of each. \u2605\u2605 WHAT CAN AND CANNOT BE PIXEL-COMPARED. A survey portrait is pinned to a commit and a rubric version, both recorded below, so the same inputs can be replayed and the render compared pixel for pixel. An AGGREGATE page \u2014 the corpus index, a language, package, country or advisory page \u2014 is a reading over the whole corpus on the day it was taken, and the corpus changes daily: those pages will differ between any two captures for reasons that have nothing to do with who composed them. They are verified by the node-tree diff over a frozen dataset, not by the pixel gate. Saying so here rather than discovering it as a wall of red in phase 6.",
+  "pages": [
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-9wx4-h78v-vm56/",
+      "facts": {
+        "title": "GHSA-9wx4-h78v-vm56 \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/advisory/ghsa-9wx4-h78v-vm56/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band"
+        ],
+        "elements": 190,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-4qpc-3hr4-r2p4/",
+      "facts": {
+        "title": "GHSA-4qpc-3hr4-r2p4 \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/advisory/ghsa-4qpc-3hr4-r2p4/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band"
+        ],
+        "elements": 190,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-qwww-vcr4-c8h2/",
+      "facts": {
+        "title": "GHSA-qwww-vcr4-c8h2 \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/advisory/ghsa-qwww-vcr4-c8h2/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band"
+        ],
+        "elements": 190,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/hong-kong/",
+      "facts": {
+        "title": "Hong Kong \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/country/hong-kong/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band",
+          "cai-trend"
+        ],
+        "elements": 194,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/egypt/",
+      "facts": {
+        "title": "Egypt \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/country/egypt/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band",
+          "cai-trend"
+        ],
+        "elements": 194,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/china/",
+      "facts": {
+        "title": "China \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/country/china/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band",
+          "cai-trend"
+        ],
+        "elements": 194,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-index",
+      "path": "/state-of-the-corpus/",
+      "facts": {
+        "title": "The state of the corpus \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band",
+          "cai-link-cards",
+          "cai-share-bars",
+          "cai-trend"
+        ],
+        "elements": 231,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/fsharp/",
+      "facts": {
+        "title": "F# \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/language/fsharp/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 195,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/csharp/",
+      "facts": {
+        "title": "C# \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/language/csharp/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 195,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/c/",
+      "facts": {
+        "title": "C \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/language/c/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 195,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/packages/",
+      "facts": {
+        "title": "Vulnerable packages across the corpus \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/packages/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band"
+        ],
+        "elements": 3438,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/languages/",
+      "facts": {
+        "title": "The corpus by language \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/languages/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band",
+          "cai-share-bars"
+        ],
+        "elements": 276,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/vm2/",
+      "facts": {
+        "title": "vm2 \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/package/vm2/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band"
+        ],
+        "elements": 184,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/lodash-template/",
+      "facts": {
+        "title": "lodash.template \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/package/lodash-template/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band"
+        ],
+        "elements": 184,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/async-std/",
+      "facts": {
+        "title": "async-std \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/state-of-the-corpus/package/async-std/",
+        "stats": [],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-figure-band"
+        ],
+        "elements": 184,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "survey-index",
+      "path": "/surveys/",
+      "facts": {
+        "title": "Measured codebases \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/",
+        "stats": [
+          {
+            "figure": "6,276",
+            "label": "published measured codebases"
+          },
+          {
+            "figure": "20",
+            "label": "languages with a field guide"
+          },
+          {
+            "figure": "56.6",
+            "label": "median across languages with a field guide"
+          },
+          {
+            "figure": "55.4",
+            "label": "median across published measured codebases"
+          },
+          {
+            "figure": "17",
+            "label": "dimensions resolved, median across the corpus"
+          }
+        ],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": "22 September 2026",
+        "readings": null,
+        "widgets": [
+          "cai-language-board",
+          "cai-link-cards"
+        ],
+        "elements": 224,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/erlang/",
+      "facts": {
+        "title": "Erlang projects, measured \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/lang/erlang/",
+        "stats": [
+          {
+            "figure": "325",
+            "label": "measured projects"
+          },
+          {
+            "figure": "57.3",
+            "label": "median CAI \u00b7 half between 49.4 and 63.8"
+          },
+          {
+            "figure": "14",
+            "label": "dimensions resolved, typically"
+          },
+          {
+            "figure": "5.6M",
+            "label": "lines in total"
+          }
+        ],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": null,
+        "readings": null,
+        "widgets": [
+          "cai-survey-list"
+        ],
+        "elements": 197,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "measuredAt",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/python/",
+      "facts": {
+        "title": "Python projects, measured \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/lang/python/",
+        "stats": [
+          {
+            "figure": "357",
+            "label": "measured projects"
+          },
+          {
+            "figure": "55.3",
+            "label": "median CAI \u00b7 half between 46.7 and 63.0"
+          },
+          {
+            "figure": "21",
+            "label": "dimensions resolved, typically \u00b7 recorded for 295"
+          },
+          {
+            "figure": "24.5M",
+            "label": "lines in total"
+          }
+        ],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": null,
+        "readings": null,
+        "widgets": [
+          "cai-survey-list"
+        ],
+        "elements": 197,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "measuredAt",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/swift/",
+      "facts": {
+        "title": "Swift projects, measured \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/lang/swift/",
+        "stats": [
+          {
+            "figure": "461",
+            "label": "measured projects"
+          },
+          {
+            "figure": "56.5",
+            "label": "median CAI \u00b7 half between 49.7 and 63.4"
+          },
+          {
+            "figure": "17",
+            "label": "dimensions resolved, typically \u00b7 recorded for 382"
+          },
+          {
+            "figure": "11.1M",
+            "label": "lines in total"
+          }
+        ],
+        "band": null,
+        "rubricVersion": null,
+        "commit": null,
+        "measuredAt": null,
+        "readings": null,
+        "widgets": [
+          "cai-survey-list"
+        ],
+        "elements": 197,
+        "cai": null,
+        "missing": [
+          "band",
+          "rubricVersion",
+          "commit",
+          "measuredAt",
+          "readings",
+          "cai"
+        ]
+      }
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/code-assurance-initiative/codeassuranceindex/",
+      "facts": {
+        "title": "code-assurance-initiative/CodeAssuranceIndex \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/github/code-assurance-initiative/codeassuranceindex/",
+        "stats": [
+          {
+            "figure": "85.5",
+            "label": "Strong \u00b7 19 September 2026"
+          },
+          {
+            "figure": "13k",
+            "label": "lines of production code"
+          },
+          {
+            "figure": "C#",
+            "label": "primary language"
+          },
+          {
+            "figure": "24",
+            "label": "measurements over time"
+          }
+        ],
+        "band": "Strong",
+        "rubricVersion": "rubric-2026.09.15",
+        "commit": "0f1f7763a2",
+        "measuredAt": "19 September 2026",
+        "readings": "24",
+        "widgets": [
+          "cai-band-scale",
+          "cai-lens-gauges",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 249,
+        "cai": "85.5",
+        "missing": []
+      }
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/phoenix-tui/phoenix/",
+      "facts": {
+        "title": "phoenix-tui/phoenix \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/github/phoenix-tui/phoenix/",
+        "stats": [
+          {
+            "figure": "84.8",
+            "label": "Strong \u00b7 21 September 2026"
+          },
+          {
+            "figure": "38k",
+            "label": "lines of production code"
+          },
+          {
+            "figure": "Go",
+            "label": "primary language"
+          },
+          {
+            "figure": "4",
+            "label": "measurements over time"
+          }
+        ],
+        "band": "Strong",
+        "rubricVersion": "rubric-2026.09.15",
+        "commit": "5f76dffea0",
+        "measuredAt": "21 September 2026",
+        "readings": "4",
+        "widgets": [
+          "cai-band-scale",
+          "cai-lens-gauges",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 249,
+        "cai": "84.8",
+        "missing": []
+      }
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/ruben-rasmussen/auth/",
+      "facts": {
+        "title": "ruben-rasmussen/auth \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/github/ruben-rasmussen/auth/",
+        "stats": [
+          {
+            "figure": "97.6",
+            "label": "Exemplary \u00b7 15 June 2026"
+          },
+          {
+            "figure": "36k",
+            "label": "lines of production code"
+          },
+          {
+            "figure": "18",
+            "label": "measurements over time"
+          }
+        ],
+        "band": "Exemplary",
+        "rubricVersion": "rubric-2026.08.11",
+        "commit": "658c7b49f7",
+        "measuredAt": "15 June 2026",
+        "readings": "18",
+        "widgets": [
+          "cai-band-scale",
+          "cai-lens-gauges",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 233,
+        "cai": "97.6",
+        "missing": []
+      }
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/zairakai/php-packages/laravel-twitch/",
+      "facts": {
+        "title": "zairakai/php-packages/laravel-twitch \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/gitlab/zairakai/php-packages/laravel-twitch/",
+        "stats": [
+          {
+            "figure": "71.5",
+            "label": "Strong \u00b7 22 September 2026"
+          },
+          {
+            "figure": "14k",
+            "label": "lines of production code"
+          },
+          {
+            "figure": "PHP",
+            "label": "primary language"
+          },
+          {
+            "figure": "4",
+            "label": "measurements over time"
+          }
+        ],
+        "band": "Strong",
+        "rubricVersion": "rubric-2026.09.15",
+        "commit": "e500687062",
+        "measuredAt": "22 September 2026",
+        "readings": "4",
+        "widgets": [
+          "cai-band-scale",
+          "cai-lens-gauges",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 249,
+        "cai": "71.5",
+        "missing": []
+      }
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api/",
+      "facts": {
+        "title": "marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/gitlab/marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api/",
+        "stats": [
+          {
+            "figure": "44.2",
+            "label": "Weak \u00b7 29 June 2026"
+          },
+          {
+            "figure": "4k",
+            "label": "lines of production code"
+          },
+          {
+            "figure": "9",
+            "label": "measurements over time"
+          }
+        ],
+        "band": "Weak",
+        "rubricVersion": "rubric-2026.08.15",
+        "commit": "cf827ac8df",
+        "measuredAt": "29 June 2026",
+        "readings": "9",
+        "widgets": [
+          "cai-band-scale",
+          "cai-lens-gauges",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 238,
+        "cai": "44.2",
+        "missing": []
+      }
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/teo-dotnet/web/web-solutions/",
+      "facts": {
+        "title": "teo-dotnet/web/Web-Solutions \u00b7 CAI",
+        "canonical": "https://codeassuranceindex.info/surveys/gitlab/teo-dotnet/web/web-solutions/",
+        "stats": [
+          {
+            "figure": "31.3",
+            "label": "Weak \u00b7 29 June 2026"
+          },
+          {
+            "figure": "6.4k",
+            "label": "lines of production code"
+          },
+          {
+            "figure": "7",
+            "label": "measurements over time"
+          }
+        ],
+        "band": "Weak",
+        "rubricVersion": "rubric-2026.08.15",
+        "commit": "c971f1c1bf",
+        "measuredAt": "29 June 2026",
+        "readings": "7",
+        "widgets": [
+          "cai-band-scale",
+          "cai-lens-gauges",
+          "cai-link-cards",
+          "cai-trend"
+        ],
+        "elements": 238,
+        "cai": "31.3",
+        "missing": []
+      }
+    }
+  ],
+  "captures": [
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-9wx4-h78v-vm56/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-9wx4-h78v-vm56__1280__light.png",
+      "bytes": 117392,
+      "sha256": "96df89cd79ca478d98da149028798cf0df4ff4ec3c5c901f978a2c39d35aa0bd"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-9wx4-h78v-vm56/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-9wx4-h78v-vm56__820__light.png",
+      "bytes": 109402,
+      "sha256": "9271d6c8d4d81766e53b49628bf23fd07757a3fd0b227e934f874cce941de36f"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-9wx4-h78v-vm56/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-9wx4-h78v-vm56__390__light.png",
+      "bytes": 116037,
+      "sha256": "60429240a841ac2117ab46d1393b18d3bbc331529f4a6c4b83aba4fdcb23361e"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-9wx4-h78v-vm56/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-9wx4-h78v-vm56__1280__dark.png",
+      "bytes": 117317,
+      "sha256": "3173fc54b7ee91ebdd5cc2da0615b5e75d3fc938597bdc7da5f3e7085b6bf911"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-9wx4-h78v-vm56/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-9wx4-h78v-vm56__820__dark.png",
+      "bytes": 110267,
+      "sha256": "c081577148357bacbadb51cb19f333084571731ad0ff0ae3c74e661bb5043901"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-9wx4-h78v-vm56/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-9wx4-h78v-vm56__390__dark.png",
+      "bytes": 116281,
+      "sha256": "67e5fb0d9013386530030ad0b518e971c953d03aabd82ef6fc9a05d854784214"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-4qpc-3hr4-r2p4/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-4qpc-3hr4-r2p4__1280__light.png",
+      "bytes": 118691,
+      "sha256": "d26e48f02cfb8a7d7648eaf959c04951e56a4777a5699d2718738bed4f126a57"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-4qpc-3hr4-r2p4/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-4qpc-3hr4-r2p4__820__light.png",
+      "bytes": 110978,
+      "sha256": "f5ad2adad1c32224ed6270bcc7c5edd1100f0547edb481468e14dea3ac53b9e0"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-4qpc-3hr4-r2p4/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-4qpc-3hr4-r2p4__390__light.png",
+      "bytes": 118037,
+      "sha256": "7115556667114accad49a06611c38a5487826382d8e1b2848e15b09270d533fe"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-4qpc-3hr4-r2p4/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-4qpc-3hr4-r2p4__1280__dark.png",
+      "bytes": 118630,
+      "sha256": "542a8dce58b178544fd8e99a189f6083f61e6b5abb42b17126ef945fc812dcee"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-4qpc-3hr4-r2p4/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-4qpc-3hr4-r2p4__820__dark.png",
+      "bytes": 111831,
+      "sha256": "bb28e1ba116e933d09ef032fb4931ef61cae865753f4e889d8a4e75a4c60d9c1"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-4qpc-3hr4-r2p4/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-4qpc-3hr4-r2p4__390__dark.png",
+      "bytes": 118502,
+      "sha256": "972d68f9162058c91b510ed5aea987fb760511e0a150a0030c964b6122ad8028"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-qwww-vcr4-c8h2/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-qwww-vcr4-c8h2__1280__light.png",
+      "bytes": 114745,
+      "sha256": "1b15c9a6ad06117c47c78d66985317fb64f4b8fe2c810f33f1e6d8b5ca72ad95"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-qwww-vcr4-c8h2/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-qwww-vcr4-c8h2__820__light.png",
+      "bytes": 107448,
+      "sha256": "eae2e1e530ffc76548bb57f924d688bcdb6f46e5c87a480a2be0dc53c8f40dd3"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-qwww-vcr4-c8h2/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-qwww-vcr4-c8h2__390__light.png",
+      "bytes": 114553,
+      "sha256": "475dd2280de0eea15acf64ead3a2919a22789052cbed08532ca4c271ab2a7b60"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-qwww-vcr4-c8h2/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-qwww-vcr4-c8h2__1280__dark.png",
+      "bytes": 114659,
+      "sha256": "b5544caf47980096ff784f743bb17bb5042757a79ebc78e60afb0b270f8016e6"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-qwww-vcr4-c8h2/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-qwww-vcr4-c8h2__820__dark.png",
+      "bytes": 108329,
+      "sha256": "e87d8bd0aca29a4548afa9a7f7abc1e020b2920468952918c480c4e471eea4ba"
+    },
+    {
+      "shape": "corpus-advisory",
+      "path": "/state-of-the-corpus/advisory/ghsa-qwww-vcr4-c8h2/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-advisory__state-of-the-corpus-advisory-ghsa-qwww-vcr4-c8h2__390__dark.png",
+      "bytes": 114860,
+      "sha256": "db0d39bb8f062b53083012e5ed57cfd47a5278286583b0db9698245b07d73c26"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/hong-kong/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-hong-kong__1280__light.png",
+      "bytes": 158283,
+      "sha256": "a6eb933c7a023c5e8f3e4457c471e35a41751068307b214563302548eea5a8b7"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/hong-kong/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-hong-kong__820__light.png",
+      "bytes": 150204,
+      "sha256": "553c412937ccedad5cf8fd3e73b1a804c05bdad3adb23f6e9e33cd63841b4faf"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/hong-kong/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-hong-kong__390__light.png",
+      "bytes": 149257,
+      "sha256": "6f2e0ba52fdbdeb5c524e50cc22c6bb72624c7418adb27fabd011380e9ff9d12"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/hong-kong/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-hong-kong__1280__dark.png",
+      "bytes": 158349,
+      "sha256": "88111c1ea0b9b4b0af902bc3f000fe54aeadf118bb396838b686bc375f1ac471"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/hong-kong/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-hong-kong__820__dark.png",
+      "bytes": 151144,
+      "sha256": "565f3f5be130a1c77d1689fc0a60e9a733f722fc3d42bfe949f6620e03032cce"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/hong-kong/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-hong-kong__390__dark.png",
+      "bytes": 150844,
+      "sha256": "87e3f279a31257e71eb6a6e456d9f728e9e0a8515e6f73263c8d88806af41f25"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/egypt/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-egypt__1280__light.png",
+      "bytes": 153425,
+      "sha256": "309c8ea28b27a2bfc3bf9e315c5d6cb4412dde1893b89d9401c3ac0732603a92"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/egypt/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-egypt__820__light.png",
+      "bytes": 146985,
+      "sha256": "776b3979e491e5513a956a6c5c876fb9bb2017a90eb5716aee9d067be2417abf"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/egypt/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-egypt__390__light.png",
+      "bytes": 146213,
+      "sha256": "c1ddda1b8b5f1fd44b7c9aea41f6cef93014e524f5fa106718afa3eec8d3bf96"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/egypt/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-egypt__1280__dark.png",
+      "bytes": 153467,
+      "sha256": "bcd121f6f5a9aac5ee6bb73803a05b2e2096e2b684334274dc80aa17e0533c7c"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/egypt/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-egypt__820__dark.png",
+      "bytes": 147866,
+      "sha256": "9eeb45c4e05a77be613e8a89be8d735bd7a3ca9a50f4cca8e083831937074ff3"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/egypt/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-egypt__390__dark.png",
+      "bytes": 147438,
+      "sha256": "ebc0769f6bb71ee695931b69783cc7fff8c9dea2336fe638ddb024afa29c0f9f"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/china/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-china__1280__light.png",
+      "bytes": 158503,
+      "sha256": "c6e76d22933af9d44f7d3cc1f1235c05bfe68daa075e2a59ec4faa979f696bf3"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/china/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-china__820__light.png",
+      "bytes": 151187,
+      "sha256": "cb750bda4a2b7bb05b566ae009b87515fd87f003cb3f536880b0578603977751"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/china/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-country__state-of-the-corpus-country-china__390__light.png",
+      "bytes": 149212,
+      "sha256": "5cbf36255dda540dec51fd0fe95f9092a7546682c52a697066fadeb57dc31008"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/china/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-china__1280__dark.png",
+      "bytes": 158721,
+      "sha256": "ad2a0e75df0d536965de481a69a1307daeefd69e9ac69e1b23b29c10682768f0"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/china/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-china__820__dark.png",
+      "bytes": 152224,
+      "sha256": "5b9cfa9c6a4093e8b684551df39aaf7147ed7d6eddbdafdf74e1a5b2dafbf1e9"
+    },
+    {
+      "shape": "corpus-country",
+      "path": "/state-of-the-corpus/country/china/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-country__state-of-the-corpus-country-china__390__dark.png",
+      "bytes": 150694,
+      "sha256": "0b072b6efdda93ba4417125eacf078eed75193fba8675df5dffb6b873c12250e"
+    },
+    {
+      "shape": "corpus-index",
+      "path": "/state-of-the-corpus/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-index__state-of-the-corpus__1280__light.png",
+      "bytes": 494097,
+      "sha256": "ac3acd8970e12b0bfdbba6d5ab1aa5bbbd8eb0f913234e7f06c3e079db507a0d"
+    },
+    {
+      "shape": "corpus-index",
+      "path": "/state-of-the-corpus/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-index__state-of-the-corpus__820__light.png",
+      "bytes": 672592,
+      "sha256": "83a565f6cf6faefa647e714779428ccd682c84f73eee0fb9be0d3d295f73d6b4"
+    },
+    {
+      "shape": "corpus-index",
+      "path": "/state-of-the-corpus/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-index__state-of-the-corpus__390__light.png",
+      "bytes": 749678,
+      "sha256": "444d2db8586f479e23ebaf6d9e08304ead3d938ef63c99543e5d47bd7bd8b739"
+    },
+    {
+      "shape": "corpus-index",
+      "path": "/state-of-the-corpus/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-index__state-of-the-corpus__1280__dark.png",
+      "bytes": 494300,
+      "sha256": "01da271ddf85ee92001e6651bf5c70164b1d5cddbad15ad09340ce2608e90569"
+    },
+    {
+      "shape": "corpus-index",
+      "path": "/state-of-the-corpus/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-index__state-of-the-corpus__820__dark.png",
+      "bytes": 672244,
+      "sha256": "62916567168762dd008cf0578217c9bf89c33ee5b095321b41bac78b4cf1e294"
+    },
+    {
+      "shape": "corpus-index",
+      "path": "/state-of-the-corpus/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-index__state-of-the-corpus__390__dark.png",
+      "bytes": 750983,
+      "sha256": "dc801d14c0872386c887c90bbec1c4897f2b37769b1107e29020a8098ebfaeaa"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/fsharp/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-fsharp__1280__light.png",
+      "bytes": 135896,
+      "sha256": "04827d6017c408a37a7ec91a84bdd3a46af3f9e97eec52c523819d9c7cf29519"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/fsharp/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-fsharp__820__light.png",
+      "bytes": 130008,
+      "sha256": "7753d01e0620050bc4eecfbd95f126583d676334fc0c00497a5d335d072613bf"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/fsharp/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-fsharp__390__light.png",
+      "bytes": 131301,
+      "sha256": "a968644b4ea68d9d9292d13d613375d56e0cceb5729c08617bb3513a60eef45f"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/fsharp/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-fsharp__1280__dark.png",
+      "bytes": 135872,
+      "sha256": "9cc697b3c99f9c6ef9e158c9f62352a2c04efe74b84fc1f629837143c3a565bc"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/fsharp/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-fsharp__820__dark.png",
+      "bytes": 130978,
+      "sha256": "e57691bff2806a13ac328453b72f10c27ef09eecee8c0e306c89f667cc4ec598"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/fsharp/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-fsharp__390__dark.png",
+      "bytes": 132489,
+      "sha256": "1ddfa3190227544519d3632d6e633902b9bde05f2ce4936e5655a9216fabd002"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/csharp/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-csharp__1280__light.png",
+      "bytes": 136930,
+      "sha256": "036fc69addf12c6afcebd1f1f403c5e7bb77e26fe7387eb863c0be69fe5c41af"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/csharp/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-csharp__820__light.png",
+      "bytes": 130131,
+      "sha256": "f0b4fa352adc437bc763b6156c36ab10b948488d5a6df7d79c168db494630b4e"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/csharp/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-csharp__390__light.png",
+      "bytes": 131381,
+      "sha256": "32762567585a7a57b796f3084763562be6b35b7798f9e0bdc85535ed17a197d9"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/csharp/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-csharp__1280__dark.png",
+      "bytes": 136829,
+      "sha256": "ca895704d086edf9e29968d21dbab7377246d6e2395d249d2de132025a020cbe"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/csharp/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-csharp__820__dark.png",
+      "bytes": 130791,
+      "sha256": "0ca5a8f076cd38b209c9671fe7b446817e161df5b33a8523e45cf3fe0aa26b85"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/csharp/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-csharp__390__dark.png",
+      "bytes": 132357,
+      "sha256": "ee4b235cd484f226bb6e4e938f99821ca23ece8e8df2f5c793c05cfb6835ff00"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/c/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-c__1280__light.png",
+      "bytes": 134521,
+      "sha256": "a549b17d340c2ce1da7eb0f6144c3b4c853c955b784c5fca04d5ebb00f8ddca7"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/c/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-c__820__light.png",
+      "bytes": 127167,
+      "sha256": "6dce2148735e8e5ec5ee3f0f892ce5fe9ebb25de13d98195f961eed01f2b6475"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/c/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-language__state-of-the-corpus-language-c__390__light.png",
+      "bytes": 128400,
+      "sha256": "fb68fb280007f682cfd0831f14a49ef00459aa541aae8f9f2a8ca8e9245ea55f"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/c/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-c__1280__dark.png",
+      "bytes": 134627,
+      "sha256": "b288ec54c4fda59e610effa52afa9f52ed79418b915260aff7603612a39d15e9"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/c/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-c__820__dark.png",
+      "bytes": 128077,
+      "sha256": "6377fd88d4ff68363b491c38832e34e768f946a815e9991720f8d72826c6f26f"
+    },
+    {
+      "shape": "corpus-language",
+      "path": "/state-of-the-corpus/language/c/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-language__state-of-the-corpus-language-c__390__dark.png",
+      "bytes": 129317,
+      "sha256": "dd24683e8f752f785af40d6ac8a07b837ce6a7db5e15a8f9b769a89992ed4096"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/packages/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-listing__state-of-the-corpus-packages__1280__light.png",
+      "bytes": 4158504,
+      "sha256": "c0df642b733ee624d8762f134916f34061fdba8d3b7664f0cbfd5f8eeadb2ddb"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/packages/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-listing__state-of-the-corpus-packages__820__light.png",
+      "bytes": 4714329,
+      "sha256": "f2d0b2ad8855f1d3c4a45742fc9ac2cc125a1c9c569267435f55f213b6e9f356"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/packages/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-listing__state-of-the-corpus-packages__390__light.png",
+      "bytes": 5211585,
+      "sha256": "2d93b4bc1eeb04f5288a8734fb827dfa144429437781bfdf8d6fa424522187c7"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/packages/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-listing__state-of-the-corpus-packages__1280__dark.png",
+      "bytes": 4238401,
+      "sha256": "2ee02ea88c2608ae5c9db175113bc50e52b1d0dcb3482e7b8d8c4d2441443efc"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/packages/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-listing__state-of-the-corpus-packages__820__dark.png",
+      "bytes": 4766981,
+      "sha256": "c10f587a21733f504ce0bfb20555881eb0ced1a53b98ce94cc0265c6c162e8c0"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/packages/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-listing__state-of-the-corpus-packages__390__dark.png",
+      "bytes": 5224268,
+      "sha256": "39fff5d2a202a18c1749764f0336a67d83ce950ab81d3f2ed44fbf25e19ae16d"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/languages/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-listing__state-of-the-corpus-languages__1280__light.png",
+      "bytes": 275918,
+      "sha256": "c43e8b348492538a40055086e9dc346ac050a0596162e2d9f0f6b41b2ab59bca"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/languages/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-listing__state-of-the-corpus-languages__820__light.png",
+      "bytes": 293493,
+      "sha256": "5488bd055c02e415214aff8a116092a07fe7c28878cf6fdabeb96b46c43af1ba"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/languages/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-listing__state-of-the-corpus-languages__390__light.png",
+      "bytes": 403215,
+      "sha256": "95c34e245d5fd80d740880a0a47fa694181dc3aa35b3e281297fcc1705e29589"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/languages/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-listing__state-of-the-corpus-languages__1280__dark.png",
+      "bytes": 275966,
+      "sha256": "a4d4342e350c6d689fe501bcfb752de4469d9db2e8c69ec2a9e16bc3fa42165a"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/languages/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-listing__state-of-the-corpus-languages__820__dark.png",
+      "bytes": 293825,
+      "sha256": "ea18529da396a77ebedd47293287a085d9411600bf02a6e29d136ee2a63520a5"
+    },
+    {
+      "shape": "corpus-listing",
+      "path": "/state-of-the-corpus/languages/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-listing__state-of-the-corpus-languages__390__dark.png",
+      "bytes": 404281,
+      "sha256": "d30ad29cd41e74a4c31d5d3d098f29bbc76d88a6e5aee7cb6722e47110a8c4e3"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/vm2/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-vm2__1280__light.png",
+      "bytes": 101776,
+      "sha256": "6b25d75c7e03edeae4b974378d53bbbe9b9f7baa6198feed955aa4415b0fa1fa"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/vm2/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-vm2__820__light.png",
+      "bytes": 96882,
+      "sha256": "0be66fa5a10423c8d18bc80e95f863a9656c6f69411308d91e3061dfcb62c9e7"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/vm2/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-vm2__390__light.png",
+      "bytes": 104357,
+      "sha256": "055a70ad161d92be3026a1207376f1d266902614803954eae2972d6ed06172e1"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/vm2/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-vm2__1280__dark.png",
+      "bytes": 101712,
+      "sha256": "8c124a72e854bf7b7321629db209aa519582c28cb623e8dfa804335f4393060e"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/vm2/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-vm2__820__dark.png",
+      "bytes": 97594,
+      "sha256": "5946e82da75c511e663debd6a4f2ea724ea2ce25ffbcb36ba2718385b0db4d9e"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/vm2/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-vm2__390__dark.png",
+      "bytes": 105143,
+      "sha256": "e32d724dd68da24957368c89afb6db37de43d9572a51de7c936d658168eb2b55"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/lodash-template/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-lodash-template__1280__light.png",
+      "bytes": 112831,
+      "sha256": "0e21c99f0e87284f3e4c909d3284fcf9558d44357adb3517edb72bd5b39b464a"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/lodash-template/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-lodash-template__820__light.png",
+      "bytes": 102671,
+      "sha256": "bc8c2130576d25f9f9b4114a91d8ee9926a31a8233f2224951e1534b3c5b9732"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/lodash-template/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-lodash-template__390__light.png",
+      "bytes": 110918,
+      "sha256": "3e3fd68d703d953f7c5b19cafac54be3f9f41871424e310280a283e0b7ad5a5e"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/lodash-template/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-lodash-template__1280__dark.png",
+      "bytes": 112843,
+      "sha256": "c68163aeacf0b544a757a45a56b463b3b521f0446808efc9c10c2b9c6c97165f"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/lodash-template/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-lodash-template__820__dark.png",
+      "bytes": 103530,
+      "sha256": "1579db3c4d2c0103e04d847d689788176a5a16f2d636013573c51caa0d8d94a6"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/lodash-template/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-lodash-template__390__dark.png",
+      "bytes": 111859,
+      "sha256": "121aa4813e7983a7d35ddb1db150f4a5ed12ec8fe1b6347b414801e868d38d67"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/async-std/",
+      "width": 1280,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-async-std__1280__light.png",
+      "bytes": 108974,
+      "sha256": "4c90cde31a9626f8334ab4c7fe03720952f173fe5116688e420090acb145d81d"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/async-std/",
+      "width": 820,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-async-std__820__light.png",
+      "bytes": 99098,
+      "sha256": "c62405f788ff534992c373c4dd6a6073128244ab121cf01d0b9ecf412824fdb4"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/async-std/",
+      "width": 390,
+      "theme": "light",
+      "file": "corpus-package__state-of-the-corpus-package-async-std__390__light.png",
+      "bytes": 106483,
+      "sha256": "db128cfb14098e5395156cabd67010b01bb6e37923935070eca82dee84854cc7"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/async-std/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-async-std__1280__dark.png",
+      "bytes": 108950,
+      "sha256": "f10d012b26b76724f45b388367202a4a1ce0e7aeb9810a07fea9af42c9e28d9d"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/async-std/",
+      "width": 820,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-async-std__820__dark.png",
+      "bytes": 99665,
+      "sha256": "81035cd09ed0462717ca43ac7a7223212b026ed3d4e114da4d0040cb5107415b"
+    },
+    {
+      "shape": "corpus-package",
+      "path": "/state-of-the-corpus/package/async-std/",
+      "width": 390,
+      "theme": "dark",
+      "file": "corpus-package__state-of-the-corpus-package-async-std__390__dark.png",
+      "bytes": 107532,
+      "sha256": "daf627e4b5dcdd5d3ee480f69d39ca8c5680dfb9cc681efd8c97d96442333299"
+    },
+    {
+      "shape": "survey-index",
+      "path": "/surveys/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-index__surveys__1280__light.png",
+      "bytes": 289292,
+      "sha256": "e463ebac76fc49be1fe965133f2d6f65e89c1603210a76f6241fee389d815542"
+    },
+    {
+      "shape": "survey-index",
+      "path": "/surveys/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-index__surveys__820__light.png",
+      "bytes": 276231,
+      "sha256": "9541513f05e6d6cfba015efbc960ef94098647958fbd95e1033e05d272daa1be"
+    },
+    {
+      "shape": "survey-index",
+      "path": "/surveys/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-index__surveys__390__light.png",
+      "bytes": 271983,
+      "sha256": "970fef3fa3bd55b854e995658ebb7133512f6472a238701a4b6d7244d33f01bd"
+    },
+    {
+      "shape": "survey-index",
+      "path": "/surveys/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-index__surveys__1280__dark.png",
+      "bytes": 289684,
+      "sha256": "3f6f3563468a6e5c4eacc61def91aa6dc79aaa7b6d9adbd528dccd5ff88ab119"
+    },
+    {
+      "shape": "survey-index",
+      "path": "/surveys/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-index__surveys__820__dark.png",
+      "bytes": 278452,
+      "sha256": "e0d1f61fd5ae5a5bfd2e429ac449444eaf201eace312ebd3d342610a1b0e83ca"
+    },
+    {
+      "shape": "survey-index",
+      "path": "/surveys/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-index__surveys__390__dark.png",
+      "bytes": 274572,
+      "sha256": "9bd081e73c30c8d31a57eef5a1c88e141d54189abdf95c8dc869c228eb573bf6"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/erlang/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-erlang__1280__light.png",
+      "bytes": 1505170,
+      "sha256": "a06dc55cf28c156797ea7a9f2cfbfecdc7ef6dd09060f7d27c21c185734532d3"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/erlang/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-erlang__820__light.png",
+      "bytes": 1656143,
+      "sha256": "6f7f504f7ca2fc9ab46a9ea689d9282ff8951cb8d52e4863ef177382fd2da92c"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/erlang/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-erlang__390__light.png",
+      "bytes": 2321000,
+      "sha256": "a873cd3d099f905d6326b121b3fd6c076133eb951c841d340b27c6aed3fcfc4f"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/erlang/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-erlang__1280__dark.png",
+      "bytes": 1494035,
+      "sha256": "4422591acd79a54204c065a902bbaf80fadefeb52188c588d5a0cc3527d62173"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/erlang/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-erlang__820__dark.png",
+      "bytes": 1653697,
+      "sha256": "64f0f52f574adfde31b51e4d9179d3be59c072520c76010b4aa83b7c3673c9a8"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/erlang/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-erlang__390__dark.png",
+      "bytes": 2334149,
+      "sha256": "d1d4972203850a5689083e4005c81d7a77e2a5c2560a609444d3bf3604eda493"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/python/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-python__1280__light.png",
+      "bytes": 1852590,
+      "sha256": "52038cad5e4e8e9d617723239f21af66e70d1ff663673a901d9181e2331e57b8"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/python/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-python__820__light.png",
+      "bytes": 1995207,
+      "sha256": "48dd21c60b974d0d6fa447979c5d52b1e19b1d864aae1de61040bd3779679ee7"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/python/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-python__390__light.png",
+      "bytes": 2713266,
+      "sha256": "e37dc8e98f7c2a946759522fe81998eedc2802091ce6563455a29e86142993e4"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/python/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-python__1280__dark.png",
+      "bytes": 1839362,
+      "sha256": "cf707ae1670d50fde1a831d6717467fd4fb5b965f959266ab9ab879278b7dbfd"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/python/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-python__820__dark.png",
+      "bytes": 1985333,
+      "sha256": "67c69b9b77c81b41c84b22838a5ce632abc87ddf0be9164e301afafa21573a6d"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/python/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-python__390__dark.png",
+      "bytes": 2722136,
+      "sha256": "278b01ad4baca750dc56af7cb305664f39d704e0bfe8a9580b1df6184dd61efb"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/swift/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-swift__1280__light.png",
+      "bytes": 2324210,
+      "sha256": "81d33256f73d995ac76f62d249a5cc76adb2d5f3fafebc699784460b62b72c34"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/swift/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-swift__820__light.png",
+      "bytes": 2515005,
+      "sha256": "348b6ce94f47f2c40dced884b0caa96c53a42a1621c359b9b4ca0145f6f1cb74"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/swift/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-language__surveys-lang-swift__390__light.png",
+      "bytes": 3464405,
+      "sha256": "04e6246ae7d514f04ae09daeb89122535281411dd85bf84316fc2eca3304fbe1"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/swift/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-swift__1280__dark.png",
+      "bytes": 2306168,
+      "sha256": "2edc37463bf11b914bfe0a4f3df92ebd807754adf39ff450105ea3d8cddbd89c"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/swift/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-swift__820__dark.png",
+      "bytes": 2508122,
+      "sha256": "155a4a5a96982a9d980ae28fa008e8a9637582d76807cb2fab585fbf0b6c0ff7"
+    },
+    {
+      "shape": "survey-language",
+      "path": "/surveys/lang/swift/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-language__surveys-lang-swift__390__dark.png",
+      "bytes": 3481699,
+      "sha256": "f704a6f43fb985d1e7c18e6061493e97cd2fb9f01d297a70e2592e09c7de9887"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/code-assurance-initiative/codeassuranceindex/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-code-assurance-initiative-codeassuranceindex__1280__light.png",
+      "bytes": 275664,
+      "sha256": "e39674156e2d9e34585d0c067c7380c08aa74b72e1fe2bf1eed98b462f27a7c3"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/code-assurance-initiative/codeassuranceindex/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-code-assurance-initiative-codeassuranceindex__820__light.png",
+      "bytes": 257255,
+      "sha256": "4b34f61e23485814e5f7f30635313c5185430aaf68505bbeb2f6959427213760"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/code-assurance-initiative/codeassuranceindex/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-code-assurance-initiative-codeassuranceindex__390__light.png",
+      "bytes": 251640,
+      "sha256": "92a45e7853113244c1658603eac094d5df6132509a50e12109fa6d80b07e69e5"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/code-assurance-initiative/codeassuranceindex/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-code-assurance-initiative-codeassuranceindex__1280__dark.png",
+      "bytes": 276671,
+      "sha256": "385473ff4a107810d0e16fe3c0811e3078f94995c6fbd66f5b36737972196c86"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/code-assurance-initiative/codeassuranceindex/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-code-assurance-initiative-codeassuranceindex__820__dark.png",
+      "bytes": 259567,
+      "sha256": "204ee0f908fa3fab0e84184faf4f731780c72eaf116c6af40b537797d3ea6405"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/code-assurance-initiative/codeassuranceindex/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-code-assurance-initiative-codeassuranceindex__390__dark.png",
+      "bytes": 253551,
+      "sha256": "b19122a783a265a75db48549c971a299b59fb7beb49c47da73e0507ad86ebad4"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/phoenix-tui/phoenix/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-phoenix-tui-phoenix__1280__light.png",
+      "bytes": 246602,
+      "sha256": "30b0f3413e54ff5c0b94302a66b2b28d2792738defaba6b257782aca0c7403dc"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/phoenix-tui/phoenix/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-phoenix-tui-phoenix__820__light.png",
+      "bytes": 229672,
+      "sha256": "ffa6995482a29c4bdbd30e7a7a520451390217558edebab4549816532947705e"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/phoenix-tui/phoenix/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-phoenix-tui-phoenix__390__light.png",
+      "bytes": 229187,
+      "sha256": "8fb29de9360b69f93ced88d7301a7466778fcb95f790a00301f307870d982c7b"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/phoenix-tui/phoenix/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-phoenix-tui-phoenix__1280__dark.png",
+      "bytes": 247115,
+      "sha256": "b06a05729e8d6b1152944f85e14ac4d7f50ae5eccbb8391cc570505e8d2360f6"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/phoenix-tui/phoenix/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-phoenix-tui-phoenix__820__dark.png",
+      "bytes": 231240,
+      "sha256": "249754217cc01762838034e77c60469f505b510b7f5de0ed5f0750f237ca0c53"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/phoenix-tui/phoenix/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-phoenix-tui-phoenix__390__dark.png",
+      "bytes": 230774,
+      "sha256": "f663d5dfbaab3b0453a27f566523ca16b45729af5607044b8ec25b6a1ed5eb9b"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/ruben-rasmussen/auth/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-ruben-rasmussen-auth__1280__light.png",
+      "bytes": 229288,
+      "sha256": "a49622b5896411f4ad23fd83c81c42fe753e17e91824e4c246be348825ee7cd9"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/ruben-rasmussen/auth/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-ruben-rasmussen-auth__820__light.png",
+      "bytes": 212529,
+      "sha256": "f59b28f368485cf74b5f403be158c7b1ed9fcd1fc06c19c164a0ab50d8433600"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/ruben-rasmussen/auth/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-portrait__surveys-github-ruben-rasmussen-auth__390__light.png",
+      "bytes": 206322,
+      "sha256": "74b1a3748b9f61bdde8e9873c2443924d305471e76dbc2d88a7b7f555ff4835d"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/ruben-rasmussen/auth/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-ruben-rasmussen-auth__1280__dark.png",
+      "bytes": 229895,
+      "sha256": "34b0dcb1868f921d273a1d2c15b3b3b0e28feb3e7ac029f9dbb1f7221fc68b60"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/ruben-rasmussen/auth/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-ruben-rasmussen-auth__820__dark.png",
+      "bytes": 214122,
+      "sha256": "a8ddd5e8e51bedea48ffc1280be62fec3cc241eff85f54aef15a77bf653c3d28"
+    },
+    {
+      "shape": "survey-portrait",
+      "path": "/surveys/github/ruben-rasmussen/auth/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-portrait__surveys-github-ruben-rasmussen-auth__390__dark.png",
+      "bytes": 206775,
+      "sha256": "de80a3b77470bae4df89a1b97b17f744cf048a878b7783b38ea0ee5093ca1515"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/zairakai/php-packages/laravel-twitch/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-zairakai-php-packages-laravel-twitch__1280__light.png",
+      "bytes": 259924,
+      "sha256": "bbd680d5036d3787176358952d58b6ec0629f8f4acce012620b2d212ec988254"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/zairakai/php-packages/laravel-twitch/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-zairakai-php-packages-laravel-twitch__820__light.png",
+      "bytes": 245303,
+      "sha256": "35067abab4390c56c7e8ca139d1b5cd9341988aad2ca6568bb78a1155e185862"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/zairakai/php-packages/laravel-twitch/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-zairakai-php-packages-laravel-twitch__390__light.png",
+      "bytes": 242282,
+      "sha256": "8a4855d18f330a23a851e90c9682b6d40794c4688443cc9579406eb09526f762"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/zairakai/php-packages/laravel-twitch/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-zairakai-php-packages-laravel-twitch__1280__dark.png",
+      "bytes": 260304,
+      "sha256": "bfafffbe453030b73ca2871261d8c5d47ca0daad56147bcb45873cd9b0eb56dd"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/zairakai/php-packages/laravel-twitch/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-zairakai-php-packages-laravel-twitch__820__dark.png",
+      "bytes": 247059,
+      "sha256": "ba03c19c74d89ee11ea97dc607d5769a7bb02dc56440897781a69778a1caa8df"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/zairakai/php-packages/laravel-twitch/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-zairakai-php-packages-laravel-twitch__390__dark.png",
+      "bytes": 244722,
+      "sha256": "19caf4f7d38f65060c996c7fe8c554c245cf76db2b0d83a2a27198a05f5c8f84"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-marquess-projects-web-api-part-1-advanced-c-sharp-restfull-api__1280__light.png",
+      "bytes": 236382,
+      "sha256": "15c83bf655a6afa656b76b1972ba18c43a5f39a2c10c563ebc4089a0c1825880"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-marquess-projects-web-api-part-1-advanced-c-sharp-restfull-api__820__light.png",
+      "bytes": 222103,
+      "sha256": "19b0a28d810006af3c0d8bb66465acbd88128a82794ca3de695013611b5e8b1c"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-marquess-projects-web-api-part-1-advanced-c-sharp-restfull-api__390__light.png",
+      "bytes": 220549,
+      "sha256": "5858658c83ac9f995d0b512958f10bc89c23d4b933f02783e0da7a77f8f8beff"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-marquess-projects-web-api-part-1-advanced-c-sharp-restfull-api__1280__dark.png",
+      "bytes": 236887,
+      "sha256": "618bba5d342862c5cf2445f6dcbd1b215b3803a560a4363adc749c5781d48859"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-marquess-projects-web-api-part-1-advanced-c-sharp-restfull-api__820__dark.png",
+      "bytes": 223490,
+      "sha256": "d8dfcc072417a1e238fbea11f975953eaaecc3a96b23a9a724761c2bcee02a31"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/marquess-projects/web-api/part-1-advanced-c-sharp-restfull-api/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-marquess-projects-web-api-part-1-advanced-c-sharp-restfull-api__390__dark.png",
+      "bytes": 221589,
+      "sha256": "cfd7786e49bf3980376cb88cf9c6a5e989577e3e029402eec4b5522fc2cbc2c4"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/teo-dotnet/web/web-solutions/",
+      "width": 1280,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-teo-dotnet-web-web-solutions__1280__light.png",
+      "bytes": 221221,
+      "sha256": "4324c3431d9ff6ac8b686c253ae59abc3863003e6e208ef85a8a1c252983bcb9"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/teo-dotnet/web/web-solutions/",
+      "width": 820,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-teo-dotnet-web-web-solutions__820__light.png",
+      "bytes": 204071,
+      "sha256": "c7b25aa950dc1fcf8c32c122124582c9df18fe565e3594a3cf54d0c0db1b22f2"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/teo-dotnet/web/web-solutions/",
+      "width": 390,
+      "theme": "light",
+      "file": "survey-portrait-deep__surveys-gitlab-teo-dotnet-web-web-solutions__390__light.png",
+      "bytes": 204636,
+      "sha256": "327c28cc7ec56ecfa2907b16c4696c54b7005405b080a0e07e8549bbd638458a"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/teo-dotnet/web/web-solutions/",
+      "width": 1280,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-teo-dotnet-web-web-solutions__1280__dark.png",
+      "bytes": 221532,
+      "sha256": "be34e86fe76089f962929175b07e0f5575d550ff31ae330670ca04da4f56dd7a"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/teo-dotnet/web/web-solutions/",
+      "width": 820,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-teo-dotnet-web-web-solutions__820__dark.png",
+      "bytes": 205588,
+      "sha256": "5a3014fd6068781c364a199953c49c3a6364619d5c8a10d4d83639217a9f44e1"
+    },
+    {
+      "shape": "survey-portrait-deep",
+      "path": "/surveys/gitlab/teo-dotnet/web/web-solutions/",
+      "width": 390,
+      "theme": "dark",
+      "file": "survey-portrait-deep__surveys-gitlab-teo-dotnet-web-web-solutions__390__dark.png",
+      "bytes": 205098,
+      "sha256": "15e4cd70e4418d82163b48663c55de7e800df7e32479af5212e0e2aa8b775598"
+    }
+  ],
+  "comparability": {
+    "pixel": [
+      "survey-portrait",
+      "survey-portrait-deep"
+    ],
+    "nodeTreeOnly": [
+      "survey-index",
+      "survey-language",
+      "corpus-index",
+      "corpus-language",
+      "corpus-advisory",
+      "corpus-package",
+      "corpus-country",
+      "corpus-listing"
+    ],
+    "why": "A portrait's inputs are pinned (commit + rubricVersion, recorded per page). An aggregate page's inputs are the corpus on a given day, which cannot be pinned by a capture."
+  }
+}
