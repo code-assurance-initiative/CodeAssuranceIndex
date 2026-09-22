@@ -53,6 +53,30 @@ public sealed record GrantRecord(
     string? ExpiresAt,
     string? RevokedAt);
 
+/// <summary>
+/// One subject's publication state — whether the standard may publish a page about it.
+/// </summary>
+/// <remarks>
+/// <para>★★ PER SUBJECT, NOT PER DELIVERY, because the page is per subject and shows the SEQUENCE. A
+/// per-delivery grant would publish a trajectory with holes in it, and no reader could tell a withdrawn
+/// reading from a month in which nothing was measured.</para>
+/// <para>★ A WITHDRAWAL KEEPS THE ROW. Grants in this registry are an audit trail rather than editable
+/// state, and publication is a grant: what was public, and when it stopped being, is a fact somebody may
+/// later need to establish.</para>
+/// </remarks>
+/// <param name="OwnerOrgId">The org that owns the deliveries about this subject — the only org whose grant
+/// publishes it.</param>
+/// <param name="Repository">The subject, as the producer names it.</param>
+/// <param name="Status"><c>granted</c> or <c>withdrawn</c>.</param>
+/// <param name="GrantedAt">When publication was last granted.</param>
+/// <param name="WithdrawnAt">When it was withdrawn, or null while it stands.</param>
+public sealed record PublicationRecord(
+    string OwnerOrgId,
+    string Repository,
+    string Status,
+    string GrantedAt,
+    string? WithdrawnAt);
+
 /// <summary>The result of an insert that hit an existing delivery id.</summary>
 public enum PublishOutcome
 {
@@ -110,6 +134,27 @@ public interface IRegistryStore
 
     /// <summary>Insert or replace CAI's quality assessment for a scanner build, keyed (scanner, version).</summary>
     void UpsertScannerQuality(ScannerQualityRecord record);
+
+    /// <summary>
+    /// Grant publication for one subject, or renew a grant that was withdrawn.
+    /// </summary>
+    /// <remarks>★ Idempotent, and one row: publication is a STATE, and the row is its history.</remarks>
+    void GrantPublication(string ownerOrgId, string repository, string grantedAt);
+
+    /// <summary>
+    /// Withdraw publication for one subject.
+    /// </summary>
+    /// <remarks>
+    /// ★ A subject that was never granted is left alone rather than given a withdrawn row — a withdrawal
+    /// of something that was never public is not a fact about it.
+    /// </remarks>
+    void WithdrawPublication(string ownerOrgId, string repository, string withdrawnAt);
+
+    /// <summary>The publication row for one subject, or null when the owner has never granted it.</summary>
+    PublicationRecord? GetPublication(string ownerOrgId, string repository);
+
+    /// <summary>Every subject whose publication currently stands.</summary>
+    IReadOnlyList<PublicationRecord> ListPublishedSubjects();
 
     /// <summary>True when the store is reachable (the /health probe).</summary>
     bool IsHealthy();
@@ -187,6 +232,16 @@ public sealed class SqliteRegistryStore : IRegistryStore
             );
             CREATE INDEX IF NOT EXISTS ix_grants_owner   ON grants(owner_org_id);
             CREATE INDEX IF NOT EXISTS ix_grants_grantee ON grants(grantee_org_id);
+
+            CREATE TABLE IF NOT EXISTS publications (
+                owner_org_id TEXT NOT NULL,
+                repository   TEXT NOT NULL,
+                status       TEXT NOT NULL,
+                granted_at   TEXT NOT NULL,
+                withdrawn_at TEXT NULL,
+                PRIMARY KEY (owner_org_id, repository)
+            );
+            CREATE INDEX IF NOT EXISTS ix_publications_status ON publications(status);
 
             CREATE TABLE IF NOT EXISTS scanner_quality (
                 scanner       TEXT NOT NULL,
@@ -460,6 +515,93 @@ public sealed class SqliteRegistryStore : IRegistryStore
         cmd.Parameters.AddWithValue("@assessed", (object?)record.AssessedAt ?? DBNull.Value);
         cmd.ExecuteNonQuery();
     }
+
+    /// <inheritdoc />
+    public void GrantPublication(string ownerOrgId, string repository, string grantedAt)
+    {
+        using var conn = Open();
+        using var cmd = conn.CreateCommand();
+        // ★ ONE ROW PER SUBJECT. A grant after a withdrawal clears the withdrawal instant, because the row
+        //   describes the state now; when it stopped being public last time is not a claim the page makes.
+        cmd.CommandText =
+            """
+            INSERT INTO publications (owner_org_id, repository, status, granted_at, withdrawn_at)
+            VALUES (@owner, @repo, 'granted', @at, NULL)
+            ON CONFLICT(owner_org_id, repository)
+            DO UPDATE SET status = 'granted', granted_at = @at, withdrawn_at = NULL;
+            """;
+        cmd.Parameters.AddWithValue("@owner", ownerOrgId);
+        cmd.Parameters.AddWithValue("@repo", repository);
+        cmd.Parameters.AddWithValue("@at", grantedAt);
+        cmd.ExecuteNonQuery();
+    }
+
+    /// <inheritdoc />
+    public void WithdrawPublication(string ownerOrgId, string repository, string withdrawnAt)
+    {
+        using var conn = Open();
+        using var cmd = conn.CreateCommand();
+        // ★ UPDATE, never INSERT: a withdrawal of something that was never public is not a fact about it,
+        //   and a withdrawn row nobody granted would put a subject in the audit trail that never appeared.
+        cmd.CommandText =
+            """
+            UPDATE publications
+               SET status = 'withdrawn', withdrawn_at = @at
+             WHERE owner_org_id = @owner AND repository = @repo;
+            """;
+        cmd.Parameters.AddWithValue("@owner", ownerOrgId);
+        cmd.Parameters.AddWithValue("@repo", repository);
+        cmd.Parameters.AddWithValue("@at", withdrawnAt);
+        cmd.ExecuteNonQuery();
+    }
+
+    /// <inheritdoc />
+    public PublicationRecord? GetPublication(string ownerOrgId, string repository)
+    {
+        using var conn = Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            """
+            SELECT owner_org_id, repository, status, granted_at, withdrawn_at
+              FROM publications
+             WHERE owner_org_id = @owner AND repository = @repo;
+            """;
+        cmd.Parameters.AddWithValue("@owner", ownerOrgId);
+        cmd.Parameters.AddWithValue("@repo", repository);
+
+        using var reader = cmd.ExecuteReader();
+        return reader.Read() ? ReadPublication(reader) : null;
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<PublicationRecord> ListPublishedSubjects()
+    {
+        using var conn = Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            """
+            SELECT owner_org_id, repository, status, granted_at, withdrawn_at
+              FROM publications
+             WHERE status = 'granted'
+             ORDER BY repository;
+            """;
+
+        var rows = new List<PublicationRecord>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            rows.Add(ReadPublication(reader));
+        }
+
+        return rows;
+    }
+
+    private static PublicationRecord ReadPublication(Microsoft.Data.Sqlite.SqliteDataReader r) => new(
+        r.GetString(r.GetOrdinal("owner_org_id")),
+        r.GetString(r.GetOrdinal("repository")),
+        r.GetString(r.GetOrdinal("status")),
+        r.GetString(r.GetOrdinal("granted_at")),
+        r.IsDBNull(r.GetOrdinal("withdrawn_at")) ? null : r.GetString(r.GetOrdinal("withdrawn_at")));
 
     /// <inheritdoc />
     public bool IsHealthy()
