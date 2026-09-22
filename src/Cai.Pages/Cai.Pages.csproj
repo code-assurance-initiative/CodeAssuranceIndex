@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>Cai.Pages</AssemblyName>
+    <RootNamespace>Cai.Pages</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- The standard's own pages: what codeassuranceindex.info publishes about a measured subject, composed HERE
+       rather than received from whoever measured it.
+
+       ★★ WHY IT IS A PROJECT OF THE STANDARD'S AND NOT A PRODUCER'S. Until now a producer sent a NODE TREE —
+       sections, widgets, URLs, titles and prose — and the CMS only styled it. That makes the page the producer's
+       opinion: a second producer would publish a structurally different page under the same standard, and the
+       theme would make them look like one site while they were never one page. A producer sends a signed
+       delivery; the standard decides what a page about it says. See docs/plans/cai-owns-its-pages.md. -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cai.Delivery\Cai.Delivery.csproj" />
+  </ItemGroup>
+</Project>

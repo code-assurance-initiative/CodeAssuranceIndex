@@ -5,6 +5,7 @@
     <Project Path="src/Cai.Web.Noise/Cai.Web.Noise.csproj" />
     <Project Path="src/Cai.Scoring/Cai.Scoring.csproj" />
     <Project Path="src/Cai.Delivery/Cai.Delivery.csproj" />
+    <Project Path="src/Cai.Pages/Cai.Pages.csproj" />
     <Project Path="src/Cai.Cli/Cai.Cli.csproj" />
   </Folder>
   <Folder Name="/tests/">
