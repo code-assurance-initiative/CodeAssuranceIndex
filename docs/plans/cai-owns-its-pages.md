@@ -377,6 +377,40 @@ session inside one producer.
 Either scope the CMS token to CAI alone, or keep it open and accept that layout is negotiable.
 **[PROPOSED] — this is the owner's call, not the implementer's.**
 
+### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
+
+Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health
+reading says `0 built, 0 changed, 0 withdrawn, 0 failed`. That is the correct and intended reading:
+**no subject has been granted publication**, so the sweep composes nothing and touches nothing. The
+site is serving exactly what kennel last published — 6,297 survey pages and 3,794 corpus pages,
+frozen rather than lost.
+
+★★ **DO NOT GRANT PUBLICATION YET.** The producer's deliveries carry NONE of the MINOR 1.1 facts:
+`Delivery.Sign` builds `new DeliverySubject { Repository, Commit, Host }` and an evidence bundle with
+no `securityReading`. So the standard would compose:
+
+- no field guides and no §3 (needs `subject.languages`),
+- no country pages and no §4 (needs `subject.origin`),
+- no §1, §2, and no advisory or package pages (needs `evidence.securityReading`).
+
+Reconciliation would then withdraw roughly 3,800 live pages in one pass — correctly, by design.
+A brake now refuses any sweep that would withdraw more than a third of the pages this system owns
+(floor: ten), and says so on the health reading. **The brake is a seatbelt, not a fix.**
+
+**The critical path, in order:**
+
+1. **Teach the producer to send the 1.1 facts.** Kennel has all three in its own database; they are
+   simply not put in the payload. ★ The gathering must be total and non-throwing — a delivery must
+   never be lost because a language lookup failed.
+2. **Re-deliver the corpus.** Even with the producer fixed, the 6,276 subjects already in the
+   registry hold 1.0 deliveries. Their pages stay thin until each has a 1.1 delivery — which means
+   either a corpus re-scan or a backfill that re-mints deliveries from stored measurements.
+   **This is the big unknown and it is worth deciding before anything else is built.**
+3. **Grant publication** for exactly the subjects the site publishes today — derivable from the live
+   sitemap (6,276 portraits), so the backfill restores the status quo rather than making a new
+   decision about anybody's repository.
+4. Then the sweep does the rest on its own.
+
 ### Phase 8 — cutover
 
 Kennel stops sweeping; CAI starts. The two must not both run.
