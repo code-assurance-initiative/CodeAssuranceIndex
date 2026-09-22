@@ -201,6 +201,40 @@ granted publication, full stop.
 
 **Done when:** Phase 1's test passes AND `RegistryPageBuilder` does not exist in Kennel.
 
+**Progress, 2026-09-22.**
+
+| Piece | State |
+|---|---|
+| Survey portrait (`SurveyPageBuilder`) | **done** — phase 1's neutrality test passes |
+| Language field guides + surveys index (`SurveyCorpus`, `FieldGuideBuilder`, `SurveyIndexBuilder`) | **done** (`f61e151`) |
+| The corpus AGGREGATION (`CorpusReading`, `AdvisoryCut`) | **done** (`a5f92c9`) |
+| The corpus PAGES (`CorpusPageBuilder`, `CorpusSheet`, `CorpusDetailPages`, `CorpusTrends`) | not started |
+| Kennel's builders deleted | not started — belongs with phase 5 |
+
+★★ **THE PLAN'S PHASE-0 MAPPING WAS TAKEN OVER THE RECORD TYPES AND MISSED THE GATE.**
+`schemas/cai-delivery-1.0.schema.json` is embedded in `Cai.Web.Registry` and validated over every
+inbound package *before any cryptography*, and its `subject` block declares
+`additionalProperties: false`. So `subject.languages`, added to `DeliverySubject` in phase 4's first
+commit, was **dead on the wire**: 400 at ingest, with no symptom but a producer whose deliveries stop
+arriving. Fixed at `49e21cc`, which also landed MINOR **1.1** — the doc comments had been claiming
+1.1 while `DeliverySchema.Current` still said `"1.0"`.
+
+★★ **AND THE CORPUS FAMILY NEEDED A SECOND FIELD THE MAPPING NEVER LOOKED FOR.** The corpus pages
+are an aggregate of per-codebase SECURITY facts — vulnerable dependencies by severity, disclosure
+policy, committed secrets, the four supply-chain controls, the advisories a survey could see — and a
+1.0 delivery carries none of them: `evidence.dimensions` holds *scores*, never what was found. That
+is `evidence.securityReading`, also at 1.1. The reason to put it under `evidence` rather than beside
+the verdict is that it is the producer's open record and is never folded into the CAI — the same
+standing as `rebuildCost`, `busFactor` and `topology` — and `evidence` is the one block the schema
+declares `additionalProperties: true`.
+
+★ **STILL OPEN: WHERE A CODEBASE COMES FROM.** `state-of-the-corpus/country/*` (42 pages) is cut by
+the owning forge account's free-text profile line, which only the producer ever sees
+(`ICorpusOriginSource`). Nothing in a delivery carries it. It needs `subject.owner` facts — declared
+something / resolved country — and the DENOMINATORS with them, because "a country share taken over
+the accounts that happen to fill in a profile field measures who fills in a profile field, not where
+software is written".
+
 ### Phase 5 — move the sweep and the CMS client
 
 `IRegistrySyndication`, `HttpRegistrySyndication`, `RegistryPublishService`,
