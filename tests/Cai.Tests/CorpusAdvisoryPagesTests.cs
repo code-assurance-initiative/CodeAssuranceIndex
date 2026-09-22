@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using Cai.Delivery;
 using Cai.Pages;
@@ -49,7 +48,7 @@ public sealed class CorpusAdvisoryPagesTests
 
         var page = Page(CorpusAdvisoryPages.Build(Reading(records), TakenAt), "advisory/cve-2026-0001");
 
-        var json = Json(page);
+        var json = PageText.Json(page);
         Assert.Contains("at least 5", json, StringComparison.Ordinal);
         Assert.Contains("could not be checked", json, StringComparison.Ordinal);
     }
@@ -63,7 +62,7 @@ public sealed class CorpusAdvisoryPagesTests
         records.AddRange(Clean(1));
         records.AddRange(Truncated("CVE-2026-0001", 2));
 
-        var json = Json(Page(CorpusAdvisoryPages.Build(Reading(records), TakenAt), "advisory/cve-2026-0001"));
+        var json = PageText.Json(Page(CorpusAdvisoryPages.Build(Reading(records), TakenAt), "advisory/cve-2026-0001"));
 
         Assert.Contains("3 of 4", json, StringComparison.Ordinal);
         Assert.Contains("surveys whose advisory list was complete", json, StringComparison.Ordinal);
@@ -76,7 +75,7 @@ public sealed class CorpusAdvisoryPagesTests
         records.AddRange(Carrying("CVE-2026-0001", 3, package: "left-pad"));
         records.AddRange(Carrying("CVE-2026-0002", 3, package: "left-pad"));
 
-        var json = Json(Page(CorpusAdvisoryPages.Build(Reading(records), TakenAt), "package/left-pad"));
+        var json = PageText.Json(Page(CorpusAdvisoryPages.Build(Reading(records), TakenAt), "package/left-pad"));
 
         Assert.Contains("CVE-2026-0001", json, StringComparison.Ordinal);
         Assert.Contains("CVE-2026-0002", json, StringComparison.Ordinal);
@@ -94,12 +93,12 @@ public sealed class CorpusAdvisoryPagesTests
         var built = pages.Select(p => $"/{p.Path}/").ToHashSet(StringComparer.Ordinal);
         var index = pages.Single(p => p.Path == "state-of-the-corpus/advisories");
 
-        foreach (var href in Hrefs(Json(index)).Where(h => h.Contains("/advisory/", StringComparison.Ordinal)))
+        foreach (var href in PageText.Hrefs(PageText.Json(index)).Where(h => h.Contains("/advisory/", StringComparison.Ordinal)))
         {
             Assert.Contains(href, built);
         }
 
-        Assert.DoesNotContain("CVE-2026-0002", Json(index), StringComparison.Ordinal);
+        Assert.DoesNotContain("CVE-2026-0002", PageText.Json(index), StringComparison.Ordinal);
     }
 
     /// <summary>
@@ -115,7 +114,7 @@ public sealed class CorpusAdvisoryPagesTests
         records.AddRange(Carrying("CVE-2026-0003", 1));
 
         var pages = CorpusAdvisoryPages.Build(Reading(records), TakenAt);
-        var json = Json(pages.Single(p => p.Path == "state-of-the-corpus/advisories"));
+        var json = PageText.Json(pages.Single(p => p.Path == "state-of-the-corpus/advisories"));
 
         Assert.Contains("2 of 3", json, StringComparison.Ordinal);
     }
@@ -162,30 +161,7 @@ public sealed class CorpusAdvisoryPagesTests
             AdvisoryListComplete = true,
         }))];
 
-    private static string Json(SurveyPage page) =>
-        JsonSerializer.Serialize(
-            page.Node, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
 
-    private static IEnumerable<string> Hrefs(string json)
-    {
-        var flat = json.Replace("\\\"", "\"", StringComparison.Ordinal);
-        var seen = new List<string>();
-        var index = 0;
-        while ((index = flat.IndexOf("href", index, StringComparison.Ordinal)) >= 0)
-        {
-            var colon = flat.IndexOf(':', index);
-            var open = colon < 0 ? -1 : flat.IndexOf('"', colon);
-            var close = open < 0 ? -1 : flat.IndexOf('"', open + 1);
-            if (close > open)
-            {
-                seen.Add(flat[(open + 1)..close]);
-            }
-
-            index += 4;
-        }
-
-        return seen;
-    }
 
     private static SurveyRecord Record(SecurityReading reading)
     {

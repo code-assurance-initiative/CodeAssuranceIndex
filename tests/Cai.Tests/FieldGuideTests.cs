@@ -63,7 +63,7 @@ public sealed class FieldGuideTests
             .OrderBy(p => p, StringComparer.Ordinal)
             .ToList();
 
-        var linked = Hrefs(Json(SurveyIndexBuilder.Build(records, TakenAt)))
+        var linked = PageText.Hrefs(Json(SurveyIndexBuilder.Build(records, TakenAt)))
             .Where(h => h.Contains("/lang/", StringComparison.Ordinal))
             .OrderBy(h => h, StringComparer.Ordinal)
             .ToList();
@@ -173,35 +173,7 @@ public sealed class FieldGuideTests
     private static string Json(SurveyPage? page)
     {
         Assert.NotNull(page);
-        return JsonSerializer.Serialize(page.Node);
+        return PageText.Json(page);
     }
 
-    /// <summary>Every href the page's node tree carries, wherever it carries it.</summary>
-    private static IEnumerable<string> Hrefs(string json)
-    {
-        const string marker = "href";
-        // Widget props carry their own JSON as a STRING, so the hrefs inside the language board arrive
-        // escaped one level deeper than the ones in the page's own nodes — and System.Text.Json's default
-        // encoder writes an inner quote as \u0022 rather than \", so both forms have to be flattened or
-        // the board's links are invisible to this reader and the test passes on an empty list.
-        json = json
-            .Replace("\\u0022", "\"", StringComparison.OrdinalIgnoreCase)
-            .Replace("\\\"", "\"", StringComparison.Ordinal);
-        var seen = new List<string>();
-        var index = 0;
-        while ((index = json.IndexOf(marker, index, StringComparison.OrdinalIgnoreCase)) >= 0)
-        {
-            var colon = json.IndexOf(':', index);
-            var open = colon < 0 ? -1 : json.IndexOf('"', colon);
-            var close = open < 0 ? -1 : json.IndexOf('"', open + 1);
-            if (close > open)
-            {
-                seen.Add(json[(open + 1)..close].Replace("\\u0026", "&", StringComparison.Ordinal));
-            }
-
-            index += marker.Length;
-        }
-
-        return seen;
-    }
 }

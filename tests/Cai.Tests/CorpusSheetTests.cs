@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using Cai.Delivery;
 using Cai.Pages;
@@ -114,20 +113,10 @@ public sealed class CorpusSheetTests
 
     private static int _ordinal;
 
-    /// <summary>
-    /// The page's node tree as text a test can read.
-    /// </summary>
-    /// <remarks>
-    /// ★ RELAXED ESCAPING, deliberately. The default encoder writes "§" as \u00A7 and an inner quote as
-    /// \u0022, so a test asserting on "§1 Population" finds nothing and passes or fails for a reason that
-    /// has nothing to do with the page. The bytes the CMS receives are unaffected either way — JSON escaping
-    /// is transparent to a parser — so this is a property of the assertion, not of the publication.
-    /// </remarks>
     private static string Json(SurveyPage? page)
     {
         Assert.NotNull(page);
-        return JsonSerializer.Serialize(
-            page.Node, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+        return PageText.Json(page);
     }
 
     private static SecurityReading Nothing() => new();

@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using Cai.Delivery;
 using Cai.Pages;
@@ -124,8 +123,7 @@ public sealed class CorpusCountryCutTests
     private static string Json(SurveyPage? page)
     {
         Assert.NotNull(page);
-        return JsonSerializer.Serialize(
-            page.Node, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
+        return PageText.Json(page);
     }
 
     private static SurveyRecord Record(string? country, string owner)
