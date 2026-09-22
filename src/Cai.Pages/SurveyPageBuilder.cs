@@ -1,5 +1,7 @@
 using System.Globalization;
+using System.Text.Json;
 using Cai.Delivery;
+using Cai.Scoring;
 
 namespace Cai.Pages;
 
@@ -84,13 +86,110 @@ public static class SurveyPageBuilder
             sections.Add(PageNodes.Section(null, "lenses", PageNodes.Widget(
                 "cai-lens-gauges",
                 ("heading", "What was measured, lens by lens"),
-                ("lenses", gauges))));
+                ("lenses", gauges),
+                ("footnote", DarkLensNote(verdict)))));
         }
+
+        // ★ AFTER THE MEASUREMENT AND BEFORE THE PROVENANCE. A reader who got this far and liked what
+        //   they read has nowhere to go; an invitation that INTERRUPTS the evidence is an advert, and
+        //   this page's whole claim is that it is evidence first.
+        sections.Add(PageNodes.Section(null, "survey-your-own",
+            PageNodes.Heading(2, "Survey your own repository"),
+            PageNodes.RichText(PageProse.Paragraph(
+                $"{PageProse.Escape(title)} was measured the same way every project in this corpus was: the "
+                + "same rubric, at a pinned commit, with the result published in full. Point a surveyor at a "
+                + "repository you know and see whether you agree with it."))));
 
         sections.Add(About(record));
 
+        // And where to go from here, as cards with a mark on each. No producer chooses these: they are
+        // the standard's own routes out of its own page.
+        sections.Add(PageNodes.Section(null, "elsewhere",
+            PageNodes.Widget("cai-link-cards", ("links", Destinations(record)))));
+
         return new SurveyPage(path, title, MetaDescription(record), PageNodes.Section([.. sections]));
     }
+
+    /// <summary>
+    /// The model-aware lenses this survey did not light up, said in the page's own words.
+    /// </summary>
+    /// <remarks>
+    /// ★★ A LENS THAT DID NOT APPLY IS NOT A ZERO, AND NOT A GAP EITHER. A reader who sees five lenses
+    /// on one page and six on another is owed the difference between "this codebase's architecture does
+    /// not call for it" and "the survey could not read it". Scoring an inapplicable lens zero would mark
+    /// a CRUD service down for having no aggregates, which is the measurement saying something false
+    /// about the code rather than about itself.
+    /// </remarks>
+    private static string? DarkLensNote(DeliveryVerdict verdict)
+    {
+        var lit = verdict.Lenses.Select(l => l.Lens).ToHashSet(StringComparer.Ordinal);
+        var dark = LensCatalog.All
+            .Where(l => !l.Core && !lit.Contains(l.Key))
+            .Select(l => l.DisplayName)
+            .ToList();
+
+        if (dark.Count == 0)
+        {
+            return null;
+        }
+
+        var names = dark.Count == 1
+            ? $"The {dark[0]} lens"
+            : $"The {string.Join(", ", dark.Take(dark.Count - 1))} and {dark[^1]} lenses";
+        var verb = dark.Count == 1 ? "stayed dark" : "stayed dark";
+        return $"{names} {verb}: this codebase's architecture does not call for them. A lens that does not "
+             + "apply is a result, not a gap.";
+    }
+
+    /// <summary>Where a reader goes from here.</summary>
+    /// <remarks>
+    /// ★ THE STANDARD'S OWN ROUTES OUT OF ITS OWN PAGE, chosen here rather than supplied. A producer
+    /// that could choose them could point the standard's readers wherever it liked.
+    /// </remarks>
+    private static string Destinations(SurveyRecord record)
+    {
+        var subject = record.Latest.Subject;
+        var links = new List<object>
+        {
+            new
+            {
+                icon = "cai",
+                label = "How this project compares",
+                note = "Every measured codebase read together — the same rubric, the same instrument",
+                href = "/state-of-the-corpus/",
+            },
+            new
+            {
+                icon = "cai",
+                label = "Verify this score yourself",
+                note = "Reproduce the number from the published evidence",
+                href = "/verify/",
+            },
+        };
+
+        if (SourceUrl(subject) is { } source)
+        {
+            links.Insert(0, new
+            {
+                icon = "",
+                label = "The project's source repository",
+                note = $"{subject.Host}/{subject.Repository}",
+                href = source,
+            });
+        }
+
+        return JsonSerializer.Serialize(links);
+    }
+
+    /// <summary>The forge address a subject can be read back at, or null when there is none to link.</summary>
+    /// <remarks>
+    /// ★ NULL IS A REAL ANSWER. A closed repository and an uploaded project have no public page, and a
+    /// card linking to a 404 is worse than a card that is not there.
+    /// </remarks>
+    private static string? SourceUrl(DeliverySubject subject) =>
+        subject.Host is { Length: > 0 } host && subject.Repository is { Length: > 0 } repository
+            ? $"https://{host}/{repository}"
+            : null;
 
     /// <summary>The figures the band states — only the ones this record can actually support.</summary>
     /// <remarks>
