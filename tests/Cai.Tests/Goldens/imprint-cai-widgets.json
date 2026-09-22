@@ -1,0 +1,185 @@
+{
+  "cai-score-card": [
+    "api-base",
+    "brand",
+    "caption",
+    "card",
+    "href",
+    "name",
+    "owner",
+    "score",
+    "seal-text"
+  ],
+  "cai-card-gallery": [
+    "api-base",
+    "brand",
+    "cards",
+    "count",
+    "footnote",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-band-scale": [
+    "api-base",
+    "brand",
+    "caption",
+    "heading",
+    "kicker",
+    "lede",
+    "score"
+  ],
+  "cai-lens-gauges": [
+    "brand",
+    "footnote",
+    "heading",
+    "kicker",
+    "lede",
+    "lenses"
+  ],
+  "cai-trend": [
+    "brand",
+    "caption",
+    "figures",
+    "first-date",
+    "heading",
+    "kicker",
+    "last-date",
+    "lede",
+    "sampled",
+    "series",
+    "tip"
+  ],
+  "cai-survey-list": [
+    "brand",
+    "empty-text",
+    "heading",
+    "kicker",
+    "lede",
+    "projects"
+  ],
+  "cai-language-board": [
+    "brand",
+    "depth-note",
+    "empty-text",
+    "heading",
+    "kicker",
+    "languages",
+    "lede",
+    "ungrouped"
+  ],
+  "cai-link-cards": [
+    "brand",
+    "heading",
+    "kicker",
+    "lede",
+    "links",
+    "tip"
+  ],
+  "cai-figure-band": [
+    "brand",
+    "dateline",
+    "figures",
+    "footnote",
+    "kicker",
+    "layout",
+    "tip"
+  ],
+  "cai-share-bars": [
+    "bar-heading",
+    "brand",
+    "columns",
+    "heading",
+    "kicker",
+    "label-heading",
+    "layout",
+    "lede",
+    "rows",
+    "tip"
+  ],
+  "cai-composition-bar": [
+    "api-base",
+    "brand",
+    "caption",
+    "heading",
+    "kicker",
+    "lede",
+    "segments"
+  ],
+  "cai-evidence-flow": [
+    "brand",
+    "footnote",
+    "heading",
+    "kicker",
+    "lede",
+    "loop-label",
+    "nodes"
+  ],
+  "cai-c4-heat": [
+    "api-base",
+    "brand",
+    "caption",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-findings": [
+    "api-base",
+    "brand",
+    "footnote",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-language-support": [
+    "api-base",
+    "brand",
+    "footnote",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-dimensions": [
+    "api-base",
+    "footnote",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-public-reports": [
+    "api-base",
+    "brand",
+    "footnote",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-verifier": [
+    "api-base",
+    "brand",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-calculator": [
+    "api-base",
+    "brand",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-report-index": [
+    "api-base",
+    "brand",
+    "heading",
+    "kicker",
+    "lede"
+  ],
+  "cai-publication-cards": [
+    "brand",
+    "heading",
+    "items",
+    "kicker",
+    "lede"
+  ]
+}

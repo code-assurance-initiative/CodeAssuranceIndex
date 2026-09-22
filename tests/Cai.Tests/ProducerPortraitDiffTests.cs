@@ -49,20 +49,22 @@ public sealed class ProducerPortraitDiffTests
     }
 
     /// <summary>
-    /// ★★ THE ONE DIFFERENCE THAT CHANGES A PUBLISHED NUMBER, HELD HERE SO IT CANNOT DRIFT SILENTLY.
+    /// ★★ RULED BY THE OWNER, 2026-09-22: PUBLISH ALWAYS, SHOW THE LATEST. The standard's reading is the
+    /// correct one and the producer's is the legacy.
     /// </summary>
     /// <remarks>
     /// <para>The producer publishes a repository's PEAK measurement as the face of its page: a regression is
-    /// never promoted to the current score, so a page can show 72.4 while the newest reading on its own
-    /// trend line is 71.0. The standard publishes the LATEST reading, and says so in the words beside it —
-    /// "its most recent published measurement, taken on …".</para>
-    /// <para>★★ THEY ARE DIFFERENT CLAIMS AND ONLY ONE CAN BE ON THE PAGE. This is not a port defect and it
-    /// is not the implementer's to decide: it changes the number every regressed codebase publishes. It is
-    /// written down here, and in the plan, for the owner to rule on. Whichever way it goes, this test is
-    /// what stops the two quietly diverging in the meantime.</para>
+    /// never promoted to the current score, so it shows 72.4 while the newest reading on its own trend line
+    /// is 71.0. The owner's words: <i>"it was peak once, today, it should publish always, and show
+    /// latest."</i></para>
+    /// <para>★ THE TEST STAYS, INVERTED IN MEANING. It no longer holds an open question; it records that the
+    /// difference is deliberate and which way it was settled, so a later reader diffing these two pages finds
+    /// the ruling instead of rediscovering the question. The standard's page also SAYS which reading it is —
+    /// "its most recent published measurement, taken on …" — which is the half that makes the number
+    /// checkable.</para>
     /// </remarks>
     [Fact]
-    public void The_headline_differs_because_the_producer_publishes_the_peak_and_the_standard_the_latest()
+    public void The_standard_shows_the_latest_reading_where_the_producer_showed_the_peak()
     {
         var producer = PageShape.Stats(Producer())[0];
         var standard = PageShape.Stats(Standard())[0];
@@ -75,6 +77,13 @@ public sealed class ProducerPortraitDiffTests
         var readings = Deliveries().Select(d => d.Verdict.Cai).ToList();
         Assert.Equal(72.4, readings.Max());
         Assert.Equal(71.0, readings[^1]);
+
+        // ★ And the page says WHICH reading it is, beside the number. A latest-reading headline that did not
+        //   say so would be the peak's claim with a different value in it.
+        Assert.Contains(
+            "most recent published measurement",
+            JsonSerializer.Serialize(Standard()),
+            StringComparison.Ordinal);
     }
 
     /// <summary>★ And the page is at the same address, under the same title.</summary>
