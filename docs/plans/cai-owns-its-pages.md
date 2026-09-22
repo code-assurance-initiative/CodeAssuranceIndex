@@ -291,6 +291,18 @@ moves with them.
 **Done when:** Kennel holds no CMS credential and no knowledge that a CMS exists —
 `grep -rn "syndicat" kennel/src` returns nothing.
 
+**KENNEL'S HALF IS DONE** (kennel `4766141f2` + `b9858c7c4`): 18,842 lines out, `grep -rn "syndicat"
+kennel/src` finds one unrelated line of seed prose, whole suite 29 projects / 8,236 passed / 0 failed.
+
+★★ **THE CUTOVER ORDER MATTERS AND IS NOT INTERCHANGEABLE.** Both publishers sweep the same two roots
+and each withdraws what the other published, so they must never run at once:
+
+1. **Promote kennel first.** Its publisher is gone, so nothing sweeps. The site serves static files —
+   the pages do not disappear, they stop being updated.
+2. **Then deploy CAI.** The publisher starts, the pages resume, composed by the standard.
+
+Deploying CAI first would have the two fighting over `surveys/**` and `state-of-the-corpus/**`.
+
 **CAI's half is done** (`e81b296`): `ISiteSyndication`, `HttpSiteSyndication`, `SitePublishService`,
 `SitePublishHostedService`, `SyndicationOptions`, and the append-only readings store (`52ce1d2`).
 Registered only when it has a site, an id and a token — credentials are not a feature switch.
