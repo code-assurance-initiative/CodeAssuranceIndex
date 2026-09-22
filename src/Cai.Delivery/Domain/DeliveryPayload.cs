@@ -126,6 +126,62 @@ public sealed record DeliverySubject
     /// codebase, and it does not change because a different rubric was folded over it.</para>
     /// </remarks>
     [JsonPropertyName("languages")] public SubjectLanguages? Languages { get; init; }
+
+    /// <summary>Where the codebase's owner says they are. Null when the producer does not say.</summary>
+    /// <remarks>
+    /// ★★ ADDED AT MINOR 1.1 FOR THE STANDARD'S COUNTRY CUT, WHICH CANNOT BE PUBLISHED WITHOUT ITS
+    /// DENOMINATORS. The only origin signal that exists anywhere is the owning forge account's free-text
+    /// profile line, and about half of owners leave it blank — so a country share taken over the accounts
+    /// that happen to fill in a profile field measures who fills in a profile field, not where software is
+    /// written. <see cref="SubjectOrigin.Declared"/> travels beside <see cref="SubjectOrigin.Country"/> for
+    /// exactly that reason, and the standard counts owners considered, declared and resolved from them.
+    /// <para>★ It is the PRODUCER's reading of a free-text line, not a fact the standard can check, which is
+    /// why <see cref="SubjectOrigin.ResolvedBy"/> rides with it: a country named outright is a far better
+    /// claim than a city name spotted inside a sentence, and a page that cannot separate them cannot be
+    /// argued with.</para>
+    /// </remarks>
+    [JsonPropertyName("origin")] public SubjectOrigin? Origin { get; init; }
+}
+
+/// <summary>Where a subject's owner says they are, and how well that answer is known.</summary>
+/// <remarks>
+/// ★★ AN UNRESOLVED ORIGIN IS AN ANSWER WITH A REASON, NEVER A MISSING VALUE. "Declared nothing" and
+/// "declared something unplaceable" are different facts about a population, and collapsing them into one
+/// "unknown" is how an unresolved share stops being reportable. A subject whose owner declared nothing,
+/// declared a joke, or declared something the producer could not place carries no
+/// <see cref="Country"/> — it is never mapped to a placeholder, which is how an "unknown" bucket becomes a
+/// country on a chart.
+/// </remarks>
+public sealed record SubjectOrigin
+{
+    /// <summary>The normalised country, or null when the declared location did not resolve to one.</summary>
+    [JsonPropertyName("country")] public string? Country { get; init; }
+
+    /// <summary>The owner wrote SOMETHING in the field, placeable or not — the honest answer to "could this
+    /// codebase have had a country at all".</summary>
+    [JsonPropertyName("declared")] public bool Declared { get; init; }
+
+    /// <summary>
+    /// How the country was found: <c>countryName</c>, <c>cityName</c>, <c>usState</c>,
+    /// <c>countryNameInText</c>, <c>cityNameInText</c>. Null when nothing resolved.
+    /// </summary>
+    /// <remarks>
+    /// ★ Recorded beside the answer because the methods are not equally strong: a country named outright is
+    /// a far better claim than a city name spotted inside a sentence.
+    /// </remarks>
+    [JsonPropertyName("resolvedBy")] public string? ResolvedBy { get; init; }
+
+    /// <summary>
+    /// Why nothing resolved: <c>blank</c>, <c>nonGeographic</c>, <c>unrecognised</c>, <c>ambiguous</c>.
+    /// Null when a country did resolve.
+    /// </summary>
+    /// <remarks>
+    /// ★ <c>ambiguous</c> is kept apart from <c>unrecognised</c> because it is a different fact: the
+    /// producer knew exactly what was written — a bare "Georgia", a bare "CA" — and refused to flip a coin,
+    /// which is a defensible line on a published page, while "never heard of this place" is a gap in the
+    /// tables. Merging them would hide which of the two a bigger vocabulary would fix.
+    /// </remarks>
+    [JsonPropertyName("unresolvedReason")] public string? UnresolvedReason { get; init; }
 }
 
 /// <summary>The languages a subject is written in, as the producer names them.</summary>

@@ -1,3 +1,4 @@
+using Cai.Delivery;
 using Cai.Scoring;
 
 namespace Cai.Pages;
@@ -24,12 +25,18 @@ namespace Cai.Pages;
 /// </remarks>
 public sealed record CorpusReading
 {
-    private CorpusReading(DateTimeOffset takenAt, int codebases, IReadOnlyList<SecurityReading> readings, AdvisoryCut advisories)
+    private CorpusReading(
+        DateTimeOffset takenAt,
+        int codebases,
+        IReadOnlyList<SecurityReading> readings,
+        AdvisoryCut advisories,
+        OriginCut origins)
     {
         TakenAt = takenAt;
         Codebases = codebases;
         SecurityReadings = readings.Count;
         Advisories = advisories;
+        Origins = origins;
 
         VulnMeasurable = readings.Count(r => r.VulnMeasurable);
         VulnUnmeasured = readings.Count(r => r.VulnUnmeasured);
@@ -153,6 +160,9 @@ public sealed record CorpusReading
     /// <summary>The advisory and package cut, carrying the size of its own blind spot.</summary>
     public AdvisoryCut Advisories { get; }
 
+    /// <summary>Where the corpus comes from, carrying its own denominators.</summary>
+    public OriginCut Origins { get; }
+
     /// <summary>Folds every delivery's security reading into one reading of the corpus.</summary>
     /// <param name="records">One record per measured codebase.</param>
     /// <param name="takenAt">The instant the corpus was read.</param>
@@ -162,7 +172,7 @@ public sealed record CorpusReading
 
         var all = records.ToList();
         var readings = all.Select(r => r.Latest.Evidence.SecurityReading).OfType<SecurityReading>().ToList();
-        return new CorpusReading(takenAt, all.Count, readings, AdvisoryCut.Of(readings));
+        return new CorpusReading(takenAt, all.Count, readings, AdvisoryCut.Of(readings), OriginCut.Of(all));
     }
 }
 
@@ -358,3 +368,132 @@ public sealed record PackageStat(
     int Surveys,
     int SurveysInherited,
     int SurveysAmongComplete);
+
+/// <summary>
+/// Where the corpus comes FROM, as far as anything can honestly say — and the denominators that make it
+/// readable.
+/// </summary>
+/// <remarks>
+/// <para>★★ THE DENOMINATORS ARE THE WHOLE POINT. The only origin signal that exists is the owning forge
+/// account's free-text profile line, and about half of owners leave it blank. So the country map never
+/// travels alone: it travels with how many owners were considered, how many declared anything and how many
+/// resolved, because a country share taken over the accounts that happen to fill in a profile field
+/// measures who fills in a profile field, not where software is written.</para>
+///
+/// <para>★★ CODEBASES PER COUNTRY IS NOT A HEADCOUNT. One prolific account can put forty codebases in a
+/// country that has three people in it, so <see cref="CodebasesByCountry"/> and
+/// <see cref="OwnersByCountry"/> are carried separately and a page shows both.</para>
+///
+/// <para>★ AN UNRESOLVED OWNER IS ABSENT FROM THE MAP, never mapped to a placeholder — which is how an
+/// "unknown" bucket becomes a country on a chart.</para>
+/// </remarks>
+public sealed record OriginCut
+{
+    private OriginCut(
+        int codebases,
+        int codebasesDeclared,
+        int codebasesResolved,
+        int ownersConsidered,
+        int ownersDeclared,
+        int ownersResolved,
+        IReadOnlyDictionary<string, int> codebasesByCountry,
+        IReadOnlyDictionary<string, int> ownersByCountry)
+    {
+        Codebases = codebases;
+        CodebasesDeclared = codebasesDeclared;
+        CodebasesResolved = codebasesResolved;
+        OwnersConsidered = ownersConsidered;
+        OwnersDeclared = ownersDeclared;
+        OwnersResolved = ownersResolved;
+        CodebasesByCountry = codebasesByCountry;
+        OwnersByCountry = ownersByCountry;
+    }
+
+    /// <summary>Every codebase asked about — THE denominator for anything said about codebases.</summary>
+    public int Codebases { get; }
+
+    /// <summary>Of those, the ones whose owner put something in the field, placeable or not.</summary>
+    public int CodebasesDeclared { get; }
+
+    /// <summary>Of those, the ones whose owner resolved to a country.</summary>
+    public int CodebasesResolved { get; }
+
+    /// <summary>Distinct owners across those codebases — THE denominator for anything said about owners.</summary>
+    /// <remarks>
+    /// ★ An owner is <c>(forge, account)</c>. The same name on two forges is two owners: an account is only
+    /// unique within a provider, and folding them would put one account's codebases in another's country.
+    /// </remarks>
+    public int OwnersConsidered { get; }
+
+    /// <summary>Of those, how many wrote something in the field.</summary>
+    public int OwnersDeclared { get; }
+
+    /// <summary>Of those, how many resolved to a country.</summary>
+    public int OwnersResolved { get; }
+
+    /// <summary>Codebases per country. ★ Not a headcount.</summary>
+    public IReadOnlyDictionary<string, int> CodebasesByCountry { get; }
+
+    /// <summary>Distinct owners per country.</summary>
+    public IReadOnlyDictionary<string, int> OwnersByCountry { get; }
+
+    /// <summary>Folds every subject's origin into the corpus's.</summary>
+    internal static OriginCut Of(IReadOnlyList<SurveyRecord> records)
+    {
+        var owners = new Dictionary<string, SubjectOrigin?>(StringComparer.Ordinal);
+        var codebasesByCountry = new Dictionary<string, int>(StringComparer.Ordinal);
+        var declaredCodebases = 0;
+        var resolvedCodebases = 0;
+
+        foreach (var record in records)
+        {
+            var subject = record.Latest.Subject;
+            var origin = subject.Origin;
+
+            if (origin?.Declared == true)
+            {
+                declaredCodebases++;
+            }
+
+            if (origin?.Country is { Length: > 0 } country)
+            {
+                resolvedCodebases++;
+                codebasesByCountry[country] = codebasesByCountry.GetValueOrDefault(country) + 1;
+            }
+
+            // ★ An owner is (forge, account). The first origin seen for an owner is the one kept: two
+            //   deliveries about one account's repositories describe one account, and a later one saying
+            //   nothing must not erase what an earlier one said.
+            var key = OwnerKey(subject);
+            if (!owners.TryGetValue(key, out var known) || known is null)
+            {
+                owners[key] = origin ?? known;
+            }
+        }
+
+        var ownersByCountry = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var country in owners.Values.Select(o => o?.Country).OfType<string>())
+        {
+            ownersByCountry[country] = ownersByCountry.GetValueOrDefault(country) + 1;
+        }
+
+        return new OriginCut(
+            records.Count,
+            declaredCodebases,
+            resolvedCodebases,
+            owners.Count,
+            owners.Values.Count(o => o?.Declared == true),
+            owners.Values.Count(o => o?.Country is { Length: > 0 }),
+            codebasesByCountry,
+            ownersByCountry);
+    }
+
+    /// <summary>The owner's identity: the forge and the account, because an account is only unique within one.</summary>
+    private static string OwnerKey(DeliverySubject subject)
+    {
+        var repository = subject.Repository ?? "";
+        var slash = repository.LastIndexOf('/');
+        var account = slash > 0 ? repository[..slash] : repository;
+        return $"{subject.Host}/{account}";
+    }
+}

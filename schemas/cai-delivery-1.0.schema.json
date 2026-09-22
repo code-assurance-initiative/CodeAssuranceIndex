@@ -142,6 +142,56 @@
                   }
                 }
               }
+            },
+            "origin": {
+              "description": "Where the codebase's owner says they are. ADDED AT MINOR 1.1 for the standard's country cut, which cannot be published without its denominators: the only origin signal that exists is the owning forge account's free-text profile line and about half of owners leave it blank, so a country share taken over the accounts that fill it in measures who fills in a profile field, not where software is written. 'declared' travels beside 'country' for exactly that reason.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "country": {
+                  "description": "The normalised country, or null when the declared location did not resolve. An unresolved origin is NEVER mapped to a placeholder country.",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "declared": {
+                  "description": "The owner wrote something in the field, placeable or not.",
+                  "type": "boolean"
+                },
+                "resolvedBy": {
+                  "description": "How the country was found. A country named outright is a far better claim than a city name spotted inside a sentence, and a page that cannot separate them cannot be argued with.",
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "countryName",
+                    "cityName",
+                    "usState",
+                    "countryNameInText",
+                    "cityNameInText",
+                    null
+                  ]
+                },
+                "unresolvedReason": {
+                  "description": "Why nothing resolved. 'declared nothing' and 'declared something unplaceable' are different facts about a population; 'ambiguous' means the producer knew what was written and refused to flip a coin.",
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "blank",
+                    "nonGeographic",
+                    "unrecognised",
+                    "ambiguous",
+                    null
+                  ]
+                }
+              }
             }
           }
         },
