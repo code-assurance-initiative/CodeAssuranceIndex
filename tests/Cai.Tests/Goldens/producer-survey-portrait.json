@@ -1,0 +1,184 @@
+{
+  "Path": "surveys/github/acme/checkout-api",
+  "Title": "acme/checkout-api",
+  "MetaDescription": "acme/checkout-api scored 72.4 on the CAI \u2014 Strong, measured 30 August 2026.",
+  "Node": {
+    "type": "section",
+    "children": [
+      {
+        "type": "section",
+        "children": [
+          {
+            "type": "heading",
+            "level": 1,
+            "text": "acme/checkout-api"
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "children": [
+          {
+            "type": "grid",
+            "minItemPx": 240,
+            "children": [
+              {
+                "type": "stack",
+                "children": [
+                  {
+                    "type": "heading",
+                    "level": 2,
+                    "text": "72.4"
+                  },
+                  {
+                    "type": "richtext",
+                    "html": "\u003Cp\u003EStrong \u00B7 30 August 2026\u003C/p\u003E"
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "children": [
+                  {
+                    "type": "heading",
+                    "level": 2,
+                    "text": "1.5k"
+                  },
+                  {
+                    "type": "richtext",
+                    "html": "\u003Cp\u003Elines of production code\u003C/p\u003E"
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "children": [
+                  {
+                    "type": "heading",
+                    "level": 2,
+                    "text": "C#"
+                  },
+                  {
+                    "type": "richtext",
+                    "html": "\u003Cp\u003Ewith TypeScript\u003C/p\u003E"
+                  }
+                ]
+              },
+              {
+                "type": "stack",
+                "children": [
+                  {
+                    "type": "heading",
+                    "level": 2,
+                    "text": "4"
+                  },
+                  {
+                    "type": "richtext",
+                    "html": "\u003Cp\u003Emeasurements over time\u003C/p\u003E"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "appearance": "StatBand",
+        "anchor": "measurement"
+      },
+      {
+        "type": "section",
+        "children": [
+          {
+            "type": "widget",
+            "tag": "cai-band-scale",
+            "props": {
+              "score": "72.4",
+              "heading": "Where 72.4 sits on the scale",
+              "caption": "Strong \u2014 the most recent published measurement, taken 30 August 2026."
+            }
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "children": [
+          {
+            "type": "widget",
+            "tag": "cai-trend",
+            "props": {
+              "heading": "How the score moved",
+              "series": "[61.2,68.1,72.4,71]",
+              "first-date": "2 May 2026",
+              "last-date": "30 August 2026",
+              "caption": "Every published measurement of this repository, oldest first. The 72.4 above is the highest of them, not the newest: the score we publish is a repository\u0027s best measurement, so a later scan that came in lower does not replace it."
+            }
+          }
+        ],
+        "anchor": "trend"
+      },
+      {
+        "type": "section",
+        "children": [
+          {
+            "type": "widget",
+            "tag": "cai-lens-gauges",
+            "props": {
+              "heading": "What was measured, lens by lens",
+              "lenses": "[{\u0022label\u0022:\u0022Code health\u0022,\u0022value\u0022:74.1,\u0022note\u0022:\u0022Strong\u0022},{\u0022label\u0022:\u0022Architecture\u0022,\u0022value\u0022:69.8,\u0022note\u0022:\u0022Adequate\u0022},{\u0022label\u0022:\u0022Maturity\u0022,\u0022value\u0022:70.2,\u0022note\u0022:\u0022Strong\u0022},{\u0022label\u0022:\u0022Production readiness\u0022,\u0022value\u0022:66.5,\u0022note\u0022:\u0022Adequate\u0022},{\u0022label\u0022:\u0022Security and compliance\u0022,\u0022value\u0022:80,\u0022note\u0022:\u0022Strong\u0022}]",
+              "footnote": "The domain modelling, event-driven and event sourcing lenses stayed dark: this codebase\u0027s architecture does not call for them. A lens that does not apply is a result, not a gap."
+            }
+          }
+        ],
+        "anchor": "lenses"
+      },
+      {
+        "type": "section",
+        "children": [
+          {
+            "type": "heading",
+            "level": 2,
+            "text": "Survey your own repository"
+          },
+          {
+            "type": "richtext",
+            "html": "\u003Cp\u003Eacme/checkout-api was measured the same way every project in this corpus was: the same rubric, at a pinned commit, with the result published in full. Point the surveyor at a repository you know and see whether you agree with it.\u003C/p\u003E"
+          },
+          {
+            "type": "button",
+            "label": "Survey a repository",
+            "href": "https://app.watchdog.canine.dev"
+          }
+        ],
+        "anchor": "survey-your-own"
+      },
+      {
+        "type": "section",
+        "children": [
+          {
+            "type": "heading",
+            "level": 2,
+            "text": "About this page"
+          },
+          {
+            "type": "richtext",
+            "html": "\u003Cul\u003E\u003Cli\u003EThe score is its most recent published measurement, taken on 30 August 2026 at a pinned commit. It is not a live figure and does not change until the project is measured again.\u003C/li\u003E\u003Cli\u003EMeasured at commit 3f9a1c2 \u2014 the exact code this score is about.\u003C/li\u003E\u003Cli\u003EScored under rubric rubric-2026.08.15. Score the same commit under that rubric and you get the same number.\u003C/li\u003E\u003Cli\u003ELast published 30 August 2026. Entries are removed after three months with nothing newly published, whether or not their owner still publishes \u2014 so a project that has gone is a project we stopped hearing from, and nothing more.\u003C/li\u003E\u003C/ul\u003E"
+          }
+        ],
+        "appearance": "Note",
+        "anchor": "about"
+      },
+      {
+        "type": "section",
+        "children": [
+          {
+            "type": "widget",
+            "tag": "cai-link-cards",
+            "props": {
+              "links": "[{\u0022icon\u0022:\u0022github\u0022,\u0022label\u0022:\u0022The project\\u0027s source repository\u0022,\u0022note\u0022:\u0022github.com/acme/checkout-api\u0022,\u0022href\u0022:\u0022https://github.com/acme/checkout-api\u0022},{\u0022icon\u0022:\u0022html\u0022,\u0022label\u0022:\u0022The full measurement report\u0022,\u0022note\u0022:\u0022Every finding behind the score\u0022,\u0022href\u0022:\u0022https://app.watchdog.canine.dev/reports/22222222-2222-2222-2222-222222222222\u0022},{\u0022icon\u0022:\u0022watchdog\u0022,\u0022label\u0022:\u0022Measured by Watchdog\u0022,\u0022note\u0022:\u0022The independent surveyor\u0022,\u0022href\u0022:\u0022https://watchdog.canine.dev/\u0022},{\u0022icon\u0022:\u0022cai\u0022,\u0022label\u0022:\u0022Verify this score yourself\u0022,\u0022note\u0022:\u0022Reproduce the number from the published evidence\u0022,\u0022href\u0022:\u0022https://codeassuranceindex.info/verify/\u0022}]"
+            }
+          }
+        ],
+        "anchor": "elsewhere"
+      }
+    ]
+  }
+}

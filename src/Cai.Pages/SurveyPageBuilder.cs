@@ -208,6 +208,18 @@ public static class SurveyPageBuilder
             yield return PageNodes.Stat(Compact(latest.Evidence.ProductionLoc), "lines of production code");
         }
 
+        // ★ WHAT THE SURVEY WAS OF. Missing from the first port of this band and caught by diffing against
+        //   the producer's own golden: the delivery carries it (subject.languages, MINOR 1.1), and a
+        //   portrait that does not say what a codebase is written in makes the reader open the source to
+        //   find out.
+        if (latest.Subject.Languages?.Primary is { Length: > 0 } primary)
+        {
+            var others = (latest.Subject.Languages.Secondary ?? []).Select(PageProse.LanguageName).ToList();
+            yield return PageNodes.Stat(
+                PageProse.LanguageName(primary),
+                others.Count > 0 ? $"with {string.Join(", ", others)}" : "primary language");
+        }
+
         yield return PageNodes.Stat(
             record.Deliveries.Count.ToString(CultureInfo.InvariantCulture),
             "measurements over time");
@@ -239,7 +251,10 @@ public static class SurveyPageBuilder
 
         lines.Add($"Measured by {PageProse.Escape(Attribution(latest.Producer))}.");
 
-        return PageNodes.Section("note", null,
+        // ★ THE APPEARANCE IS THE VOCABULARY'S CONSTANT AND THE ANCHOR IS "about". Ported by hand as a
+        //   lower-case literal with no anchor, which the theme does not style and no link can reach — caught
+        //   by diffing this page against the producer's own golden rather than by reading it.
+        return PageNodes.Section(PageNodes.Note, "about",
             PageNodes.Heading(2, "About this page"),
             PageNodes.RichText("<ul>" + string.Join("", lines.Select(l => $"<li>{l}</li>")) + "</ul>"));
     }
