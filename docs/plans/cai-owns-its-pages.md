@@ -208,8 +208,34 @@ granted publication, full stop.
 | Survey portrait (`SurveyPageBuilder`) | **done** — phase 1's neutrality test passes |
 | Language field guides + surveys index (`SurveyCorpus`, `FieldGuideBuilder`, `SurveyIndexBuilder`) | **done** (`f61e151`) |
 | The corpus AGGREGATION (`CorpusReading`, `AdvisoryCut`) | **done** (`a5f92c9`) |
-| The corpus PAGES (`CorpusPageBuilder`, `CorpusSheet`, `CorpusDetailPages`, `CorpusTrends`) | not started |
+| The corpus sheet §1 §2 §3 §4 (`CorpusSheetBuilder`, `CorpusCuts`) | **done** (`41d38ea`, `2722119`, `2509c43`) |
+| Advisory + package pages and indexes (`CorpusAdvisoryPages`) | **done** (`39370d1`) |
+| Per-language + per-country pages and indexes (`CorpusGroupPages`) | **done** (`813fb83`) |
+| The corpus sheet §5 Series | **blocked on a store — see below** |
 | Kennel's builders deleted | not started — belongs with phase 5 |
+
+★★ **§5 NEEDS SOMETHING THIS PLAN DID NOT NAME: AN APPEND-ONLY RECORD OF READINGS.** The producer
+draws its trend through `metrics.corpus_snapshots`, and its own remarks say why that is not optional:
+*"snapshots are append-only precisely so that a line drawn through them is checkable point by point;
+deriving one from today's data would draw a line that never happened, and no reader could tell the
+difference."*
+
+It is tempting to say the standard is exempt, because it holds every delivery ever and can re-fold
+"the corpus as of day D" from the deliveries issued on or before D — reproducible by anyone holding
+the same packages, which is strictly better than a snapshot table. **It is not exempt.** A
+re-derivation is only faithful if the PUBLISHED SET never changes, and publication is a grant an
+owner org can withdraw: a codebase that was in the reading on the day would silently drop out of a
+reading recomputed later, which is precisely "a line that never happened". So CAI records each
+reading it publishes, append-only, and may additionally state that it is reproducible.
+
+That store belongs with phase 5, which is where the reading starts being taken on a schedule.
+
+★ **ONE DELIBERATE DIFFERENCE FROM THE PRODUCER'S PAGES, FLAGGED BECAUSE IT CHANGES WHAT IS
+PUBLISHED:** the median column in §3 and §4 carries no band ink. A band word is read off a rubric's
+cutlines, and the codebases in one row were scored under many rubric versions whose cutlines a later
+one may have moved — banding their MEDIAN publishes a word no single rubric backs. `Cai.Scoring.Bands`
+deliberately offers no way to band a bare number for exactly that reason, and these pages are not
+going to be the thing that works around it.
 
 ★★ **THE PLAN'S PHASE-0 MAPPING WAS TAKEN OVER THE RECORD TYPES AND MISSED THE GATE.**
 `schemas/cai-delivery-1.0.schema.json` is embedded in `Cai.Web.Registry` and validated over every
