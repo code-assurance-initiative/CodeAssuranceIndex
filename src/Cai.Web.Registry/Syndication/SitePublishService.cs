@@ -33,6 +33,7 @@ public sealed record SiteSweep(int Built, int Changed, int Withdrawn, int Failed
 public sealed class SitePublishService(
     IRegistryStore store,
     ISiteSyndication syndication,
+    SiteSweepMemory memory,
     TimeProvider clock,
     ILogger<SitePublishService> logger)
 {
@@ -75,7 +76,9 @@ public sealed class SitePublishService(
             //    be read" are indistinguishable from here, and only one of them means the site should be
             //    emptied — so neither does.
             logger.LogInformation("Site sweep: no published subject, nothing composed and nothing withdrawn.");
-            return new SiteSweep(0, 0, 0, 0);
+            var nothing = new SiteSweep(0, 0, 0, 0);
+            memory.Record(nothing, takenAt);
+            return nothing;
         }
 
         var pages = Compose(records, takenAt);
@@ -92,6 +95,10 @@ public sealed class SitePublishService(
         RecordReading(records, takenAt);
 
         var sweep = new SiteSweep(pages.Count, pushed.Changed, withdrawn, pushed.Failed);
+
+        // ★ REMEMBERED BEFORE IT IS LOGGED. A log line on a deployed host is not a surface anyone reads on a
+        //   normal day, and "the publisher stopped" looks exactly like "nothing changed" from outside.
+        memory.Record(sweep, takenAt);
         logger.LogInformation(
             "Site sweep: {Built} built, {Changed} changed, {Withdrawn} withdrawn, {Failed} failed.",
             sweep.Built, sweep.Changed, sweep.Withdrawn, sweep.Failed);

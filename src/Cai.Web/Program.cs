@@ -127,6 +127,10 @@ builder.Services.AddHealthChecks().AddCheck<RegistryHealthCheck>("registry");
 //    id and a token; a half-configured environment is INERT rather than half-publishing, and a missing token
 //    means "do not publish" rather than "publish anonymously".
 builder.Services.Configure<SyndicationOptions>(builder.Configuration.GetSection(SyndicationOptions.Section));
+// ★ THE MEMORY IS REGISTERED EVEN WHEN THE PUBLISHER IS NOT. The health reading has to be able to say "this
+//   process has never swept" — an unconfigured environment answering nothing at all is exactly the silence
+//   that made a stopped publisher invisible for months.
+builder.Services.AddSingleton<SiteSweepMemory>();
 var syndication = builder.Configuration.GetSection(SyndicationOptions.Section).Get<SyndicationOptions>()
     ?? new SyndicationOptions();
 if (syndication.IsConfigured)

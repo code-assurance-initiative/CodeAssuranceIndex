@@ -13,7 +13,8 @@ namespace Cai.Web.Registry;
 /// <item><b>Healthy</b> (200) — store reachable and at least one active trusted key.</item>
 /// </list>
 /// </summary>
-public sealed class RegistryHealthCheck(IRegistryStore store, TrustedKeyProvider trusted) : IHealthCheck
+public sealed class RegistryHealthCheck(
+    IRegistryStore store, TrustedKeyProvider trusted, SiteSweepMemory sweeps) : IHealthCheck
 {
     /// <inheritdoc />
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default) =>
@@ -21,6 +22,21 @@ public sealed class RegistryHealthCheck(IRegistryStore store, TrustedKeyProvider
             !store.IsHealthy()
                 ? HealthCheckResult.Unhealthy("registry store unreachable")
                 : trusted.Keys.Keys.Any(k => k.Status == "active")
-                    ? HealthCheckResult.Healthy("registry store reachable, trusted keys loaded")
-                    : HealthCheckResult.Degraded("registry store reachable, but no ACTIVE trusted signing key is configured — every publish is rejected"));
+                    ? HealthCheckResult.Healthy("registry store reachable, trusted keys loaded", Publishing())
+                    : HealthCheckResult.Degraded(
+                        "registry store reachable, but no ACTIVE trusted signing key is configured — every publish is rejected",
+                        data: Publishing()));
+
+    /// <summary>
+    /// What the site publisher last did, carried on the health reading.
+    /// </summary>
+    /// <remarks>
+    /// ★★ IT DOES NOT CHANGE THE STATUS, AND THAT IS DELIBERATE. <c>/health</c> is the deploy's
+    /// verify-before-swap gate; a publisher that has not swept yet must not stop a fresh slot going live, and
+    /// an unconfigured environment has no publisher at all. What it must not do is stay SILENT: a sweep that
+    /// quietly stopped looks exactly like one that had nothing to do, which is how a corpus came to publish
+    /// 2,398 codebases against 3,485 measured for months with the number in a log nobody reads.
+    /// </remarks>
+    private IReadOnlyDictionary<string, object> Publishing() =>
+        new Dictionary<string, object>(StringComparer.Ordinal) { ["sitePublishing"] = sweeps.Describe() };
 }

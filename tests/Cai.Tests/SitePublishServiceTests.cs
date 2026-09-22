@@ -185,7 +185,7 @@ public sealed class SitePublishServiceTests : IDisposable
 
     private static Task<SiteSweep> Sweep(IRegistryStore store, ISiteSyndication site) =>
         new SitePublishService(
-            store, site, new FrozenClock(Now), NullLogger<SitePublishService>.Instance)
+            store, site, new SiteSweepMemory(), new FrozenClock(Now), NullLogger<SitePublishService>.Instance)
             .SweepAsync(TestContext.Current.CancellationToken);
 
     private static void Deliver(IRegistryStore store, string ownerOrgId, string repository)
