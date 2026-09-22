@@ -72,6 +72,16 @@ public sealed record EvidenceBundle
     /// move the headline. Absent ⇒ not assessed; omitted from the canonical form, so old packages are unaffected.</summary>
     [JsonPropertyName("busFactor")] public string? BusFactor { get; init; }
 
+    /// <summary>DESCRIPTIVE, NON-SCORED security reading — what the survey found when it looked for
+    /// known-vulnerable dependencies, a disclosure policy, committed secrets and supply-chain attestations.
+    /// It is NEVER folded into the CAI and can never move the headline (<see cref="CaiScorer"/> reads none of
+    /// it); it exists so the standard can publish what was FOUND across the corpus beside what it SCORED,
+    /// from the same signed artifacts and with every denominator the producer stated.
+    /// <para>★★ ADDED AT MINOR 1.1. Absent ⇒ this codebase contributes to no corpus denominator, which is the
+    /// honest reading of a producer that did not say. Omitted from the canonical form when null, so every
+    /// signature issued before it existed keeps verifying byte for byte.</para></summary>
+    [JsonPropertyName("securityReading")] public SecurityReading? SecurityReading { get; init; }
+
     /// <summary>DESCRIPTIVE, NON-SCORED deployment topology — the producer's authoritative "what this system runs and what
     /// it depends on," read from the repo's own declarative deployment sources (Docker Compose / .NET Aspire / Kubernetes /
     /// Terraform / Bicep / …). Carried VERBATIM through the signed package so a downstream consumer (e.g. an Assay buyer

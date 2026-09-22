@@ -8,7 +8,7 @@ namespace Cai.Delivery;
 public static class DeliverySchema
 {
     /// <summary>The current package format version — <c>MAJOR.MINOR</c>.</summary>
-    public const string Current = "1.0";
+    public const string Current = "1.1";
 
     /// <summary>The MAJOR this build implements. A verifier rejects a delivery whose MAJOR differs (an incompatible
     /// shape/trust change); a higher MINOR is forward-compatible (additive, unknown fields ignored).</summary>
