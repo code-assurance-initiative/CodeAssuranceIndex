@@ -399,13 +399,24 @@ A brake now refuses any sweep that would withdraw more than a third of the pages
 
 **The critical path, in order:**
 
-1. **Teach the producer to send the 1.1 facts.** Kennel has all three in its own database; they are
-   simply not put in the payload. ★ The gathering must be total and non-throwing — a delivery must
-   never be lost because a language lookup failed.
-2. **Re-deliver the corpus.** Even with the producer fixed, the 6,276 subjects already in the
-   registry hold 1.0 deliveries. Their pages stay thin until each has a 1.1 delivery — which means
-   either a corpus re-scan or a backfill that re-mints deliveries from stored measurements.
-   **This is the big unknown and it is worth deciding before anything else is built.**
+1. ~~**Teach the producer to send the 1.1 facts.**~~ **DONE, all three** (kennel `ef3dce4fd`,
+   `f7aeb5d05`, `955b9cee9`). `subject.languages` from the engine's own census through the existing
+   `LanguageMix` derivation; `subject.origin` from the owner-location row the scan already refreshes;
+   `evidence.securityReading` folded by `CorpusSecurityReader`, the one place that knows a clean scan,
+   a failed scan and an unreadable scan are three different things. Every gathering is total and
+   non-throwing, each with a test that drives a rogue implementation.
+
+   ★★ **AND IT NEEDED A PACKAGE, WHICH NOTHING HAD NOTICED.** Kennel consumes the standard as
+   `Cai.Delivery`, pinned at `0.2.0-ws-g` — which predates the 1.1 types entirely, so the producer
+   code would not compile. Packed `0.2.0-ws-h` from CAI `fe34344` and vendored under
+   `local-packages/` in both feeds, which is how these have always been consumed: no public release
+   is involved. Both pins move together, as `CaiPackagePinLockstepTests` requires.
+2. **Re-deliver the corpus — THE OWNER'S CALL.** The 6,276 subjects already in the registry hold
+   1.0 deliveries, and their pages stay thin until each has a 1.1 one. ★ A rescan produces a new
+   delivery through the same path, so the corpus fills in as it is re-scanned — no special backfill
+   is needed, only the decision to rescan (or to wait for the ordinary cycle). Nothing was started
+   unattended: a corpus rescan is a large compute operation, and a re-mint writes deliveries that
+   are immutable and un-withdrawable by design.
 3. **Grant publication** for exactly the subjects the site publishes today — derivable from the live
    sitemap (6,276 portraits), so the backfill restores the status quo rather than making a new
    decision about anybody's repository.
