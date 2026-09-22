@@ -261,6 +261,27 @@ something / resolved country — and the DENOMINATORS with them, because "a coun
 the accounts that happen to fill in a profile field measures who fills in a profile field, not where
 software is written".
 
+### ★★ OPEN FOR THE OWNER — peak or latest?
+
+Found by phase 6's node diff, 2026-09-22, and it is the one difference that changes a published
+number.
+
+The producer publishes a repository's **PEAK** measurement as the face of its page: a regression is
+never promoted to the current score, so the specimen page shows **72.4** while the newest reading on
+its own trend line is **71.0**. The standard as built publishes the **LATEST** reading, and says so
+in the words beside it — *"its most recent published measurement, taken on …"*.
+
+Both are defensible and only one can be on the page:
+
+- **Peak** is what the gallery's redemption arc is built on, and it never punishes a codebase for
+  being measured again. It also means the number beside the chart is not the last point on the chart.
+- **Latest** is what "measured at a pinned commit, on a stated day" already promises, and it is the
+  only reading a survey page's own prose supports.
+
+It changes the number every regressed codebase publishes, so it is not the implementer's call. Held
+by `ProducerPortraitDiffTests.The_headline_differs_because_the_producer_publishes_the_peak_and_the_standard_the_latest`
+so the two cannot quietly diverge while it is open.
+
 ### Phase 5 — move the sweep and the CMS client
 
 `IRegistrySyndication`, `HttpRegistrySyndication`, `RegistryPublishService`,
@@ -269,6 +290,24 @@ moves with them.
 
 **Done when:** Kennel holds no CMS credential and no knowledge that a CMS exists —
 `grep -rn "syndicat" kennel/src` returns nothing.
+
+**CAI's half is done** (`e81b296`): `ISiteSyndication`, `HttpSiteSyndication`, `SitePublishService`,
+`SitePublishHostedService`, `SyndicationOptions`, and the append-only readings store (`52ce1d2`).
+Registered only when it has a site, an id and a token — credentials are not a feature switch.
+
+**Kennel's half is NOT started, deliberately, and the order matters.** Deleting the producer's
+builders destroys the only thing the new pages can be diffed against, and phase 6 has only just
+begun. It also needs a decision the plan did not separate:
+
+★★ **`CorpusMirror` IS DATA, NOT RENDERING, AND IT STAYS.** It serves
+`/api/public/state-of-the-corpus` and `…​.csv` from the producer's own metrics — the machine-readable
+mirror of a reading, which is exactly what "Kennel should only provide the data" asks it to keep
+doing. It sits in the `Corpus/` folder beside the page builders and would have gone out with them
+in a folder-shaped deletion.
+
+Same question for `RegistryIngest*`, `RegistryScanNotifier` and `ScanIngestedFanOut`: those push
+DELIVERIES to the standard's registry, which is the producer's job and not the CMS's. Only the CMS
+client, the page builders, the sweep and the vocabulary leave.
 
 ### Phase 6 — pixel-perfect verification
 
@@ -287,6 +326,15 @@ matrix. Then:
 somebody says otherwise.
 
 **Done when:** the owner has seen the diff summary, and any non-zero cell is explained.
+
+**Step 1 has begun for the survey portrait** (CAI `0de5319`, golden kennel `68f48f5ce`). It found two
+defects a reading of the code did not — the About section ported with a lower-case appearance and no
+anchor, and the stat band's language cell simply missing — and one difference that changes a
+published number (peak vs latest, above). Everything else matches: sections in order with their
+appearances, islands and their tags, the rest of the stat band, the address and the title.
+
+Still to diff: the surveys index, the field guides, and the corpus family. The aggregate pages are
+not pixel-comparable and are verified by node diff over a frozen dataset only.
 
 ### Phase 7 — close the door
 
