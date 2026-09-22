@@ -10,7 +10,12 @@ namespace Cai.Web.Registry;
 /// <param name="Changed">Of those, the ones whose content the site did not already hold.</param>
 /// <param name="Withdrawn">Pages the site was serving that nothing stands behind any more.</param>
 /// <param name="Failed">Pages that could not be pushed.</param>
-public sealed record SiteSweep(int Built, int Changed, int Withdrawn, int Failed);
+/// <param name="WithdrawalRefused">
+/// How many orphans this sweep DECLINED to withdraw because removing them would have taken most of the
+/// site. Zero on an ordinary sweep. ★ Carried so a refusal cannot be mistaken for a sweep with nothing to
+/// withdraw — both otherwise report zero withdrawals.
+/// </param>
+public sealed record SiteSweep(int Built, int Changed, int Withdrawn, int Failed, int WithdrawalRefused = 0);
 
 /// <summary>
 /// Composes every page the standard stands behind and reconciles the site against them.
@@ -37,6 +42,39 @@ public sealed class SitePublishService(
     TimeProvider clock,
     ILogger<SitePublishService> logger)
 {
+    /// <summary>
+    /// The largest share of its own pages one sweep may withdraw before it refuses and withdraws none.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ THE LOADED GUN THIS DISARMS. Reconciliation withdraws every page under these roots that the
+    /// current sweep did not compose — which is right, and is the only way an orphan ever leaves. It is
+    /// also, exactly, "delete everything the standard cannot currently build". A producer whose deliveries
+    /// stop carrying a fact — a schema the standard reads and the producer has not caught up to, a scan
+    /// that lost a dimension — makes whole page FAMILIES uncomposable, and the sweep would then remove
+    /// thousands of live pages in one pass, correctly, by design, while nobody was watching.</para>
+    ///
+    /// <para>★★ A SHARE, NOT A COUNT. The corpus grows; a fixed number is wrong at both ends — too small to
+    /// matter on a big corpus, and a standing veto on a small one. A third is deliberately generous: this
+    /// is a catastrophe brake, not a change-control policy, and a brake that stops ordinary work gets
+    /// removed by whoever it stops.</para>
+    ///
+    /// <para>★ AND IT IS A CEILING ON ONE PASS, NOT A LOCK. When the withdrawals really are wanted, the
+    /// corpus arrives at them a third at a time, over successive sweeps — each of which is visible.</para>
+    /// </remarks>
+    private const double MostOfTheSite = 1.0 / 3.0;
+
+    /// <summary>
+    /// How many withdrawals a single sweep must be proposing before the share above is even consulted.
+    /// </summary>
+    /// <remarks>
+    /// ★★ A BRAKE IS FOR A CATASTROPHE, AND TEN PAGES IS NOT ONE. Without this floor the share alone
+    /// refuses ordinary work on a small site — two owned pages and one real orphan is 50%, and the brake
+    /// would stand between the corpus and every legitimate withdrawal it has. That is the shape of a guard
+    /// people delete: one that stops the thing it was not built to stop. Caught by this service's own
+    /// existing test the moment the share went in, which is what those tests are for.
+    /// </remarks>
+    private const int CatastropheFloor = 10;
+
     /// <summary>The roots this system publishes under, and is therefore allowed to withdraw from.</summary>
     private static readonly string[] Roots = [SurveyPageBuilder.Root, CorpusSheetBuilder.Root];
 
@@ -88,20 +126,21 @@ public sealed class SitePublishService(
         //   push failed is still a page the standard stands behind, and withdrawing it because a single PUT
         //   returned 503 would delete the site one outage at a time.
         var wanted = pages.Select(p => p.Path).ToHashSet(StringComparer.Ordinal);
-        var withdrawn = serving is null
-            ? 0
+        var (withdrawn, refused) = serving is null
+            ? (0, 0)
             : await WithdrawOrphansAsync(wanted, serving, cancellationToken).ConfigureAwait(false);
 
         RecordReading(records, takenAt);
 
-        var sweep = new SiteSweep(pages.Count, pushed.Changed, withdrawn, pushed.Failed);
+        var sweep = new SiteSweep(pages.Count, pushed.Changed, withdrawn, pushed.Failed, refused);
 
         // ★ REMEMBERED BEFORE IT IS LOGGED. A log line on a deployed host is not a surface anyone reads on a
         //   normal day, and "the publisher stopped" looks exactly like "nothing changed" from outside.
         memory.Record(sweep, takenAt);
         logger.LogInformation(
-            "Site sweep: {Built} built, {Changed} changed, {Withdrawn} withdrawn, {Failed} failed.",
-            sweep.Built, sweep.Changed, sweep.Withdrawn, sweep.Failed);
+            "Site sweep: {Built} built, {Changed} changed, {Withdrawn} withdrawn, {Failed} failed, "
+            + "{Refused} withdrawals refused.",
+            sweep.Built, sweep.Changed, sweep.Withdrawn, sweep.Failed, sweep.WithdrawalRefused);
         return sweep;
     }
 
@@ -205,15 +244,29 @@ public sealed class SitePublishService(
         return (changed, failed);
     }
 
-    /// <summary>Withdraw the pages under this system's own roots that nothing stands behind any more.</summary>
-    private async Task<int> WithdrawOrphansAsync(
+    /// <summary>
+    /// Withdraw the pages under this system's own roots that nothing stands behind any more — unless that
+    /// would be most of them.
+    /// </summary>
+    /// <returns>How many were withdrawn, and how many were refused.</returns>
+    private async Task<(int Withdrawn, int Refused)> WithdrawOrphansAsync(
         IReadOnlySet<string> wanted, IReadOnlyList<string> serving, CancellationToken cancellationToken)
     {
-        var doomed = serving
-            .Select(p => p.Trim('/'))
-            .Where(p => Owns(p) && !wanted.Contains(p))
-            .Distinct(StringComparer.Ordinal)
-            .ToList();
+        var ours = serving.Select(p => p.Trim('/')).Where(Owns).Distinct(StringComparer.Ordinal).ToList();
+        var doomed = ours.Where(p => !wanted.Contains(p)).ToList();
+
+        // ★★ MEASURED AGAINST WHAT THIS SYSTEM OWNS, not against the whole site. The site serves pages this
+        //    system never wrote, and counting them would make the brake looser exactly as somebody else's
+        //    content grew.
+        if (doomed.Count >= CatastropheFloor && doomed.Count > ours.Count * MostOfTheSite)
+        {
+            logger.LogError(
+                "Site sweep REFUSED to withdraw {Doomed} of {Ours} pages under its own roots — more than a "
+                + "third. Composing fewer pages than the site serves is what a missing FACT looks like, not "
+                + "what a shrinking corpus looks like; nothing was withdrawn this sweep.",
+                doomed.Count, ours.Count);
+            return (0, doomed.Count);
+        }
 
         var withdrawn = 0;
         foreach (var path in doomed)
@@ -231,7 +284,7 @@ public sealed class SitePublishService(
             }
         }
 
-        return withdrawn;
+        return (withdrawn, 0);
     }
 
     private async Task<IReadOnlyList<string>?> ServingAsync(CancellationToken cancellationToken)

@@ -51,7 +51,15 @@ public sealed class SiteSweepMemory
         }
 
         var when = last.At.UtcDateTime.ToString("u", CultureInfo.InvariantCulture);
+
+        // ★★ A REFUSAL IS THE STATE IT IS REFUSING TO BE CONFUSED WITH. A sweep that declined to withdraw and
+        //    a sweep with nothing to withdraw both report zero withdrawals, so the refusal is said out loud —
+        //    it is the one reading here that means somebody should look.
+        var refused = last.Sweep.WithdrawalRefused == 0
+            ? string.Empty
+            : $", {last.Sweep.WithdrawalRefused} withdrawals REFUSED (composing far less than the site serves)";
+
         return $"{last.Sweep.Built} built, {last.Sweep.Changed} changed, {last.Sweep.Withdrawn} withdrawn, "
-             + $"{last.Sweep.Failed} failed, at {when}";
+             + $"{last.Sweep.Failed} failed{refused}, at {when}";
     }
 }
