@@ -107,6 +107,58 @@ public sealed class CorpusSheetTests
         Assert.Contains("unmeasured, not clean", json, StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>★ A sheet with no recorded history draws no line and implies nothing.</summary>
+    [Fact]
+    public void A_sheet_with_too_few_recorded_readings_publishes_no_series()
+    {
+        var json = Json(CorpusSheetBuilder.Build(FullCorpus(), TakenAt));
+
+        Assert.DoesNotContain("§5 Series", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("cai-trend", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// ★★ ONLY A MEDIAN IS DRAWN. The corpus's own growth is stated as figures and never plotted: the
+    /// chart's axis is the band scale a CAI is defined on, and a count on it lands thousands of units above
+    /// the box while a share lands inside it and looks right while being inked in a direction the corpus
+    /// never claimed.
+    /// </summary>
+    [Fact]
+    public void The_series_draws_the_median_and_states_nothing_else_as_a_line()
+    {
+        var history = new List<DatedReading>
+        {
+            new(new DateTimeOffset(2026, 8, 1, 2, 0, 0, TimeSpan.Zero), 580, 49.8),
+            new(new DateTimeOffset(2026, 9, 1, 2, 0, 0, TimeSpan.Zero), 3545, 52.6),
+        };
+
+        var json = Json(CorpusSheetBuilder.Build(FullCorpus(), TakenAt, history));
+
+        Assert.Contains("§5 Series", json, StringComparison.Ordinal);
+        Assert.Contains("cai-trend", json, StringComparison.Ordinal);
+        // The line carries the medians, not the corpus size.
+        Assert.Contains("49.8,52.6", json.Replace("\\\"", "\"", StringComparison.Ordinal), StringComparison.Ordinal);
+        Assert.DoesNotContain("580,3545", json, StringComparison.Ordinal);
+        // And the growth is stated in words, with the population each median was taken over.
+        Assert.Contains("580 published measured codebases", json, StringComparison.Ordinal);
+        Assert.Contains("3,545 published measured codebases", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>★ The line says it is sampled, because the island states that contract to a reader as fact.</summary>
+    [Fact]
+    public void The_series_says_it_is_sampled()
+    {
+        var history = Enumerable.Range(0, 30)
+            .Select(i => new DatedReading(
+                new DateTimeOffset(2026, 8, 1, 2, 0, 0, TimeSpan.Zero).AddDays(i), 3000 + i, 50 + (i * 0.1)))
+            .ToList();
+
+        var json = Json(CorpusSheetBuilder.Build(FullCorpus(), TakenAt, history));
+
+        Assert.Contains("weekly", json, StringComparison.Ordinal);
+        Assert.Contains("never recomputed from today's corpus", json, StringComparison.Ordinal);
+    }
+
     // ---------------------------------------------------------------- fixtures
 
     private static readonly DateTimeOffset TakenAt = new(2026, 9, 22, 0, 0, 0, TimeSpan.Zero);

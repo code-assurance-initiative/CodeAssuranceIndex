@@ -77,6 +77,28 @@ public sealed record PublicationRecord(
     string GrantedAt,
     string? WithdrawnAt);
 
+/// <summary>
+/// One dated reading of the whole corpus, kept exactly as it was taken.
+/// </summary>
+/// <remarks>
+/// <para>★★ THE TREND LINE IS READ OUT OF THESE ROWS AND IS NEVER RECOMPUTED. The standard holds every
+/// delivery ever, so it CAN re-fold "the corpus as of day D" from the deliveries issued on or before D —
+/// and that re-fold is only faithful while the published set never changes. Publication is a grant an
+/// owner org can withdraw, so a codebase that was in the reading on the day would silently drop out of a
+/// reading recomputed later. That is a line that never happened, and no reader could tell.</para>
+/// <para>★ A CORRECTION IS A NEW READING ON A NEW DAY, never an edit to an old one — which is why the
+/// instant is the key and a second reading at the same instant is REFUSED rather than merged.</para>
+/// </remarks>
+/// <param name="TakenAt">The instant the corpus was read, RFC 3339 UTC. The key.</param>
+/// <param name="Codebases">Published measured codebases at that instant.</param>
+/// <param name="MedianCai">The median CAI across them, or null when there were none. ★ Null is not zero.</param>
+/// <param name="ReadingJson">The whole fold as it was taken, for anything the columns do not carry.</param>
+public sealed record CorpusReadingRecord(
+    string TakenAt,
+    int Codebases,
+    double? MedianCai,
+    string ReadingJson);
+
 /// <summary>The result of an insert that hit an existing delivery id.</summary>
 public enum PublishOutcome
 {
@@ -155,6 +177,17 @@ public interface IRegistryStore
 
     /// <summary>Every subject whose publication currently stands.</summary>
     IReadOnlyList<PublicationRecord> ListPublishedSubjects();
+
+    /// <summary>
+    /// Record one dated reading of the corpus.
+    /// </summary>
+    /// <returns>True when it was recorded; false when a reading at that instant is already held.</returns>
+    /// <remarks>★ APPEND-ONLY. A reading already held is never overwritten, because a line drawn through
+    /// these rows is only checkable point by point if the points cannot change under it.</remarks>
+    bool RecordCorpusReading(CorpusReadingRecord reading);
+
+    /// <summary>Every recorded reading, oldest first.</summary>
+    IReadOnlyList<CorpusReadingRecord> ListCorpusReadings();
 
     /// <summary>True when the store is reachable (the /health probe).</summary>
     bool IsHealthy();
@@ -242,6 +275,13 @@ public sealed class SqliteRegistryStore : IRegistryStore
                 PRIMARY KEY (owner_org_id, repository)
             );
             CREATE INDEX IF NOT EXISTS ix_publications_status ON publications(status);
+
+            CREATE TABLE IF NOT EXISTS corpus_readings (
+                taken_at    TEXT PRIMARY KEY,
+                codebases   INTEGER NOT NULL,
+                median_cai  REAL NULL,
+                reading_json TEXT NOT NULL
+            );
 
             CREATE TABLE IF NOT EXISTS scanner_quality (
                 scanner       TEXT NOT NULL,
@@ -602,6 +642,54 @@ public sealed class SqliteRegistryStore : IRegistryStore
         r.GetString(r.GetOrdinal("status")),
         r.GetString(r.GetOrdinal("granted_at")),
         r.IsDBNull(r.GetOrdinal("withdrawn_at")) ? null : r.GetString(r.GetOrdinal("withdrawn_at")));
+
+    /// <inheritdoc />
+    public bool RecordCorpusReading(CorpusReadingRecord reading)
+    {
+        ArgumentNullException.ThrowIfNull(reading);
+
+        using var conn = Open();
+        using var cmd = conn.CreateCommand();
+        // ★ DO NOTHING ON CONFLICT, never DO UPDATE. The row is the point a line is drawn through, and a
+        //   point that can change under the line makes the line uncheckable.
+        cmd.CommandText =
+            """
+            INSERT INTO corpus_readings (taken_at, codebases, median_cai, reading_json)
+            VALUES (@at, @codebases, @median, @json)
+            ON CONFLICT(taken_at) DO NOTHING;
+            """;
+        cmd.Parameters.AddWithValue("@at", reading.TakenAt);
+        cmd.Parameters.AddWithValue("@codebases", reading.Codebases);
+        cmd.Parameters.AddWithValue("@median", (object?)reading.MedianCai ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@json", reading.ReadingJson);
+        return cmd.ExecuteNonQuery() == 1;
+    }
+
+    /// <inheritdoc />
+    public IReadOnlyList<CorpusReadingRecord> ListCorpusReadings()
+    {
+        using var conn = Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText =
+            """
+            SELECT taken_at, codebases, median_cai, reading_json
+              FROM corpus_readings
+             ORDER BY taken_at;
+            """;
+
+        var rows = new List<CorpusReadingRecord>();
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            rows.Add(new CorpusReadingRecord(
+                reader.GetString(0),
+                reader.GetInt32(1),
+                reader.IsDBNull(2) ? null : reader.GetDouble(2),
+                reader.GetString(3)));
+        }
+
+        return rows;
+    }
 
     /// <inheritdoc />
     public bool IsHealthy()

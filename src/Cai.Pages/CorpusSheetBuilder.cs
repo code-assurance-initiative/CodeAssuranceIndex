@@ -38,12 +38,16 @@ public static class CorpusSheetBuilder
     /// <summary>The sheet for one reading of the corpus.</summary>
     /// <param name="records">One record per measured codebase — the corpus itself.</param>
     /// <param name="takenAt">The instant the corpus was read. ★ Not the instant the page was built.</param>
+    /// <param name="history">Every reading recorded before now, in any order. Empty draws no line.</param>
     /// <remarks>
     /// ★ IT TAKES THE CORPUS, NOT A READING AND ITS CUTS. The totals and the per-group rows are folded here,
     /// from one set of records, so a row cannot be drawn over a population the headline above it would not
     /// recognise — which is exactly what happens when a caller assembles the two separately.
     /// </remarks>
-    public static SurveyPage Build(IReadOnlyList<SurveyRecord> records, DateTimeOffset takenAt)
+    public static SurveyPage Build(
+        IReadOnlyList<SurveyRecord> records,
+        DateTimeOffset takenAt,
+        IReadOnlyList<DatedReading>? history = null)
     {
         ArgumentNullException.ThrowIfNull(records);
 
@@ -63,6 +67,7 @@ public static class CorpusSheetBuilder
             Findings(reading),
             Languages(reading, languages),
             Countries(reading, countries),
+            Series(history ?? []),
         };
 
         return new SurveyPage(
@@ -442,6 +447,69 @@ public static class CorpusSheetBuilder
     /// <summary>A share, or null when there is nothing to take it over — never a zero standing in for one.</summary>
     private static Figure? Share(int numerator, int denominator, Basis basis, DateTimeOffset takenAt) =>
         denominator == 0 || numerator == 0 ? null : Figure.Ratio(numerator, denominator, basis, takenAt);
+
+    // ── §5, the one quantity this axis is defined over ───────────────────────────────────────────────────────
+
+    /// <summary>
+    /// The median drawn, and both of its ends stated beneath it — or nothing at all when too few dated
+    /// readings are held to draw a line.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ ONLY A MEDIAN IS DRAWN, WHICH IS THE WHOLE POINT OF STATING THE OTHER. The site ships one
+    /// chart and its axis is the fixed assurance band scale; a count of codebases plotted on it lands
+    /// thousands of units above the box, and a share lands inside it and looks right while being inked good
+    /// or bad in a direction the corpus never claimed. So the corpus's own growth is a figure and never a
+    /// line, and the note says so where a reader will ask.</para>
+    ///
+    /// <para>★★ EVERY POINT IS A READING KEPT AS IT WAS TAKEN. A correction is a new reading on a new day,
+    /// never an edit to an old one, so this line is read out of what was recorded at the time and is never
+    /// recomputed from today's corpus — which the standard COULD do, and which would draw a line that never
+    /// happened the first time a publication was withdrawn.</para>
+    ///
+    /// <para>★ THE SECOND PAIR IS THE FIRST PAIR'S POPULATION, which is why neither restates it: "580 →
+    /// 3,545 published measured codebases" IS what "across 580" and "across 3,545" say under the medians.
+    /// Saying it twice is the redundancy; moving it behind a disclosure would be worse, because behind a
+    /// disclosure a population is separated from its figure.</para>
+    /// </remarks>
+    private static Dictionary<string, object?>? Series(IReadOnlyList<DatedReading> history)
+    {
+        if (CorpusSeries.Medians(history) is not { } medians)
+        {
+            return null;
+        }
+
+        var weekly = medians.Weekly();
+        var note =
+            "The median CAI of the whole measured corpus. Every point is one reading taken on the day it is "
+            + "dated, kept as it was taken and never rewritten: a correction is a new reading on a new day, "
+            + "never an edit to an old one. So this line is read out of what was recorded at the time and is "
+            + "never recomputed from today's corpus."
+            + "\n\nOnly a median is drawn. The chart's axis is the fixed band scale a CAI is defined on, "
+            + "which fits a median and leaves a share or a count to be stated as its own dated figure instead."
+            + "\n\nThe line is sampled to one point a week, and each point is the newest reading on or "
+            + "before its own date. The corpus is read nightly and its median sits still for weeks, so a mark "
+            + "per reading put a mark wherever the median happened to change — and the spacing of the marks "
+            + "then drew the data's volatility rather than the passage of time.";
+
+        return PageNodes.Section(
+            null,
+            "trend",
+            PageNodes.Widget(
+                "cai-trend",
+                ("heading", "§5 Series"),
+                ("series", weekly.Points()),
+                ("sampled", weekly.Sampling),
+                ("first-date", PageProse.Day(medians.First.TakenAt)),
+                ("last-date", PageProse.Day(medians.Last.TakenAt)),
+                ("tip", note)),
+            // ★ BOTH ENDS IN WORDS. A chart here is evidence for a figure, never a figure of its own, and a
+            //   trend section cannot be built without the pair — which is why the medians carry their own
+            //   populations and the size pair is stated as the movement it is.
+            PageNodes.Band(
+                "movements",
+                PageNodes.Stat(medians.First, "median when the record opens"),
+                PageNodes.Stat(medians.Last, "median at the latest reading")));
+    }
 
     // ── the sentences a figure is stated inside ──────────────────────────────────────────────────────────────
 
