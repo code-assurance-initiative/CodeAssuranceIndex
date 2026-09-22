@@ -99,11 +99,11 @@ standard looks.
 
 | Page element | Gap | Proposed |
 | --- | --- | --- |
-| `PrimaryLanguage` | not in the schema | add `subject.languages.primary` at **MINOR 1.1** |
-| `SecondaryLanguages` | not in the schema | add `subject.languages.secondary[]` at 1.1 |
+| `PrimaryLanguage` | not in the schema | **DONE 2026-09-22** — `subject.languages.primary` at MINOR 1.1 |
+| `SecondaryLanguages` | not in the schema | **DONE 2026-09-22** — `subject.languages.secondary[]` at 1.1 |
 | `Tags` (app kind, architecture style) | not in the schema | add `subject.tags[]` at 1.1 |
 | Bus factor row ("1 of 3 developers") | `evidence.busFactor` is a producer-worded STRING | add `evidence.keyPersonRisk.{busFactor,authorCount}` at 1.1; keep the string for back-compat |
-| **Measured-at** | `payload.issuedAt` is when CAI SIGNED | add `payload.subject.measuredAt` at 1.1 — the two are not the same fact and the page's honesty depends on the measurement date |
+| ~~Measured-at~~ | ★★ **NOT A GAP — THIS ROW WAS WRONG.** `payload.measurement.scannedAt` has carried it all along ("when the code was scanned; may precede issuedAt"), and its doc-comment says exactly this. Found by reading the payload rather than this plan. The DISTINCTION still mattered: the first portrait dated itself by the SIGNATURE, which tells a reader the code was looked at on a day nobody looked at it — caught by a test before it reached a page. | none needed |
 | `SourceUrl` | — | DERIVE from `subject.host` + `subject.repository`; do not carry |
 
 MINOR 1.1 is forward-compatible by the schema's own rule ("a higher MINOR is forward-compatible and
