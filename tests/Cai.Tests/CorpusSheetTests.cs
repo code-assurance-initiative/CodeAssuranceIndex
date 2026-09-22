@@ -25,7 +25,7 @@ public sealed class CorpusSheetTests
     [Fact]
     public void The_population_is_stated_before_the_findings()
     {
-        var json = Json(CorpusSheetBuilder.Build(FullReading()));
+        var json = Json(CorpusSheetBuilder.Build(FullCorpus(), TakenAt));
 
         var population = json.IndexOf("§1 Population", StringComparison.Ordinal);
         var findings = json.IndexOf("§2 Findings", StringComparison.Ordinal);
@@ -43,7 +43,7 @@ public sealed class CorpusSheetTests
     [Fact]
     public void A_corpus_nothing_could_be_measured_in_states_its_population_and_no_findings()
     {
-        var json = Json(CorpusSheetBuilder.Build(Reading([Nothing()])));
+        var json = Json(CorpusSheetBuilder.Build([Record(Nothing())], TakenAt));
 
         Assert.Contains("§1 Population", json, StringComparison.Ordinal);
         Assert.DoesNotContain("§2 Findings", json, StringComparison.Ordinal);
@@ -53,7 +53,7 @@ public sealed class CorpusSheetTests
     [Fact]
     public void A_corpus_no_producer_said_anything_about_publishes_neither_section()
     {
-        var json = Json(CorpusSheetBuilder.Build(CorpusReading.From([SilentRecord()], TakenAt)));
+        var json = Json(CorpusSheetBuilder.Build([SilentRecord()], TakenAt));
 
         Assert.DoesNotContain("§1 Population", json, StringComparison.Ordinal);
         Assert.DoesNotContain("§2 Findings", json, StringComparison.Ordinal);
@@ -63,7 +63,7 @@ public sealed class CorpusSheetTests
     [Fact]
     public void No_share_on_the_sheet_is_inked_with_an_assurance_band()
     {
-        var json = Json(CorpusSheetBuilder.Build(FullReading()));
+        var json = Json(CorpusSheetBuilder.Build(FullCorpus(), TakenAt));
 
         foreach (var band in new[] { "exemplary", "strong", "adequate", "weak", "critical" })
         {
@@ -79,7 +79,7 @@ public sealed class CorpusSheetTests
     [Fact]
     public void Every_share_carries_the_population_it_was_taken_over()
     {
-        var json = Json(CorpusSheetBuilder.Build(FullReading()));
+        var json = Json(CorpusSheetBuilder.Build(FullCorpus(), TakenAt));
 
         Assert.Contains("surveys whose dependencies a scanner could resolve", json, StringComparison.Ordinal);
         Assert.Contains("surveys where a disclosure policy was looked for", json, StringComparison.Ordinal);
@@ -90,7 +90,7 @@ public sealed class CorpusSheetTests
     [Fact]
     public void The_sheet_lives_at_the_corpus_address()
     {
-        var page = CorpusSheetBuilder.Build(FullReading());
+        var page = CorpusSheetBuilder.Build(FullCorpus(), TakenAt);
 
         Assert.NotNull(page);
         Assert.Equal("state-of-the-corpus", page.Path);
@@ -103,7 +103,7 @@ public sealed class CorpusSheetTests
     [Fact]
     public void The_population_says_that_an_unscanned_codebase_is_unmeasured_rather_than_clean()
     {
-        var json = Json(CorpusSheetBuilder.Build(FullReading()));
+        var json = Json(CorpusSheetBuilder.Build(FullCorpus(), TakenAt));
 
         Assert.Contains("unmeasured, not clean", json, StringComparison.OrdinalIgnoreCase);
     }
@@ -148,9 +148,11 @@ public sealed class CorpusSheetTests
         }]);
     }
 
-    private static CorpusReading FullReading() => Reading(
-        [
-            new SecurityReading
+    private static List<SurveyRecord> FullCorpus() =>
+    [
+        .. new SecurityReading[]
+        {
+            new()
             {
                 VulnMeasurable = true, VulnAffected = true, VulnHighOrCritical = true, VulnCritical = true,
                 Findings = 12, FindingsCritical = 2, FindingsHigh = 4,
@@ -159,7 +161,7 @@ public sealed class CorpusSheetTests
                 SecretsCurrentMeasured = true,
                 SupplyChainMeasurable = true,
             },
-            new SecurityReading
+            new()
             {
                 VulnMeasurable = true,
                 DisclosureMeasured = true, DisclosurePolicy = true, DisclosureContact = true,
@@ -167,11 +169,9 @@ public sealed class CorpusSheetTests
                 SecretsCurrentMeasured = true,
                 SupplyChainMeasurable = true, Sbom = true, Signing = true,
             },
-            new SecurityReading { VulnScanFailed = true },
-        ]);
-
-    private static CorpusReading Reading(IEnumerable<SecurityReading> readings) =>
-        CorpusReading.From(readings.Select(Record), TakenAt);
+            new() { VulnScanFailed = true },
+        }.Select(Record),
+    ];
 
     private static SurveyRecord Record(SecurityReading reading)
     {

@@ -36,9 +36,19 @@ public static class CorpusSheetBuilder
     public static string PathForIndex() => Root;
 
     /// <summary>The sheet for one reading of the corpus.</summary>
-    public static SurveyPage Build(CorpusReading reading)
+    /// <param name="records">One record per measured codebase — the corpus itself.</param>
+    /// <param name="takenAt">The instant the corpus was read. ★ Not the instant the page was built.</param>
+    /// <remarks>
+    /// ★ IT TAKES THE CORPUS, NOT A READING AND ITS CUTS. The totals and the per-group rows are folded here,
+    /// from one set of records, so a row cannot be drawn over a population the headline above it would not
+    /// recognise — which is exactly what happens when a caller assembles the two separately.
+    /// </remarks>
+    public static SurveyPage Build(IReadOnlyList<SurveyRecord> records, DateTimeOffset takenAt)
     {
-        ArgumentNullException.ThrowIfNull(reading);
+        ArgumentNullException.ThrowIfNull(records);
+
+        var reading = CorpusReading.From(records, takenAt);
+        var languages = CorpusCuts.ByLanguage(records, takenAt);
 
         var children = new List<object?>
         {
@@ -50,6 +60,7 @@ public static class CorpusSheetBuilder
                     + "was taken over, because the populations are not the same."))),
             Population(reading),
             Findings(reading),
+            Languages(reading, languages),
         };
 
         return new SurveyPage(
@@ -200,6 +211,91 @@ public static class CorpusSheetBuilder
                     + "codebase that publishes no releases is outside this population rather than counted "
                     + "as failing it."
                     + Beside(reading.NoneOfFourShare, "do none of the four supply-chain controls")));
+    }
+
+    // ── §3, every language the reading can speak for ─────────────────────────────────────────────────────────
+
+    /// <summary>The language cut as a bar per row, or nothing at all when no language clears the gate.</summary>
+    /// <remarks>
+    /// <para>★★ A LANGUAGE WITH NOTHING RESOLVABLE DRAWS NO BAR AND SAYS SO. A row at zero reads as "none
+    /// affected" — exactly the substitution §1 exists to prevent, one table further in.
+    /// <see cref="PageNodes.BarRow"/> refuses a row that has neither a reading nor a sentence saying why
+    /// there is none, so the alternative cannot be written.</para>
+    ///
+    /// <para>★★ AFFECTED IS TAKEN OVER MEASURABLE, NEVER OVER SURVEYS. A language that resolves few of its
+    /// dependencies draws a shorter bar because less was looked at, not because less is there — which is why
+    /// the measurable count sits in a column of its own, beside the bar rather than behind it.</para>
+    ///
+    /// <para>★★ AND THE MEDIAN COLUMN IS NOT INKED WITH A BAND, WHICH IS A DELIBERATE DIFFERENCE FROM THE
+    /// PRODUCER'S VERSION OF THIS TABLE. A band word is read off a rubric's cutlines, and the codebases in
+    /// one of these rows were scored under many different rubric versions whose cutlines a later one may
+    /// have moved. Banding their MEDIAN would publish a word no single rubric backs — and
+    /// <c>Cai.Scoring.Bands</c> deliberately offers no way to band a bare number for exactly that reason.
+    /// The cell states the median and the population it was taken over, which is checkable.</para>
+    /// </remarks>
+    private static Dictionary<string, object?>? Languages(CorpusReading reading, IReadOnlyList<CorpusSlice> cuts)
+    {
+        if (cuts.Count == 0)
+        {
+            return null;
+        }
+
+        var here = Basis.Of(
+            "survey here whose dependencies a scanner could resolve",
+            "surveys here whose dependencies a scanner could resolve");
+        var written = Basis.Of(
+            "survey written mainly in this language",
+            "surveys written mainly in this language");
+
+        var rows = new List<object?>();
+        foreach (var cut in cuts)
+        {
+            rows.Add(PageNodes.BarRow(
+                cut.Name,
+                cut.Href,
+                null,
+                cut.Reading.VulnAffectedShare is { } affected
+                    ? Figure.Ratio(cut.Reading.VulnAffected, cut.Reading.VulnMeasurable, here, reading.TakenAt)
+                    : null,
+                "affected",
+                "not affected",
+                "nothing a scanner could resolve",
+                PageNodes.Column(Figure.Count(cut.Codebases, written, reading.TakenAt)),
+                PageNodes.Column(
+                    cut.Codebases == 0
+                        ? null
+                        : Figure.Scalar(cut.MedianHeadline, cut.Codebases, written, reading.TakenAt)),
+                PageNodes.Column(Figure.Count(cut.Reading.VulnMeasurable, here, reading.TakenAt)),
+                PageNodes.Column(Figure.Count(
+                    cut.Reading.DisclosureMeasured - cut.Reading.DisclosurePolicy,
+                    CorpusReading.DisclosureAskedBasis,
+                    reading.TakenAt))));
+        }
+
+        var coverage = CorpusCuts.Coverage(
+            cuts, reading.Codebases, Basis.Of("survey in this reading", "surveys in this reading"), reading.TakenAt);
+
+        return PageNodes.ShareBars(
+            "languages",
+            "table",
+            "§3 By language",
+            // ★ Impersonal standards prose. A first person on the standard's own domain would claim the
+            //   standard did the indexing; the limit belongs to whichever implementation produced the reading.
+            "A language is read off the code, so nothing here rests on anybody declaring anything."
+            + "\n\n**Affected is taken over Measurable, never over Surveys.** A language that resolves few of "
+            + "its dependencies shows a shorter bar. Less was looked at, which is not the same as less being "
+            + "there."
+            + (coverage is null
+                ? string.Empty
+                : "\n\n" + coverage.Headline() + " could be placed in a language at all. The rest carry no "
+                    + "primary language this reading could read, which is a limit of the indexing behind this "
+                    + "reading and never a fact about the codebases themselves."),
+            null,
+            null,
+            "Language",
+            "Affected of measurable",
+            ["Surveys", "Median", "Measurable", "No policy"],
+            rows);
     }
 
     // ── the sentences a figure is stated inside ──────────────────────────────────────────────────────────────
