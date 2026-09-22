@@ -58,7 +58,7 @@ public static class SurveyPageBuilder
                 "cai-band-scale",
                 ("score", Number(verdict.Cai)),
                 ("heading", $"Where {Number(verdict.Cai)} sits on the scale"),
-                ("caption", $"{verdict.Band} — the most recent published measurement, taken {Day(latest.IssuedAt)}."))),
+                ("caption", $"{verdict.Band} — the most recent published measurement, taken {MeasuredOn(latest)}."))),
         };
 
         // How the score moved, as a line — derived from the SEQUENCE this record holds, never supplied.
@@ -71,8 +71,8 @@ public static class SurveyPageBuilder
                 "cai-trend",
                 ("heading", "How the score moved"),
                 ("series", series),
-                ("first-date", Day(record.Deliveries[0].IssuedAt)),
-                ("last-date", Day(latest.IssuedAt)),
+                ("first-date", MeasuredOn(record.Deliveries[0])),
+                ("last-date", MeasuredOn(latest)),
                 ("caption", TrendCaption(record)))));
         }
 
@@ -201,7 +201,7 @@ public static class SurveyPageBuilder
         var latest = record.Latest;
         yield return PageNodes.Stat(
             Number(latest.Verdict.Cai),
-            $"{latest.Verdict.Band} · {Day(latest.IssuedAt)}");
+            $"{latest.Verdict.Band} · {MeasuredOn(latest)}");
 
         if (latest.Evidence.ProductionLoc > 0)
         {
@@ -224,7 +224,7 @@ public static class SurveyPageBuilder
         var latest = record.Latest;
         var lines = new List<string>
         {
-            $"The score is its most recent published measurement, taken on {Day(latest.IssuedAt)} at a "
+            $"The score is its most recent published measurement, taken on {MeasuredOn(latest)} at a "
             + "pinned commit. It is not a live figure and does not change until the project is measured again.",
         };
 
@@ -263,10 +263,21 @@ public static class SurveyPageBuilder
         var last = record.Latest;
         var delta = last.Verdict.Cai - first.Verdict.Cai;
         var direction = delta >= 0 ? "up" : "down";
-        return $"{record.Deliveries.Count} measurements, from {Day(first.IssuedAt)} to {Day(last.IssuedAt)}: "
+        return $"{record.Deliveries.Count} measurements, from {MeasuredOn(first)} to {MeasuredOn(last)}: "
              + $"{Number(first.Verdict.Cai)} to {Number(last.Verdict.Cai)} — {direction} "
              + $"{Number(Math.Abs(delta))}. Every published measurement of this repository, oldest first.";
     }
+
+    /// <summary>When the code was MEASURED — never when the delivery was signed.</summary>
+    /// <remarks>
+    /// ★★ THE TWO ARE DAYS APART AND THE PAGE MEANS THE FIRST. The standard signs when a delivery is
+    /// pushed; the producer scanned whenever it scanned, and `measurement.scannedAt` says so. Dating a
+    /// page by its signature tells a reader the code was looked at on a day nobody looked at it — and
+    /// the whole claim of a survey page is that a number is attached to a moment. The fallback to the
+    /// signature is honest only because it is the latest the measurement can possibly be.
+    /// </remarks>
+    private static string MeasuredOn(DeliveryPayload delivery) =>
+        Day(delivery.Measurement.ScannedAt is { Length: > 0 } scanned ? scanned : delivery.IssuedAt);
 
     private static string Number(double value) => value.ToString("0.#", CultureInfo.InvariantCulture);
 

@@ -115,6 +115,32 @@ public sealed record DeliverySubject
 
     /// <summary>Optional host/forge (e.g. <c>github.com</c>) — provenance only.</summary>
     [JsonPropertyName("host")] public string? Host { get; init; }
+
+    /// <summary>What the subject is written in. Null when the producer does not say.</summary>
+    /// <remarks>
+    /// ★★ ADDED AT MINOR 1.1 BECAUSE THE STANDARD'S OWN PAGES NEED IT AND NOTHING CARRIED IT. The
+    /// language field guides group every measured subject by exactly this, and a 1.0 delivery says only
+    /// what a subject scored, never what it is. Additive, so a 1.0 package keeps verifying byte for byte
+    /// and simply groups under no language — which is the honest reading of a producer that did not say.
+    /// <para>★ It is the SUBJECT's, not the evidence's: what a codebase is written in is a fact about the
+    /// codebase, and it does not change because a different rubric was folded over it.</para>
+    /// </remarks>
+    [JsonPropertyName("languages")] public SubjectLanguages? Languages { get; init; }
+}
+
+/// <summary>The languages a subject is written in, as the producer names them.</summary>
+/// <remarks>
+/// ★ PRIMARY AND SECONDARY, not a flat list. A page groups by ONE language and says which others
+/// materially share the codebase; a flat list would make the grouping arbitrary, and the first entry
+/// would silently become the answer.
+/// </remarks>
+public sealed record SubjectLanguages
+{
+    /// <summary>The dominant language, lower-case (e.g. <c>csharp</c>). Null when none dominates.</summary>
+    [JsonPropertyName("primary")] public string? Primary { get; init; }
+
+    /// <summary>The languages that materially share the codebase, dominant first.</summary>
+    [JsonPropertyName("secondary")] public IReadOnlyList<string> Secondary { get; init; } = [];
 }
 
 /// <summary>Measurement-scale provenance shown to a reader (never re-folded into the score).</summary>
