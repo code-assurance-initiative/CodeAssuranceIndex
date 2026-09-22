@@ -1,4 +1,5 @@
 using Cai.Delivery;
+using Cai.Pages.Publishing;
 using Cai.Scoring;
 
 namespace Cai.Pages;
@@ -162,6 +163,111 @@ public sealed record CorpusReading
 
     /// <summary>Where the corpus comes from, carrying its own denominators.</summary>
     public OriginCut Origins { get; }
+
+    // ── the shares, each over its own population ─────────────────────────────────────────────────────────────
+
+    /// <summary>What the corpus's dependency-vulnerability figures are taken over.</summary>
+    /// <remarks>
+    /// ★ NOT "codebases". A codebase whose dependency graph nobody could resolve is not in this population,
+    /// and the phrase has to say so wherever the share is quoted.
+    /// </remarks>
+    internal static readonly Basis ResolvedBasis = Basis.Of(
+        "survey whose dependencies a scanner could resolve",
+        "surveys whose dependencies a scanner could resolve");
+
+    /// <summary>What the disclosure figures are taken over.</summary>
+    internal static readonly Basis DisclosureAskedBasis = Basis.Of(
+        "survey where a disclosure policy was looked for",
+        "surveys where a disclosure policy was looked for");
+
+    /// <summary>What the contact share is taken over — the policies that exist, not the surveys that asked.</summary>
+    internal static readonly Basis PolicyBasis = Basis.Of("published disclosure policy", "published disclosure policies");
+
+    /// <summary>What the secrets figures are taken over.</summary>
+    internal static readonly Basis SecretsScannedBasis = Basis.Of(
+        "survey whose full history was scanned for secrets",
+        "surveys whose full history was scanned for secrets");
+
+    /// <summary>What the supply-chain figures are taken over.</summary>
+    internal static readonly Basis ReleasePipelineBasis = Basis.Of(
+        "survey with a release pipeline to judge",
+        "surveys with a release pipeline to judge");
+
+    /// <summary>What the security readings themselves are taken over.</summary>
+    internal static readonly Basis SurveyedBasis = Basis.Of("survey read for security", "surveys read for security");
+
+    /// <summary>How much of the corpus a dependency scanner could resolve — the denominator §2 is drawn over.</summary>
+    public Figure? ResolvedShare => Share(VulnMeasurable, SecurityReadings, SurveyedBasis);
+
+    /// <summary>
+    /// Codebases carrying a known-vulnerable component, over the ones a scanner could resolve.
+    /// </summary>
+    /// <remarks>
+    /// ★★ OVER MEASURABLE, NEVER OVER THE CORPUS. A codebase nobody could scan is unmeasured, not clean;
+    /// dividing by the whole corpus counts it as passing, which is the single arithmetic error every figure
+    /// on these pages is shaped to prevent.
+    /// </remarks>
+    public Figure? VulnAffectedShare => Share(VulnAffected, VulnMeasurable, ResolvedBasis);
+
+    /// <summary>Codebases carrying at least one High or Critical, over the ones a scanner could resolve.</summary>
+    public Figure? VulnHighOrCriticalShare => Share(VulnHighOrCritical, VulnMeasurable, ResolvedBasis);
+
+    /// <summary>Codebases carrying at least one Critical, over the ones a scanner could resolve.</summary>
+    public Figure? VulnCriticalShare => Share(VulnCritical, VulnMeasurable, ResolvedBasis);
+
+    /// <summary>The part of the unmeasured gap where a scanner ran and failed — a defect in the measuring.</summary>
+    /// <remarks>
+    /// ★ It belongs to whoever ran the scan. The codebase's own condition is untouched by it, and the
+    /// remainder simply ship nothing a scanner could resolve into a graph.
+    /// </remarks>
+    public Figure? ScanFailedShare => Share(VulnScanFailed, SecurityReadings, SurveyedBasis);
+
+    /// <summary>
+    /// Codebases publishing no disclosure policy, over the ones where one was looked for.
+    /// </summary>
+    /// <remarks>
+    /// ★ The codebases never asked are EXCLUDED rather than counted as codebases without a policy. Whether
+    /// the question was asked is a fact about the survey, never about the codebase.
+    /// </remarks>
+    public Figure? DisclosureWithoutPolicyShare =>
+        Share(DisclosureMeasured - DisclosurePolicy, DisclosureMeasured, DisclosureAskedBasis);
+
+    /// <summary>Of the policies that exist, the ones naming someone to contact.</summary>
+    /// <remarks>
+    /// ★★ OVER THE POLICIES, NOT OVER THE SURVEYS. "Of the policies that do exist, how many name someone to
+    /// contact" is the only reading of this number that is true; taken over the surveys it would read as a
+    /// claim about the corpus and be wrong by the size of the no-policy majority.
+    /// </remarks>
+    public Figure? DisclosureContactShare => Share(DisclosureContact, DisclosurePolicy, PolicyBasis);
+
+    /// <summary>Codebases that ever committed a secret, over the ones whose history was scanned.</summary>
+    public Figure? SecretsInHistoryShare =>
+        Share(SecretsHistoryAffected, SecretsHistoryMeasured, SecretsScannedBasis);
+
+    /// <summary>Codebases publishing an SBOM, over the ones with a release pipeline to judge.</summary>
+    public Figure? SbomShare => Share(Sbom, SupplyChainMeasurable, ReleasePipelineBasis);
+
+    /// <summary>Codebases doing none of the four supply-chain controls.</summary>
+    public Figure? NoneOfFourShare => Share(NoneOfFour, SupplyChainMeasurable, ReleasePipelineBasis);
+
+    /// <summary>
+    /// Vulnerability findings across the corpus, with what they were summed across.
+    /// </summary>
+    /// <remarks>
+    /// ★ THE ONE FIGURE HERE THAT IS NOT A COUNT OF CODEBASES. More than one scanner can contribute, so a
+    /// component two of them see counts as one finding each — while the codebase counts above never
+    /// double-count. Stated as a total rather than a share, because it is not a part of anything.
+    /// </remarks>
+    public Figure? FindingsTotal =>
+        VulnMeasurable == 0 ? null : Figure.Scalar(Findings, VulnMeasurable, ResolvedBasis, TakenAt);
+
+    /// <summary>A share, or null when its denominator is empty.</summary>
+    /// <remarks>
+    /// ★ NULL, NOT ZERO. The share of nothing is not zero: a bar drawn at zero says nobody is affected, when
+    /// what is true is that nobody looked.
+    /// </remarks>
+    private Figure? Share(int numerator, int denominator, Basis basis) =>
+        denominator == 0 ? null : Figure.Ratio(numerator, denominator, basis, TakenAt);
 
     /// <summary>Folds every delivery's security reading into one reading of the corpus.</summary>
     /// <param name="records">One record per measured codebase.</param>
