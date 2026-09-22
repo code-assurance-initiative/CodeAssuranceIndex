@@ -49,6 +49,7 @@ public static class CorpusSheetBuilder
 
         var reading = CorpusReading.From(records, takenAt);
         var languages = CorpusCuts.ByLanguage(records, takenAt);
+        var countries = CorpusCuts.ByCountry(records, takenAt);
 
         var children = new List<object?>
         {
@@ -61,6 +62,7 @@ public static class CorpusSheetBuilder
             Population(reading),
             Findings(reading),
             Languages(reading, languages),
+            Countries(reading, countries),
         };
 
         return new SurveyPage(
@@ -297,6 +299,149 @@ public static class CorpusSheetBuilder
             ["Surveys", "Median", "Measurable", "No policy"],
             rows);
     }
+
+    // ── §4, every country the reading can speak for ──────────────────────────────────────────────────────────
+
+    /// <summary>The two units a country is counted in — codebases, and the accounts that hold them.</summary>
+    private static readonly Basis CountryCodebases = Basis.Of(
+        "codebase whose owner declared this country",
+        "codebases whose owner declared this country");
+
+    /// <summary>The other unit, kept apart from the first.</summary>
+    private static readonly Basis CountryOwners = Basis.Of(
+        "owner who declared this country",
+        "owners who declared this country");
+
+    /// <summary>The denominator every bar in §4 is drawn over — the same one §3's bars are drawn over.</summary>
+    private static readonly Basis CountryResolvable = Basis.Of(
+        "survey here whose dependencies a scanner could resolve",
+        "surveys here whose dependencies a scanner could resolve");
+
+    /// <summary>The country cut as a bar per row, or nothing at all when no country clears the gate.</summary>
+    /// <remarks>
+    /// <para>★★ THE SAME ISLAND AND THE SAME LAYOUT AS §3, WHICH IS THE POINT RATHER THAN A CONVENIENCE. Two
+    /// cuts of one corpus drawn differently read as two different kinds of claim, and a reader who has learnt
+    /// how to read the language table should not have to learn a second grammar one section down.</para>
+    ///
+    /// <para>★★ AND THE CAVEAT IS NOT OPTIONAL HERE, WHICH IS THE ONE WAY §4 IS NOT §3. A language is read
+    /// off the code by the pass that measured everything else: nobody declares it and no account can decline
+    /// to. A country is a claim an account writes about ITSELF in a free-text profile line, it places an
+    /// OWNER rather than a project or a legal entity, and most owners cannot be placed at all. A table of
+    /// countries with no caveat beside it is read as a map of open source, which is a claim this reading
+    /// cannot make and has never made.</para>
+    ///
+    /// <para>★ A COUNTRY UNDER THE GATE IS NOT A ROW, AND THE NUMBER OF THEM IS STATED. Dropping them
+    /// silently would publish a table that says these are the countries in the corpus; the count of what was
+    /// held back is what stops it saying that.</para>
+    /// </remarks>
+    private static Dictionary<string, object?>? Countries(CorpusReading reading, IReadOnlyList<CorpusSlice> cuts)
+    {
+        var published = cuts.Where(c => c.Path is not null).ToList();
+        if (published.Count == 0)
+        {
+            return null;
+        }
+
+        var rows = new List<object?>();
+        foreach (var cut in published)
+        {
+            rows.Add(PageNodes.BarRow(
+                cut.Name,
+                cut.Href,
+                null,
+                cut.Reading.VulnAffectedShare is not null
+                    ? Figure.Ratio(
+                        cut.Reading.VulnAffected, cut.Reading.VulnMeasurable, CountryResolvable, reading.TakenAt)
+                    : null,
+                "affected",
+                "not affected",
+                "nothing a scanner could resolve",
+                PageNodes.Column(Figure.Count(cut.Codebases, CountryCodebases, reading.TakenAt)),
+                PageNodes.Column(Figure.Count(cut.Reading.Origins.OwnersConsidered, CountryOwners, reading.TakenAt)),
+                // ★ NO BAND INK ON THE MEDIAN, for the same reason as §3: a band word is read off a rubric's
+                //   cutlines, and these codebases were scored under many rubric versions.
+                PageNodes.Column(
+                    cut.Codebases == 0
+                        ? null
+                        : Figure.Scalar(cut.MedianHeadline, cut.Codebases, CountryCodebases, reading.TakenAt)),
+                PageNodes.Column(Figure.Count(cut.Reading.VulnMeasurable, CountryResolvable, reading.TakenAt)),
+                PageNodes.Column(Figure.Count(
+                    cut.Reading.DisclosureMeasured - cut.Reading.DisclosurePolicy,
+                    CorpusReading.DisclosureAskedBasis,
+                    reading.TakenAt))));
+        }
+
+        return PageNodes.ShareBars(
+            "countries",
+            "table",
+            "§4 By country",
+            Census(reading, cuts, published.Count),
+            null,
+            null,
+            "Country",
+            "Affected of measurable",
+            ["Codebases", "Owners", "Median", "Measurable", "No policy"],
+            rows);
+    }
+
+    /// <summary>
+    /// What a country table is a table OF — stated where a reader meets the rows.
+    /// </summary>
+    /// <remarks>
+    /// ★★ THE TWO UNITS ARE STATED AS THIS READING'S OWN FIGURES. The sentence could argue that a codebase
+    /// count is not a headcount by asserting "one account can hold forty codebases" — a concrete-sounding
+    /// number nobody measured, on a page whose entire argument is that a figure without its population cannot
+    /// be checked. Two figures this reading already holds make the same point and can be checked against the
+    /// table above.
+    /// </remarks>
+    private static string Census(CorpusReading reading, IReadOnlyList<CorpusSlice> cuts, int published)
+    {
+        var origins = reading.Origins;
+        var placedOwners = Share(
+            origins.OwnersResolved,
+            origins.OwnersConsidered,
+            Basis.Of("owner behind the whole corpus", "owners behind the whole corpus"),
+            reading.TakenAt);
+        var reach = Share(
+            origins.CodebasesResolved,
+            origins.Codebases,
+            Basis.Of("measured codebase", "measured codebases"),
+            reading.TakenAt);
+        var held = Share(
+            cuts.Count - published,
+            cuts.Count,
+            Basis.Of("country the corpus could place at all", "countries the corpus could place at all"),
+            reading.TakenAt);
+
+        var codebases = Figure.Count(
+            origins.Codebases, Basis.Of("measured codebase", "measured codebases"), reading.TakenAt);
+        var owners = Figure.Count(
+            origins.OwnersConsidered,
+            Basis.Of("account that owns one of them", "accounts that own them"),
+            reading.TakenAt);
+
+        return "A country is normalised from what an account writes about itself in its own profile line, so "
+            + "it places an owner. It never places a project, and never a legal entity."
+            + (placedOwners is null
+                ? string.Empty
+                : "\n\n**" + placedOwners.Headline() + "** could be placed in a country at all. This is a "
+                    + "reading of the codebases whose owners said where they are, and of nothing wider.")
+            + (reach is null
+                ? string.Empty
+                : "\n\n**" + reach.Headline() + "** is how much of the corpus that reaches.")
+            + (held is null
+                ? string.Empty
+                : "\n\n**" + held.Headline() + "** have no page, because they hold fewer than "
+                    + CorpusCuts.MinimumCountryCodebases + " measured codebases. Below that, a national figure "
+                    + "describes a few account holders and not a country. They are absent from the rows above "
+                    + "rather than folded into them.")
+            + "\n\nCodebases and accounts are counted separately because neither converts into the other: the "
+            + codebases.Headline() + " in this reading sit behind " + owners.Headline() + ".";
+    }
+
+    /// <summary>A share, or null when there is nothing to take it over — never a zero standing in for one.</summary>
+    private static Figure? Share(int numerator, int denominator, Basis basis, DateTimeOffset takenAt) =>
+        denominator == 0 || numerator == 0 ? null : Figure.Ratio(numerator, denominator, basis, takenAt);
 
     // ── the sentences a figure is stated inside ──────────────────────────────────────────────────────────────
 
