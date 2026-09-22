@@ -1,0 +1,768 @@
+{
+  "state-of-the-corpus": {
+    "Path": "state-of-the-corpus",
+    "Title": "The state of the corpus",
+    "MetaDescription": "10 published measured codebases, read together: what they score, what they ship, and what could not be measured.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "The state of the corpus"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003EEvery codebase here was scored under the \u003Ca href=\u0022https://codeassuranceindex.info/spec/\u0022\u003ECodebase Assurance Index\u003C/a\u003E, an open standard. A score is a measurement, never a certificate, and these readings were produced by an \u003Ca href=\u0022https://codeassuranceindex.info/implementations/\u0022\u003Eimplementation of the standard\u003C/a\u003E.\u003C/p\u003E"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "head",
+                "dateline": "22 September 2026, 02:00 UTC",
+                "figures": "[{\u0022lead\u0022:\u002210\u0022,\u0022label\u0022:\u0022Codebases\u0022,\u0022support\u0022:\u0022published measured codebases\u0022},{\u0022lead\u0022:\u0022rubric-2026.07.01 \\u2013 rubric-2026.08.15\u0022,\u0022label\u0022:\u0022Rubric span\u0022,\u0022tip\u0022:\u0022A reading spans every [rubric](https://codeassuranceindex.info/rubric/) its surveys were scored under. Repositories are surveyed on their own cadence: once, or every three months, fortnightly, weekly, daily. On any given day the corpus therefore holds scores from several rubric versions, and naming one of them would be wrong for most of the rest.\\n\\n2 rubric versions.\u0022},{\u0022lead\u0022:\u002215,000\u0022,\u0022label\u0022:\u0022Production lines of code\u0022,\u0022support\u0022:\u0022across 10 published measured codebases\u0022},{\u0022lead\u0022:\u00223\u0022,\u0022label\u0022:\u0022Readings held\u0022,\u0022support\u0022:\u0022dated readings\u0022}]"
+              }
+            }
+          ],
+          "anchor": "masthead"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-share-bars",
+              "props": {
+                "layout": "wide",
+                "kicker": "\u00A71 Population",
+                "lede": "A [survey](https://codeassuranceindex.info/verify/) with no dependency graph is absent from every share below rather than counted as clean.",
+                "rows": "[{\u0022label\u0022:\u0022Surveys with a dependency graph a scanner could resolve\u0022,\u0022parts\u0022:[{\u0022weight\u0022:8,\u0022count\u0022:\u00228\u0022,\u0022label\u0022:\u0022resolved\u0022,\u0022tone\u0022:\u0022accent\u0022},{\u0022weight\u0022:2,\u0022count\u0022:\u00222\u0022,\u0022label\u0022:\u0022unmeasured\u0022,\u0022tone\u0022:\u0022track\u0022}],\u0022note\u0022:\u00228 of 10\u0022,\u0022tip\u0022:\u0022Every share in \\u00A72 is taken over the resolved part, never over the corpus.\\n\\nThe rest ship no lockfile a scanner can read. They are **unmeasured, not clean**. Each share leaves them out rather than counting them as passing, because nobody looked at them.\\n\\n2 surveys whose dependencies no scanner could resolve ship nothing a dependency scanner could resolve into a graph.\\n\\n50.0% of surveys whose dependencies could not be measured (1 of 2) is the part of that gap where a scanner ran and failed. That is a defect in the measuring, and it belongs to whoever ran the scan. The project\\u0027s own condition is untouched by it, and the remainder ship no lockfile for a scanner to resolve.\\n\\n100.0% of published measured codebases (10 of 10) have their findings broken down by dimension; the remainder were measured before that breakdown was kept.\\n\\n80.0% of surveys with findings broken down by dimension (8 of 10)\u0022}]"
+              }
+            }
+          ],
+          "anchor": "population"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "\u00A72 Findings",
+                "figures": "[{\u0022lead\u0022:\u002262.5%\u0022,\u0022label\u0022:\u0022carry a known-vulnerable component\u0022,\u0022support\u0022:\u00225 of 8 surveys whose dependencies a scanner could resolve\u0022,\u0022tip\u0022:\u0022A component with an advisory published against it, matched from the lockfile the project ships. Counted once per survey however many findings it carries.\\n\\n37.5% of surveys whose dependencies a scanner could resolve (3 of 8) carry at least one High or Critical.\\n\\n12.5% of surveys whose dependencies a scanner could resolve (1 of 8) carry at least one Critical.\\n\\n63 findings were found across the 8 surveys whose dependencies a scanner could resolve. Three scanners contribute, so a component two of them see counts as one finding each, while the survey counts above never double-count.\u0022},{\u0022lead\u0022:\u002266.7%\u0022,\u0022label\u0022:\u0022publish no disclosure policy\u0022,\u0022support\u0022:\u00226 of 9 codebases whose repository was checked for a disclosure policy\u0022,\u0022tip\u0022:\u0022No SECURITY.md or security.txt **in the repository itself**. An organisation can publish one policy in its .github repository covering everything it owns, and a project covered that way is reportable while having no file of its own. This share counts only a policy published in the repository itself.\\n\\n66.7% of surveys publishing a disclosure policy (2 of 3) of the policies that do exist name someone to contact.\\n\\n1 survey taken before a disclosure policy was ever looked for were never asked, and are excluded from the population above rather than counted as projects without a policy.\u0022},{\u0022lead\u0022:\u002222.2%\u0022,\u0022label\u0022:\u0022committed a secret at some point\u0022,\u0022support\u0022:\u00222 of 9 codebases whose full git history was scanned for secrets\u0022,\u0022tip\u0022:\u0022Found anywhere in the full git history, not only at the current commit. Deleting the file does not remove it from history; only rotating the credential does.\\n\\n5 committed secrets were found across the 9 codebases whose full git history was scanned for secrets.\\n\\n11.1% of codebases whose current files were scanned for secrets (1 of 9) still carry one in the working tree. That figure comes from a **separate scanner on a separate set of surveys**, so it is not a subset of the count above and the two must not be subtracted from each other.\u0022},{\u0022lead\u0022:\u002228.6%\u0022,\u0022label\u0022:\u0022publish a bill of materials\u0022,\u0022support\u0022:\u00222 of 7 codebases with a release pipeline to inspect\u0022,\u0022tip\u0022:\u0022Taken over surveys that have a release pipeline to inspect. A project with no pipeline cannot sign or attest a release, so it is outside this share rather than failing it.\\n\\n14.3% of codebases with a release pipeline to inspect (1 of 7) attach build provenance.\\n\\n42.9% of codebases with a release pipeline to inspect (3 of 7) sign their releases.\\n\\n57.1% of codebases with a release pipeline to inspect (4 of 7) pin their CI actions to a commit.\\n\\n28.6% of codebases with a release pipeline to inspect (2 of 7) do none of the four.\u0022}]",
+                "footnote": "Each is taken over its own population, named beneath it. The four populations are not the same."
+              }
+            }
+          ],
+          "anchor": "findings"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-share-bars",
+              "props": {
+                "layout": "table",
+                "kicker": "\u00A73 By language",
+                "tip": "A language is read off the code, so nothing here rests on anybody declaring anything.\n\n**Affected is taken over Measurable, never over Surveys.** A language that resolves few of its dependencies shows a shorter bar. Less was looked at, which is not the same as less being there.\n\n60.0% of surveys in this reading (6 of 10) could be placed in a language at all. The rest carry no primary language this reading could read, which is a limit of the indexing behind this reading and never a fact about the projects themselves.",
+                "label-heading": "Language",
+                "bar-heading": "Affected of measurable",
+                "columns": "[\u0022Surveys\u0022,\u0022Median\u0022,\u0022Measurable\u0022,\u0022No policy\u0022]",
+                "rows": "[{\u0022label\u0022:\u0022C#\u0022,\u0022href\u0022:\u0022/state-of-the-corpus/language/csharp/\u0022,\u0022cells\u0022:[\u00226\u0022,\u002262.5 Adequate\u0022,\u00225\u0022,\u00224\u0022],\u0022cellTones\u0022:[\u0022\u0022,\u0022fair\u0022,\u0022\u0022,\u0022\u0022],\u0022parts\u0022:[{\u0022weight\u0022:3,\u0022count\u0022:\u00223\u0022,\u0022label\u0022:\u0022affected\u0022,\u0022tone\u0022:\u0022accent\u0022},{\u0022weight\u0022:2,\u0022count\u0022:\u00222\u0022,\u0022label\u0022:\u0022not affected\u0022,\u0022tone\u0022:\u0022track\u0022}],\u0022note\u0022:\u00223 of 5\u0022,\u0022tip\u0022:\u002260.0% of surveys here whose dependencies a scanner could resolve (3 of 5)\u0022}]"
+              }
+            }
+          ],
+          "anchor": "languages"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-share-bars",
+              "props": {
+                "layout": "table",
+                "kicker": "\u00A74 By country",
+                "tip": "A country is normalised from what an account writes about itself in its own profile line, so it places an owner. It never places a project, and never a legal entity.\n\n**57.1% of owners behind the whole corpus (4 of 7)** could be placed in a country at all. This is a reading of the projects whose owners said where they are, and of nothing wider.\n\n**60.0% of measured repositories (6 of 10)** is how much of the corpus that reaches.\n\n**0.0% of country the corpus could place at all (0 of 1)** have no page, because they hold fewer than ten measured repositories. Below that, a national figure describes a few account holders and not a country. They are absent from the rows above rather than folded into them.\n\nRepositories and accounts are counted separately because neither converts into the other: the 10 measured repositories in this reading sit behind 7 accounts that own them.\n\n**Affected is taken over Measurable, never over Surveys**, as in \u00A73.",
+                "label-heading": "Country",
+                "bar-heading": "Affected of measurable",
+                "columns": "[\u0022Repositories\u0022,\u0022Owners\u0022,\u0022Surveys\u0022,\u0022Median\u0022,\u0022Measurable\u0022,\u0022No policy\u0022]",
+                "rows": "[{\u0022label\u0022:\u0022Denmark\u0022,\u0022href\u0022:\u0022/state-of-the-corpus/country/denmark/\u0022,\u0022cells\u0022:[\u002210\u0022,\u00223\u0022,\u00226\u0022,\u002262.5 Adequate\u0022,\u00225\u0022,\u00224\u0022],\u0022cellTones\u0022:[\u0022\u0022,\u0022\u0022,\u0022\u0022,\u0022fair\u0022,\u0022\u0022,\u0022\u0022],\u0022parts\u0022:[{\u0022weight\u0022:3,\u0022count\u0022:\u00223\u0022,\u0022label\u0022:\u0022affected\u0022,\u0022tone\u0022:\u0022accent\u0022},{\u0022weight\u0022:2,\u0022count\u0022:\u00222\u0022,\u0022label\u0022:\u0022not affected\u0022,\u0022tone\u0022:\u0022track\u0022}],\u0022note\u0022:\u00223 of 5\u0022,\u0022tip\u0022:\u002260.0% of surveys here whose dependencies a scanner could resolve (3 of 5)\u0022}]"
+              }
+            }
+          ],
+          "anchor": "countries"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-trend",
+              "props": {
+                "kicker": "\u00A75 Series",
+                "tip": "The median CAI of the whole measured corpus. Every point is one reading taken on the day it is dated, kept as it was taken and never rewritten: a correction is a new reading on a new day, never an edit to an old one. So this line is read out of what was recorded at the time and is never recomputed from today\u0027s corpus.\n\nOnly a median is drawn. The chart\u0027s axis is the fixed [band scale](https://codeassuranceindex.info/spec/) a CAI is defined on, which fits a median and leaves a share or a count to be stated as its own dated figure instead.\n\nThe line is sampled to one point a week, and each point is the newest reading on or before its own date. The corpus is read nightly and its median sits still for weeks, so a mark per reading put a mark wherever the median happened to change. The spacing of the marks then drew the data\u0027s volatility rather than the passage of time.",
+                "figures": "[{\u0022label\u0022:\u0022Median\u0022,\u0022from\u0022:{\u0022value\u0022:\u002249.8\u0022},\u0022to\u0022:{\u0022value\u0022:\u002252.6\u0022}},{\u0022label\u0022:\u0022Published measured codebases\u0022,\u0022from\u0022:{\u0022value\u0022:\u00226\u0022},\u0022to\u0022:{\u0022value\u0022:\u002210\u0022}}]",
+                "series": "[49.8,49.8,49.8,51.2,51.2,52.6]",
+                "first-date": "23 August 2026",
+                "last-date": "22 September 2026",
+                "sampled": "weekly"
+              }
+            }
+          ],
+          "anchor": "trend"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-link-cards",
+              "props": {
+                "kicker": "\u00A76 Detail",
+                "links": "[{\u0022icon\u0022:\u0022doc\u0022,\u0022label\u0022:\u0022Advisories\u0022,\u0022note\u0022:\u0022distinct advisory seen across the corpus, most widespread first\u0022,\u0022href\u0022:\u0022/state-of-the-corpus/advisories/\u0022,\u0022tip\u0022:\u0022One page per advisory: how many surveys carry it and how many of those never chose the package themselves. Counts are lower bounds, because a brief lists at most fifty affected locations per kind.\u0022,\u0022go\u0022:\u0022Every advisory\u0022,\u0022figure\u0022:\u00221\u0022},{\u0022icon\u0022:\u0022doc\u0022,\u0022label\u0022:\u0022Packages\u0022,\u0022note\u0022:\u0022vulnerable package seen across the corpus, ordered by how many surveys carry them\u0022,\u0022href\u0022:\u0022/state-of-the-corpus/packages/\u0022,\u0022tip\u0022:\u0022The same reading grouped by package rather than advisory, so one upgrade that clears several advisories reads as one row.\u0022,\u0022go\u0022:\u0022Every package\u0022,\u0022figure\u0022:\u00221\u0022},{\u0022icon\u0022:\u0022doc\u0022,\u0022label\u0022:\u0022Countries\u0022,\u0022note\u0022:\u0022country with a page of its own, according to where the owning accounts say they are\u0022,\u0022href\u0022:\u0022/state-of-the-corpus/countries/\u0022,\u0022tip\u0022:\u0022Grouped by the owning account\\u0027s own declared location and normalised to a country, so it places an owner rather than a project or a legal entity. Roughly half the corpus declares nothing, and that share is stated on the page rather than divided away. A country needs ten measured repositories before it gets a page of its own. Below ten, the figure describes a few accounts rather than a place.\u0022,\u0022go\u0022:\u0022Every country\u0022,\u0022figure\u0022:\u00221\u0022},{\u0022icon\u0022:\u0022doc\u0022,\u0022label\u0022:\u0022Languages\u0022,\u0022note\u0022:\u0022language with a page of its own, the same rows as the third section as an addressable list\u0022,\u0022href\u0022:\u0022/state-of-the-corpus/languages/\u0022,\u0022tip\u0022:\u0022The by-language section is drawn by the site and its rows are not in this page\\u0027s markup. This is the same set as a table of links, which is what a crawler, a reader with no script and any check over the served page can follow.\u0022,\u0022go\u0022:\u0022Every language\u0022,\u0022figure\u0022:\u00221\u0022}]"
+              }
+            }
+          ],
+          "anchor": "elsewhere"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over 10 published measured codebases, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  },
+  "state-of-the-corpus/advisory/cve-2026-0001": {
+    "Path": "state-of-the-corpus/advisory/cve-2026-0001",
+    "Title": "CVE-2026-0001",
+    "MetaDescription": "at least 4 surveys carrying this advisory \u2014 a further 2 could not be checked. A brief lists at most fifty affected locations per kind, so what a survey was seen to carry is what fitted.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "CVE-2026-0001"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003EThe advisories a survey carries survive only in its brief\u0027s rendered list of affected locations, and that list stops at fifty entries per kind without the count above it changing \u2014 so what a survey was seen to carry is what fitted.\u003C/p\u003E"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "Reach",
+                "figures": "[{\u0022lead\u0022:\u0022at least 4\u0022,\u0022label\u0022:\u0022seen carrying it\u0022,\u0022support\u0022:\u0022surveys carrying this advisory \\u2014 a further 2 could not be checked\u0022,\u0022tip\u0022:\u0022A floor, not a total. The cut bites hardest on the projects with the most vulnerabilities, so this count is not short by a random amount \\u2014 it is short in one direction.\u0022},{\u0022lead\u0022:\u00223\u0022,\u0022label\u0022:\u0022of the surveys nothing was withheld from\u0022,\u0022support\u0022:\u002250.0% of surveys whose advisory list was complete (3 of 6)\u0022,\u0022tip\u0022:\u0022The one share here taken over a population nothing was withheld from, and the only one that can be read as a statement about the corpus: its numerator and its denominator are counted over the same thing.\\n\\nIt understates how widespread this is \\u2014 a survey with a complete list is by construction a survey with fewer findings \\u2014 and understating something in a way a reader can see is a different object from a censored count that cannot say so.\u0022},{\u0022lead\u0022:\u00222\u0022,\u0022label\u0022:\u0022never chose the package themselves\u0022,\u0022support\u0022:\u002250.0% of surveys where this advisory was visible (2 of 4)\u0022,\u0022tip\u0022:\u0022Read from the brief\\u0027s own sentence \\u2014 the scanner says whether the package is declared in the repository\\u0027s manifests or pulled in by something that is \\u2014 and never inferred from the dependency graph\\u0027s shape.\\n\\nTaken over the surveys it was SEEN in, which is exact about that set and silent about the corpus: if a row was visible, its whole text was.\u0022},{\u0022lead\u0022:\u00222\u0022,\u0022label\u0022:\u0022\u0022,\u0022support\u0022:\u0022surveys whose advisory list was cut short, any of which may carry it without being counted here\u0022,\u0022tip\u0022:\u0022A brief lists at most fifty affected locations per kind, and one dimension reports findings with no file location at all, so neither reaches the list in full. Any of these may carry this advisory without appearing in the count beside it.\u0022}]"
+              }
+            }
+          ],
+          "anchor": "reach"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EThe package it is in\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003EIt is an advisory against left-pad.\u003C/p\u003E"
+            }
+          ],
+          "anchor": "package"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EAbout this reading\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over at least 4 surveys carrying this advisory, with a further 2 not checked, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  },
+  "state-of-the-corpus/package/left-pad": {
+    "Path": "state-of-the-corpus/package/left-pad",
+    "Title": "left-pad",
+    "MetaDescription": "at least 4 surveys carrying a known-vulnerable copy of it \u2014 a further 2 could not be checked. A brief lists at most fifty affected locations per kind, so what a survey was seen to carry is what fitted.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "left-pad"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003EA survey\u0027s advisories are read from its brief\u0027s list of affected locations, and that list stops at fifty entries per kind \u2014 so what a survey was seen to carry is what fitted.\u003C/p\u003E"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "Reach",
+                "figures": "[{\u0022lead\u0022:\u0022at least 4\u0022,\u0022label\u0022:\u0022seen carrying it\u0022,\u0022support\u0022:\u0022surveys carrying a known-vulnerable copy of it \\u2014 a further 2 could not be checked\u0022,\u0022tip\u0022:\u0022A floor, not a total. The cut bites hardest on the projects with the most vulnerabilities, so this count is not short by a random amount \\u2014 it is short in one direction.\u0022},{\u0022lead\u0022:\u00221\u0022,\u0022label\u0022:\u0022raised against it across the corpus\u0022,\u0022support\u0022:\u0022distinct advisory seen raised against it\u0022,\u0022tip\u0022:\u0022One upgrade can clear several of these at once, which is why the same reading is published grouped by package as well as by advisory.\u0022},{\u0022lead\u0022:\u00223\u0022,\u0022label\u0022:\u0022of the surveys nothing was withheld from\u0022,\u0022support\u0022:\u002250.0% of surveys whose advisory list was complete (3 of 6)\u0022,\u0022tip\u0022:\u0022The one share here taken over a population nothing was withheld from, and the only one that can be read as a statement about the corpus: its numerator and its denominator are counted over the same thing.\\n\\nIt understates how widespread this is \\u2014 a survey with a complete list is by construction a survey with fewer findings \\u2014 and understating something in a way a reader can see is a different object from a censored count that cannot say so.\u0022},{\u0022lead\u0022:\u00222\u0022,\u0022label\u0022:\u0022did not declare it themselves\u0022,\u0022support\u0022:\u002250.0% of surveys seen carrying it (2 of 4)\u0022,\u0022tip\u0022:\u0022A package a project never asked for is a package nobody on that project is watching.\\n\\nRead from the brief\\u0027s own sentence \\u2014 the scanner says whether the package is declared in the repository\\u0027s manifests or pulled in by something that is \\u2014 and never inferred from the dependency graph\\u0027s shape. Taken over the surveys it was SEEN in, which is exact about that set and silent about the corpus.\u0022},{\u0022lead\u0022:\u00222\u0022,\u0022label\u0022:\u0022\u0022,\u0022support\u0022:\u0022surveys whose advisory list was cut short, any of which may carry it without being counted here\u0022,\u0022tip\u0022:\u0022A brief lists at most fifty affected locations per kind, and one dimension reports findings with no file location at all, so neither reaches the list in full. Any of these may carry this package without appearing in the count beside it.\u0022}]"
+              }
+            }
+          ],
+          "anchor": "reach"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EAbout this reading\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over at least 4 surveys carrying a known-vulnerable copy of it, with a further 2 not checked, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  },
+  "state-of-the-corpus/advisories": {
+    "Path": "state-of-the-corpus/advisories",
+    "Title": "Advisories across the corpus",
+    "MetaDescription": "Which published advisories the measured corpus carries, how widespread each is, and why every one of those counts is a floor.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "Advisories across the corpus"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "The cut",
+                "figures": "[{\u0022lead\u0022:\u00221\u0022,\u0022label\u0022:\u0022have a page of their own\u0022,\u0022support\u0022:\u0022advisory with a page of its own\u0022,\u0022tip\u0022:\u0022One page per advisory: how many surveys were seen carrying it, and how many of those never chose the package themselves.\u0022},{\u0022lead\u0022:\u00220\u0022,\u0022label\u0022:\u0022are not listed\u0022,\u0022support\u0022:\u00220.0% of advisory the corpus could see at all (0 of 1)\u0022,\u0022tip\u0022:\u0022They were seen in fewer than three surveys \\u2014 too few for a page to be about anything but which briefs happened to fit under the cap. They are counted here rather than dropped, so this list is not quietly shorter than the reading behind it.\u0022},{\u0022lead\u0022:\u00222\u0022,\u0022label\u0022:\u0022\u0022,\u0022support\u0022:\u0022surveys whose advisory list was cut short\u0022,\u0022tip\u0022:\u0022A brief lists at most fifty affected locations per kind, and one dimension reports findings with no file location at all, so neither reaches the list in full. Any of these may carry any advisory below without appearing in its count.\\n\\nThe cut bites hardest on the projects with the most vulnerabilities, so every count below is short in one direction rather than by a random amount.\u0022}]",
+                "footnote": "Every survey count in the list below is a floor."
+              }
+            }
+          ],
+          "anchor": "cut"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EEvery advisory\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cul\u003E\u003Cli\u003E\u003Cstrong\u003EAdvisory\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Cstrong\u003EPackage\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Cstrong\u003ESurveys seen carrying it\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Ca href=\u0022/state-of-the-corpus/advisory/cve-2026-0001/\u0022\u003ECVE-2026-0001\u003C/a\u003E\u003C/li\u003E\u003Cli\u003Eleft-pad\u003C/li\u003E\u003Cli\u003Eat least 4 surveys \u2014 a further 2 could not be checked\u003C/li\u003E\u003C/ul\u003E"
+            }
+          ],
+          "appearance": "TableList",
+          "anchor": "advisories"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EAbout this reading\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over 1 advisory with a page of its own, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  },
+  "state-of-the-corpus/packages": {
+    "Path": "state-of-the-corpus/packages",
+    "Title": "Vulnerable packages across the corpus",
+    "MetaDescription": "Which packages the measured corpus carries known-vulnerable copies of, and how often they were inherited rather than chosen.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "Vulnerable packages across the corpus"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "The cut",
+                "figures": "[{\u0022lead\u0022:\u00221\u0022,\u0022label\u0022:\u0022have a page of their own\u0022,\u0022support\u0022:\u0022vulnerable package with a page of its own\u0022,\u0022tip\u0022:\u0022The same reading as the advisory list, grouped by package rather than by advisory, so one upgrade that clears several advisories reads as one row.\u0022},{\u0022lead\u0022:\u00220\u0022,\u0022label\u0022:\u0022are not listed\u0022,\u0022support\u0022:\u00220.0% of vulnerable package the corpus could see at all (0 of 1)\u0022,\u0022tip\u0022:\u0022They were seen in fewer than three surveys \\u2014 too few for a page to be about anything but which briefs happened to fit under the cap. They are counted here rather than dropped, so this list is not quietly shorter than the reading behind it.\u0022},{\u0022lead\u0022:\u00222\u0022,\u0022label\u0022:\u0022\u0022,\u0022support\u0022:\u0022surveys whose advisory list was cut short\u0022,\u0022tip\u0022:\u0022A brief lists at most fifty affected locations per kind, and one dimension reports findings with no file location at all, so neither reaches the list in full. Any of these may carry any package below without appearing in its count.\\n\\nThe cut bites hardest on the projects with the most vulnerabilities, so every count below is short in one direction rather than by a random amount.\u0022}]",
+                "footnote": "Every survey count in the list below is a floor."
+              }
+            }
+          ],
+          "anchor": "cut"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EEvery package\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cul\u003E\u003Cli\u003E\u003Cstrong\u003EPackage\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Cstrong\u003ESurveys seen carrying it\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Cstrong\u003EAdvisories raised\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Ca href=\u0022/state-of-the-corpus/package/left-pad/\u0022\u003Eleft-pad\u003C/a\u003E\u003C/li\u003E\u003Cli\u003Eat least 4 surveys \u2014 a further 2 could not be checked\u003C/li\u003E\u003Cli\u003E1 advisory\u003C/li\u003E\u003C/ul\u003E"
+            }
+          ],
+          "appearance": "TableList",
+          "anchor": "packages"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EAbout this reading\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over 1 vulnerable package with a page of its own, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  },
+  "state-of-the-corpus/country/denmark": {
+    "Path": "state-of-the-corpus/country/denmark",
+    "Title": "Denmark",
+    "MetaDescription": "10 repositories whose owner declared this country, counted again by the accounts that hold them \u2014 and what a country cut can and cannot be a reading of.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "Denmark"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ERepositories and accounts are counted separately here, because neither converts into the other: a single account can hold many repositories, so a repository count is not a headcount and an account count is not a measure of how much software is written here.\u003C/p\u003E"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "This country",
+                "figures": "[{\u0022lead\u0022:\u002210\u0022,\u0022label\u0022:\u0022in the measured corpus\u0022,\u0022support\u0022:\u0022repositories whose owner declared this country\u0022,\u0022tip\u0022:\u0022How much measured software is held here \\u2014 not how much is written here, and not how many people are here.\u0022},{\u0022lead\u0022:\u00223\u0022,\u0022label\u0022:\u0022hold them\u0022,\u0022support\u0022:\u0022owners who declared this country\u0022,\u0022tip\u0022:\u0022A single account can hold many repositories, so this is not a headcount either: it is how many distinct accounts the count beside it is spread across.\u0022}]"
+              }
+            }
+          ],
+          "anchor": "here"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "What was found",
+                "figures": "[{\u0022lead\u0022:\u00226\u0022,\u0022label\u0022:\u0022\u0022,\u0022support\u0022:\u0022of them carry an indexed security brief\u0022,\u0022tip\u0022:\u0022The readings beside this one are shares of THIS, not of the repositories: a repository joins it when the indexing behind this reading reaches its bundle, which is a fact about how far that indexing has walked and never a fact about the project.\\n\\n57.1% of owners behind the whole corpus (4 of 7) could be placed in a country at all.\u0022},{\u0022lead\u0022:\u002262.5\u0022,\u0022label\u0022:\u0022median assurance score\u0022,\u0022support\u0022:\u0022across 6 surveys here\u0022,\u0022tip\u0022:\u0022The middle of the distribution, not its average \\u2014 one very good or very bad project moves a mean and does not move this.\u0022},{\u0022lead\u0022:\u00223\u0022,\u0022label\u0022:\u0022carry a known-vulnerable component\u0022,\u0022support\u0022:\u002260.0% of surveys here whose dependencies a scanner could resolve (3 of 5)\u0022,\u0022tip\u0022:\u0022Taken over the surveys here whose dependencies a scanner could resolve, never over all of them. The rest ship no lockfile a scanner can read: they are **unmeasured, not clean**, absent from this share rather than counted as passing.\u0022},{\u0022lead\u0022:\u00222\u0022,\u0022label\u0022:\u0022publish a disclosure policy in the repository\u0022,\u0022support\u0022:\u002233.3% of surveys here where the repository itself was checked for a disclosure policy (2 of 6)\u0022,\u0022tip\u0022:\u0022A SECURITY.md or security.txt **in the repository itself**. An organisation can publish one policy covering everything it holds, and a project covered that way is reportable while having no file of its own; nothing here counts those.\u0022}]",
+                "footnote": "Each is taken over its own population, named beneath it. The populations are not the same."
+              }
+            }
+          ],
+          "anchor": "found"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-trend",
+              "props": {
+                "kicker": "How the median moved",
+                "tip": "Only a median is drawn. The chart\u0027s axis is the fixed assurance scale a CAI is defined on, so a small wobble cannot be drawn as a climb \u2014 and a count or a share has no place on it.\n\nA country enters this line on the day its first owner resolves, and that resolver walks a forge budget at a time, so this can be far shorter than the corpus\u0027s own.",
+                "figures": "[{\u0022label\u0022:\u0022Median\u0022,\u0022from\u0022:{\u0022value\u0022:\u002262.5\u0022,\u0022sub\u0022:\u0022across 6 surveys here\u0022},\u0022to\u0022:{\u0022value\u0022:\u002262.5\u0022,\u0022sub\u0022:\u0022across 6 surveys here\u0022}}]",
+                "series": "[62.5,62.5,62.5]",
+                "first-date": "23 August 2026",
+                "last-date": "22 September 2026",
+                "caption": "The median assurance score across the surveys here, on every reading that placed any in Denmark. Each point is one reading taken on the day it is dated, kept exactly as it was taken and never rewritten."
+              }
+            }
+          ],
+          "anchor": "trend"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EWhat a country cut can and cannot be\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003EThe only country signal is what an account writes in its own profile line. Nothing is inferred where that line is blank and there is no bucket for the unplaceable: an owner who wrote nothing is counted in the census and absent from every country. So this is a reading of the projects whose owners said where they are, and of nothing wider.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "census"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EAbout this reading\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over 10 repositories whose owner declared this country, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  },
+  "state-of-the-corpus/countries": {
+    "Path": "state-of-the-corpus/countries",
+    "Title": "The corpus by country",
+    "MetaDescription": "Where the measured corpus\u0027s owners say they are \u2014 with the census that says how much of it could be placed at all.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "The corpus by country"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "The cut",
+                "figures": "[{\u0022lead\u0022:\u00221\u0022,\u0022label\u0022:\u0022have a page of their own\u0022,\u0022support\u0022:\u0022country with a page of its own\u0022,\u0022tip\u0022:\u0022A country needs ten measured repositories before it gets one. Below ten, the figure describes a few account holders and not a country.\u0022},{\u0022lead\u0022:\u00224\u0022,\u0022label\u0022:\u0022could be placed in a country at all\u0022,\u0022support\u0022:\u002257.1% of owners behind the whole corpus (4 of 7)\u0022,\u0022tip\u0022:\u0022The only signal is what an account writes in its own profile line, so this places an OWNER \\u2014 never a project and never a legal entity. Nothing is inferred where the line is blank and there is no bucket for the unplaceable: an owner who wrote nothing is counted here and absent from every country below.\u0022},{\u0022lead\u0022:\u00226\u0022,\u0022label\u0022:\u0022are held by an owner that could be placed\u0022,\u0022support\u0022:\u002260.0% of measured repositories (6 of 10)\u0022,\u0022tip\u0022:\u0022The same census counted in the other unit: how much measured software sits behind the owners who could be placed, rather than how many of them there are.\u0022},{\u0022lead\u0022:\u00220\u0022,\u0022label\u0022:\u0022have no page\u0022,\u0022support\u0022:\u00220.0% of country the corpus could place at all (0 of 1)\u0022,\u0022tip\u0022:\u0022They hold fewer than ten measured repositories. They are counted here rather than dropped, so this list is not quietly shorter than the reading behind it.\u0022}]",
+                "footnote": "Repositories and accounts are counted separately because neither converts into the other: the 10 measured repositories in this reading sit behind 7 accounts that own them."
+              }
+            }
+          ],
+          "anchor": "cut"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-share-bars",
+              "props": {
+                "layout": "table",
+                "kicker": "By country",
+                "tip": "This places an OWNER, not a project and not a legal entity \u2014 it is where the account holding a repository says it is.\n\n**Affected is taken over Measurable, never over Repositories.** A country whose projects resolve few of their dependencies shows a shorter bar because less was looked at, not because less is there.\n\n57.1% of owners behind the whole corpus (4 of 7) could be placed in a country at all.\n\n60.0% of measured repositories (6 of 10) is how much of the corpus that reaches.",
+                "label-heading": "Country",
+                "bar-heading": "Affected of measurable",
+                "columns": "[\u0022Repositories\u0022,\u0022Owners\u0022,\u0022Median\u0022,\u0022Measurable\u0022]",
+                "rows": "[{\u0022label\u0022:\u0022Denmark\u0022,\u0022href\u0022:\u0022/state-of-the-corpus/country/denmark/\u0022,\u0022cells\u0022:[\u002210\u0022,\u00223\u0022,\u002262.5 Adequate\u0022,\u00225\u0022],\u0022cellTones\u0022:[\u0022\u0022,\u0022\u0022,\u0022fair\u0022,\u0022\u0022],\u0022parts\u0022:[{\u0022weight\u0022:3,\u0022count\u0022:\u00223\u0022,\u0022label\u0022:\u0022affected\u0022,\u0022tone\u0022:\u0022accent\u0022},{\u0022weight\u0022:2,\u0022count\u0022:\u00222\u0022,\u0022label\u0022:\u0022not affected\u0022,\u0022tone\u0022:\u0022track\u0022}],\u0022note\u0022:\u00223 of 5\u0022,\u0022tip\u0022:\u002260.0% of surveys here whose dependencies a scanner could resolve (3 of 5)\u0022}]"
+              }
+            }
+          ],
+          "anchor": "board"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EEvery country\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cul\u003E\u003Cli\u003E\u003Cstrong\u003ECountry\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Cstrong\u003ERepositories\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Cstrong\u003EOwners\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Ca href=\u0022/state-of-the-corpus/country/denmark/\u0022\u003EDenmark\u003C/a\u003E\u003C/li\u003E\u003Cli\u003E10 repositories\u003C/li\u003E\u003Cli\u003E3 owners\u003C/li\u003E\u003C/ul\u003E"
+            }
+          ],
+          "appearance": "TableList",
+          "anchor": "countries"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EAbout this reading\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over 1 country with a page of its own, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  },
+  "state-of-the-corpus/language/csharp": {
+    "Path": "state-of-the-corpus/language/csharp",
+    "Title": "C#",
+    "MetaDescription": "6 surveys written mainly in this language \u2014 what a scanner found in what they ship, and whether they say how to report a flaw.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "C#"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "This language",
+                "figures": "[{\u0022lead\u0022:\u00226\u0022,\u0022label\u0022:\u0022carry an indexed security brief\u0022,\u0022support\u0022:\u0022surveys written mainly in this language\u0022,\u0022tip\u0022:\u0022Every reading below is taken over this population, never over the corpus. A survey joins it when the indexing behind this reading reaches its bundle, which is a fact about how far that indexing has walked and never a fact about the code.\\n\\nA language needs five before it gets a page at all. Below five, the page would describe a handful of codebases rather than a language.\u0022}]"
+              }
+            }
+          ],
+          "anchor": "here"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "What was found",
+                "figures": "[{\u0022lead\u0022:\u002262.5\u0022,\u0022label\u0022:\u0022median assurance score\u0022,\u0022support\u0022:\u0022across 6 surveys written mainly in this language\u0022,\u0022tip\u0022:\u0022The middle of the distribution, not its average \\u2014 one very good or very bad project moves a mean and does not move this.\u0022},{\u0022lead\u0022:\u00223\u0022,\u0022label\u0022:\u0022carry a known-vulnerable component\u0022,\u0022support\u0022:\u002260.0% of surveys here whose dependencies a scanner could resolve (3 of 5)\u0022,\u0022tip\u0022:\u0022Taken over the surveys here whose dependencies a scanner could resolve, never over all of them. The rest ship no lockfile a scanner can read: they are **unmeasured, not clean**, absent from this share rather than counted as passing.\u0022},{\u0022lead\u0022:\u00221\u0022,\u0022label\u0022:\u0022carry one rated Critical\u0022,\u0022support\u0022:\u002220.0% of surveys here whose dependencies a scanner could resolve (1 of 5)\u0022,\u0022tip\u0022:\u0022A subset of the share beside it, over the same population \\u2014 a survey carrying a Critical is counted in both.\u0022},{\u0022lead\u0022:\u00222\u0022,\u0022label\u0022:\u0022publish a disclosure policy in the repository\u0022,\u0022support\u0022:\u002233.3% of surveys here where the repository itself was checked for a disclosure policy (2 of 6)\u0022,\u0022tip\u0022:\u0022A SECURITY.md or security.txt **in the repository itself**. An organisation can publish one policy covering everything it holds, and a project covered that way is reportable while having no file of its own; nothing here counts those.\u0022}]",
+                "footnote": "Each is taken over its own population, named beneath it. The populations are not the same."
+              }
+            }
+          ],
+          "anchor": "found"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-trend",
+              "props": {
+                "kicker": "How the median moved",
+                "tip": "Only a median is drawn. The chart\u0027s axis is the fixed assurance scale a CAI is defined on, so a small wobble cannot be drawn as a climb \u2014 and a count or a share has no place on it.\n\nA language enters this line on the day its first survey is indexed, so it can be far shorter than the corpus\u0027s own.",
+                "figures": "[{\u0022label\u0022:\u0022Median\u0022,\u0022from\u0022:{\u0022value\u0022:\u002262.5\u0022,\u0022sub\u0022:\u0022across 6 surveys written mainly in this language\u0022},\u0022to\u0022:{\u0022value\u0022:\u002262.5\u0022,\u0022sub\u0022:\u0022across 6 surveys written mainly in this language\u0022}}]",
+                "series": "[62.5,62.5,62.5]",
+                "first-date": "23 August 2026",
+                "last-date": "22 September 2026",
+                "caption": "The median assurance score across C# surveys, on every reading that held any. Each point is one reading taken on the day it is dated, kept exactly as it was taken and never rewritten."
+              }
+            }
+          ],
+          "anchor": "trend"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EAbout this reading\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over 6 surveys written mainly in this language, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  },
+  "state-of-the-corpus/languages": {
+    "Path": "state-of-the-corpus/languages",
+    "Title": "The corpus by language",
+    "MetaDescription": "The security reading of the measured corpus cut by the language its projects are written in \u2014 with how much of it could be placed in a language at all.",
+    "Node": {
+      "type": "section",
+      "children": [
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "heading",
+              "level": 1,
+              "text": "The corpus by language"
+            }
+          ]
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-figure-band",
+              "props": {
+                "layout": "lead",
+                "kicker": "The cut",
+                "figures": "[{\u0022lead\u0022:\u00221\u0022,\u0022label\u0022:\u0022have a page of their own\u0022,\u0022support\u0022:\u0022language with a page of its own\u0022,\u0022tip\u0022:\u0022Each is the security reading of the surveys written mainly in that language \\u2014 what a scanner found in what they ship, and whether they say how to report a flaw.\u0022},{\u0022lead\u0022:\u002210\u0022,\u0022label\u0022:\u0022could be placed in a language at all\u0022,\u0022support\u0022:\u0022100.0% of surveys in this reading (10 of 10)\u0022,\u0022tip\u0022:\u0022The rest carry no primary language we could read, which is a fact about our own indexing and never a fact about the projects. They are counted here and absent from every language below, so a reader meeting this table knows what it is a table of before reading it as the shape of the corpus.\u0022},{\u0022lead\u0022:\u00221\u0022,\u0022label\u0022:\u0022have no page\u0022,\u0022support\u0022:\u002250.0% of languages this reading measured at all (1 of 2)\u0022,\u0022tip\u0022:\u0022Fewer than five of their surveys carry an indexed security brief \\u2014 few enough that a page about the language would be a page about two or three projects. They are counted here rather than dropped, so this list is not quietly shorter than the reading behind it.\u0022}]",
+                "footnote": "A language is read off the code, so nothing here rests on anybody having said anything about themselves."
+              }
+            }
+          ],
+          "anchor": "cut"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "widget",
+              "tag": "cai-share-bars",
+              "props": {
+                "layout": "table",
+                "kicker": "By language",
+                "tip": "**Affected is taken over Measurable, never over Surveys.** A language that resolves few of its dependencies shows a shorter bar because less was looked at \u2014 not because less is there, which is why the measurable count has a column of its own.\n\nThe median is inked with the assurance band it falls in, and that scale is used here and nowhere else on this page: it is a judgement about a CAI score, and a share coloured by it would read good or bad in a direction this reading never claimed.\n\n100.0% of surveys in this reading (10 of 10) could be placed in a language at all.",
+                "label-heading": "Language",
+                "bar-heading": "Affected of measurable",
+                "columns": "[\u0022Surveys\u0022,\u0022Median\u0022,\u0022Measurable\u0022,\u0022No policy\u0022]",
+                "rows": "[{\u0022label\u0022:\u0022C#\u0022,\u0022href\u0022:\u0022/state-of-the-corpus/language/csharp/\u0022,\u0022cells\u0022:[\u00226\u0022,\u002262.5 Adequate\u0022,\u00225\u0022,\u00224\u0022],\u0022cellTones\u0022:[\u0022\u0022,\u0022fair\u0022,\u0022\u0022,\u0022\u0022],\u0022parts\u0022:[{\u0022weight\u0022:3,\u0022count\u0022:\u00223\u0022,\u0022label\u0022:\u0022affected\u0022,\u0022tone\u0022:\u0022accent\u0022},{\u0022weight\u0022:2,\u0022count\u0022:\u00222\u0022,\u0022label\u0022:\u0022not affected\u0022,\u0022tone\u0022:\u0022track\u0022}],\u0022note\u0022:\u00223 of 5\u0022,\u0022tip\u0022:\u002260.0% of surveys here whose dependencies a scanner could resolve (3 of 5)\u0022}]"
+              }
+            }
+          ],
+          "anchor": "board"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EEvery language\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cul\u003E\u003Cli\u003E\u003Cstrong\u003ELanguage\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Cstrong\u003ESurveys\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Cstrong\u003EMedian assurance\u003C/strong\u003E\u003C/li\u003E\u003Cli\u003E\u003Ca href=\u0022/state-of-the-corpus/language/csharp/\u0022\u003EC#\u003C/a\u003E\u003C/li\u003E\u003Cli\u003E6 surveys written mainly in this language\u003C/li\u003E\u003Cli\u003E62.5 across 6 surveys written mainly in this language\u003C/li\u003E\u003C/ul\u003E"
+            }
+          ],
+          "appearance": "TableList",
+          "anchor": "languages"
+        },
+        {
+          "type": "section",
+          "children": [
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003E\u003Cstrong\u003EAbout this reading\u003C/strong\u003E\u003C/p\u003E"
+            },
+            {
+              "type": "richtext",
+              "html": "\u003Cp\u003ETaken over 1 language with a page of its own, measured 22 September 2026 at 02:00 UTC. Corpus readings are append-only: this one is a citable observation of a single reading and is never edited. Every share on this page states the counts it was derived from, so any of them can be checked against the reading rather than taken on faith.\u003C/p\u003E"
+            }
+          ],
+          "appearance": "Note",
+          "anchor": "about"
+        }
+      ]
+    }
+  }
+}

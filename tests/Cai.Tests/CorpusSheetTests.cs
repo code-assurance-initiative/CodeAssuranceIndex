@@ -134,14 +134,22 @@ public sealed class CorpusSheetTests
 
         var json = Json(CorpusSheetBuilder.Build(FullCorpus(), TakenAt, history));
 
-        Assert.Contains("§5 Series", json, StringComparison.Ordinal);
-        Assert.Contains("cai-trend", json, StringComparison.Ordinal);
+        var flat = json.Replace("\\\"", "\"", StringComparison.Ordinal);
+
+        Assert.Contains("§5 Series", flat, StringComparison.Ordinal);
+        Assert.Contains("cai-trend", flat, StringComparison.Ordinal);
+
         // The line carries the medians, not the corpus size.
-        Assert.Contains("49.8,52.6", json.Replace("\\\"", "\"", StringComparison.Ordinal), StringComparison.Ordinal);
-        Assert.DoesNotContain("580,3545", json, StringComparison.Ordinal);
-        // And the growth is stated in words, with the population each median was taken over.
-        Assert.Contains("580 published measured codebases", json, StringComparison.Ordinal);
-        Assert.Contains("3,545 published measured codebases", json, StringComparison.Ordinal);
+        Assert.Contains("49.8,52.6", flat, StringComparison.Ordinal);
+        Assert.DoesNotContain("580,3545", flat, StringComparison.Ordinal);
+
+        // ★ And the growth is STATED, as the island's own figures row: two pairs, each with its two ends.
+        //   The second pair IS the first pair's population, which is why neither restates it in small type
+        //   — "580 → 3,545 published measured codebases" is what "across 580" and "across 3,545" said.
+        Assert.Contains("\"label\":\"Median\"", flat, StringComparison.Ordinal);
+        Assert.Contains("\"label\":\"Published measured codebases\"", flat, StringComparison.Ordinal);
+        Assert.Contains("\"value\":\"580\"", flat, StringComparison.Ordinal);
+        Assert.Contains("\"value\":\"3,545\"", flat, StringComparison.Ordinal);
     }
 
     /// <summary>★ The line says it is sampled, because the island states that contract to a reader as fact.</summary>

@@ -153,6 +153,30 @@ public sealed record CorpusSeries
         "published measured codebase",
         "published measured codebases");
 
+    /// <summary>
+    /// The size of the corpus across the dated readings — the population the median was taken over.
+    /// </summary>
+    /// <remarks>
+    /// ★★ STATED, NEVER DRAWN. A count plotted on an axis defined by the assurance band cutlines lands
+    /// thousands of units above the box, its end label reads a codebase count to one decimal place, and its
+    /// end dot is inked as though the corpus had scored Exemplary. This series exists so the corpus's own
+    /// growth can be said in words beside the line, with both ends dated.
+    /// </remarks>
+    public static CorpusSeries? Sizes(IReadOnlyList<DatedReading> readings)
+    {
+        ArgumentNullException.ThrowIfNull(readings);
+
+        var points = readings
+            .GroupBy(r => r.TakenAt.UtcDateTime.Date)
+            .Select(g => g.MaxBy(r => r.TakenAt)!)
+            .OrderBy(r => r.TakenAt)
+            .Where(r => r.MedianCai is not null && r.Codebases > 0)
+            .Select(r => Figure.Count(r.Codebases, CodebasesBasis, r.TakenAt))
+            .ToList();
+
+        return points.Count < MinimumReadings ? null : new CorpusSeries(points);
+    }
+
     private static Figure? Median(DatedReading reading) =>
         reading.MedianCai is { } median && reading.Codebases > 0
             ? Figure.Scalar(median, reading.Codebases, CodebasesBasis, reading.TakenAt)

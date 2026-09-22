@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Cai.Pages.Publishing;
 
 namespace Cai.Pages;
@@ -22,6 +23,11 @@ namespace Cai.Pages;
 /// </remarks>
 public static class CorpusSheetBuilder
 {
+    /// <summary>What the corpus count is a count of. ★ "Published", for the reason the index states.</summary>
+    private static readonly Basis CodebasesBasis = Basis.Of(
+        "published measured codebase",
+        "published measured codebases");
+
     /// <summary>The first path segment every corpus page lives under.</summary>
     /// <remarks>
     /// ★★ DELIBERATELY OUTSIDE <see cref="SurveyPageBuilder.Root"/>. <c>surveys</c> is the catalogue of
@@ -58,21 +64,24 @@ public static class CorpusSheetBuilder
         var children = new List<object?>
         {
             PageNodes.Section(
-                PageNodes.Heading(1, "State of the corpus"),
+                PageNodes.Heading(1, "The state of the corpus"),
                 PageNodes.RichText(PageProse.Paragraph(
                     $"Every codebase measured against the Codebase Assurance Index, read together on "
                     + $"{PageProse.DayAndTime(reading.TakenAt)}. Each figure below carries the population it "
                     + "was taken over, because the populations are not the same."))),
+            Masthead(reading),
             Population(reading),
             Findings(reading),
             Languages(reading, languages),
             Countries(reading, countries),
             Series(history ?? []),
+            Elsewhere(records, takenAt),
+            About(reading),
         };
 
         return new SurveyPage(
             PathForIndex(),
-            "State of the corpus",
+            "The state of the corpus",
             MetaDescription(reading),
             PageNodes.Section([.. children]));
     }
@@ -479,7 +488,19 @@ public static class CorpusSheetBuilder
         }
 
         var weekly = medians.Weekly();
-        var note =
+        var sizes = CorpusSeries.Sizes(history);
+
+        // ★ THE SECOND PAIR IS THE FIRST PAIR'S POPULATION, so neither restates it: "6 → 10 published
+        //   measured codebases" IS what "across 6" and "across 10" say under the medians. The label spells
+        //   the basis, which is the condition for dropping the sub-lines at all.
+        var statesItsOwn = sizes is null;
+        var figures = new List<object?>
+        {
+            PageNodes.Movement(medians.First, medians.Last, "Median", statesItsOwn),
+            sizes is null ? null : PageNodes.Movement(sizes.First, sizes.Last, "Published measured codebases", false),
+        };
+
+        var tip =
             "The median CAI of the whole measured corpus. Every point is one reading taken on the day it is "
             + "dated, kept as it was taken and never rewritten: a correction is a new reading on a new day, "
             + "never an edit to an old one. So this line is read out of what was recorded at the time and is "
@@ -488,28 +509,100 @@ public static class CorpusSheetBuilder
             + "which fits a median and leaves a share or a count to be stated as its own dated figure instead."
             + "\n\nThe line is sampled to one point a week, and each point is the newest reading on or "
             + "before its own date. The corpus is read nightly and its median sits still for weeks, so a mark "
-            + "per reading put a mark wherever the median happened to change — and the spacing of the marks "
-            + "then drew the data's volatility rather than the passage of time.";
+            + "per reading put a mark wherever the median happened to change. The spacing of the marks then "
+            + "drew the data's volatility rather than the passage of time.";
 
         return PageNodes.Section(
             null,
             "trend",
             PageNodes.Widget(
                 "cai-trend",
-                ("heading", "§5 Series"),
+                ("kicker", "\u00a75 Series"),
+                ("tip", tip),
+                ("figures", JsonSerializer.Serialize(figures.Where(f => f is not null).ToList())),
                 ("series", weekly.Points()),
-                ("sampled", weekly.Sampling),
-                ("first-date", PageProse.Day(medians.First.TakenAt)),
-                ("last-date", PageProse.Day(medians.Last.TakenAt)),
-                ("tip", note)),
-            // ★ BOTH ENDS IN WORDS. A chart here is evidence for a figure, never a figure of its own, and a
-            //   trend section cannot be built without the pair — which is why the medians carry their own
-            //   populations and the size pair is stated as the movement it is.
-            PageNodes.Band(
-                "movements",
-                PageNodes.Stat(medians.First, "median when the record opens"),
-                PageNodes.Stat(medians.Last, "median at the latest reading")));
+                // ★ The dates are the SAMPLED series' own ends, so resampling cannot desynchronise them from
+                //   the points they label.
+                ("first-date", PageProse.Day(weekly.First.TakenAt)),
+                ("last-date", PageProse.Day(weekly.Last.TakenAt)),
+                // ★ The claim travels WITH the points: only Weekly sets it, so no call site can promise a
+                //   sampling it did not do.
+                ("sampled", weekly.Sampling)));
     }
+
+    // ── the masthead, §6 and the provenance ──────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// The figures a reader should see first, over the instant the reading was taken.
+    /// </summary>
+    /// <remarks>
+    /// ★★ THE INSTANT OF THE READING, NOT THE DAY AND NOT THE BUILD. The dateline is the label a reader
+    /// cites this sheet by, and two readings a day under one day stamp cannot be told apart.
+    /// </remarks>
+    private static Dictionary<string, object?>? Masthead(CorpusReading reading)
+    {
+        var codebases = Figure.Count(reading.Codebases, CodebasesBasis, reading.TakenAt);
+
+        return PageNodes.FigureBand(
+            "masthead",
+            "head",
+            null,
+            PageProse.DayAndTime(reading.TakenAt),
+            null,
+            PageNodes.Reading(codebases, "Codebases"),
+            reading.SecurityReadings == 0
+                ? null
+                : PageNodes.Reading(
+                    Figure.Count(reading.SecurityReadings, CorpusReading.SurveyedBasis, reading.TakenAt),
+                    "Read for security"));
+    }
+
+    /// <summary>
+    /// §6. Where a reader goes from the sheet — and only to pages this build produced.
+    /// </summary>
+    /// <remarks>
+    /// ★★ A CARD IS OFFERED BECAUSE A PAGE WAS BUILT, NOT BECAUSE ONE PROBABLY WAS. The cards are counted
+    /// out of the same call that produces the pages, so the index and the set cannot disagree. They did
+    /// once, in the producer: the cards were gated on a sub-reading merely EXISTING while the pages were
+    /// gated on it having something to say, and at a zero population a reader was offered four links to
+    /// pages nobody built — which is a 404, or worse, the page the last sweep left behind.
+    /// </remarks>
+    private static Dictionary<string, object?>? Elsewhere(IReadOnlyList<SurveyRecord> records, DateTimeOffset takenAt)
+    {
+        var built = CorpusGroupPages.Build(records, takenAt)
+            .Concat(CorpusAdvisoryPages.Build(CorpusReading.From(records, takenAt), takenAt))
+            .Select(p => p.Path)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var cards = new List<object?>();
+        foreach (var (path, label, note) in new[]
+        {
+            (CorpusGroupPages.PathForLanguageIndex(), "By language", "Every language with enough measured codebases to read as a group"),
+            (CorpusGroupPages.PathForCountryIndex(), "By country", "Where the codebases' owners say they are, with the denominators that make it readable"),
+            (CorpusAdvisoryPages.PathForAdvisoryIndex(), "Advisories seen", "Every advisory seen across the corpus — each count a floor"),
+            (CorpusAdvisoryPages.PathForPackageIndex(), "Vulnerable packages", "Every package seen carrying an advisory — each count a floor"),
+        })
+        {
+            if (built.Contains(path))
+            {
+                cards.Add(PageNodes.LinkCard("cai", label, note, $"/{path}/"));
+            }
+        }
+
+        return PageNodes.LinkCards("elsewhere", "§6 Elsewhere in this reading", null, cards);
+    }
+
+    /// <summary>What this reading is, and the one thing a reader must know before quoting it.</summary>
+    private static Dictionary<string, object?> About(CorpusReading reading) =>
+        PageNodes.Section(
+            PageNodes.Note,
+            "about",
+            PageNodes.RichText(PageProse.Paragraph(
+                $"Taken over {PageProse.Count(reading.Codebases)} published measured codebases, measured "
+                + $"{PageProse.DayAndTime(reading.TakenAt)}. Corpus readings are append-only: this one is a "
+                + "citable observation of a single reading and is never edited. Every share on this page "
+                + "states the counts it was derived from, so any of them can be checked against the reading "
+                + "rather than taken on faith.")));
 
     // ── the sentences a figure is stated inside ──────────────────────────────────────────────────────────────
 
