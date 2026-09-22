@@ -128,25 +128,23 @@ jobs:
           rsync -a --delete rubrics/ /home/jimmy/apps/cai-web/rubrics/
           rm -rf /home/jimmy/apps/cai-web/app.prev
           [ -d /home/jimmy/apps/cai-web/app ] && mv /home/jimmy/apps/cai-web/app /home/jimmy/apps/cai-web/app.prev || true
-          mv /home/jimmy/apps/cai-web/app.next /home/jimmy/apps/cai-web/app
-          sudo systemctl restart cai-web.service
 
-      # ★★ THE SITE PUBLISHER'S CREDENTIAL IS DISCOVERED, NOT CONFIGURED. The authoring token lives in the
-      #    running imprint colour's own settings on this host; reading it there means no secret is typed, held
-      #    in a repository secret, or pasted into a unit file. This is the same discovery the producer's
-      #    promote.sh did for the publisher that used to live there — carried over with the publisher.
-      #
-      # ★ FAIL-CLOSED AND SAID OUT LOUD. No running imprint colour with a token ⇒ the env file is removed and
-      #   the sweep stays inert, with a warning in the run. A publisher that cannot authenticate must not
-      #   start and retry every tick against a live site.
-      - name: Point the site publisher at the CMS
-        run: |
-          set -euo pipefail
-          env_file=/home/jimmy/apps/cai-web/syndication.env
-          # ★ ASKED OF SYSTEMD, NEVER GUESSED FROM A PATH. Imprint runs blue/green, so which directory holds
-          #   the live settings changes on its cutovers; querying the ACTIVE unit's WorkingDirectory means a
-          #   cutover there needs no bookkeeping here. A glob would work until the day it silently did not,
-          #   and the symptom would be a publisher that quietly stopped publishing.
+          # ★★ THE SITE PUBLISHER'S CONFIGURATION, WRITTEN INTO THE PUBLISHED APP AND NOWHERE ELSE. The unit
+          #    file in deploy/ is committed for reference and never installed, so Environment= lines added
+          #    there would reach nothing; ASPNETCORE_ENVIRONMENT=Production is set on the running unit, so
+          #    the host loads appsettings.Production.json from its content root — which is this directory,
+          #    replaced on every deploy.
+          #
+          # ★★ AND THE TOKEN IS DISCOVERED, NOT CONFIGURED. It lives in the running imprint colour's own
+          #    authoring settings on this host, so no secret is typed, held as a repository secret, or
+          #    committed — which matters more than usual in a repository whose claim is that its evidence is
+          #    public. Asked of SYSTEMD rather than guessed from a path: imprint runs blue/green, so a glob
+          #    would work until the day it silently did not, and the symptom would be a publisher that
+          #    quietly stopped publishing.
+          #
+          # ★ FAIL-CLOSED. No running imprint colour with a token ⇒ no file ⇒ SyndicationOptions.IsConfigured
+          #   is false ⇒ the sweep is never registered. Nothing points a publisher at a live site by accident,
+          #   and the run says so rather than passing quietly.
           token=""
           for unit in imprint-green imprint-blue; do
             systemctl is-active --quiet "$unit.service" || continue
@@ -157,13 +155,50 @@ jobs:
           done
           if [ -n "$token" ]; then
             umask 077
-            printf 'Syndication__Token=%s\n' "$token" > "$env_file"
+            jq -n --arg token "$token" '{
+              Syndication: {
+                SiteBaseUrl: "https://app.imprint.canine.dev",
+                SiteId: "c3236bdf87db403ebc06379649f7a2d8",
+                Token: $token,
+                TickMinutes: 60
+              }
+            }' > /home/jimmy/apps/cai-web/app.next/appsettings.Production.json
             echo "site publisher: ON"
           else
-            rm -f "$env_file"
             echo "::warning::no running imprint colour with an authoring token — the site publisher stays inert"
           fi
+
+          mv /home/jimmy/apps/cai-web/app.next /home/jimmy/apps/cai-web/app
           sudo systemctl restart cai-web.service
+
+      # ★★ "site publisher: ON" ABOVE IS AN ECHO, NOT A CHECK. What proves the publisher is running is the
+      #    publisher saying what it last did — SiteSweepMemory is registered even when the publisher is not,
+      #    precisely so an unconfigured host answers "never swept" instead of answering nothing. A health
+      #    surface with no reading and a publisher that stopped look identical, and only one of them is fine.
+      #
+      # ★ WARN, NEVER FAIL. The first sweep after a cutover composes every page in the corpus, and a deploy
+      #   that rolled back because a publisher was still working would be the deploy breaking the thing it
+      #   just shipped. The run carries the sentence either way.
+      - name: What the site publisher last did
+        run: |
+          set -euo pipefail
+          reading=""
+          for i in $(seq 1 24); do
+            reading=$(curl -s http://127.0.0.1:8090/api/health/detail \
+              | jq -r '.checks[] | select(.name == "registry") | .data.sitePublishing // empty' || true)
+            case "$reading" in
+              ""|*never*) sleep 5 ;;
+              *) break ;;
+            esac
+          done
+          if [ -z "$reading" ]; then
+            echo "::warning::the registry health reading carries no sitePublishing line — the publisher is not wired"
+          else
+            echo "site publishing: $reading"
+            case "$reading" in
+              *never*) echo "::warning::the publisher has not completed a sweep — it may still be on its first pass, or it is inert" ;;
+            esac
+          fi
 
       - name: Health check (roll back on failure)
         run: |
