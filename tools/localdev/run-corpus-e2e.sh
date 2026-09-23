@@ -267,6 +267,13 @@ node "$ROOT/tools/localdev/ui/shoot.mjs" \
 RESULT=$(( RESULT + $? ))
 set -e
 
+# ── every internal link, over every published page ───────────────────────────────────────────
+# ★ The shoot opens ONE page per shape — fifteen of sixty-seven — so a link pointing at a path
+#   nobody built survives on every page it never visits. This reads the published files instead.
+echo
+echo "links:"
+python3 "$ROOT/tools/localdev/check-links.py" "$DATA/publish" || RESULT=$(( RESULT + 1 ))
+
 echo
 echo "screenshots: $SHOTS/$STAMP   (LOOK at them — a green report over an unviewed screenshot is worthless)"
 echo "             $SHOTS/$STAMP/dark      the same shapes in the dark scheme"

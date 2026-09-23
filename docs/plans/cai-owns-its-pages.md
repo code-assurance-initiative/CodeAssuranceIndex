@@ -607,6 +607,29 @@ that is correct for its three uses, because each introduces a SENTENCE that shou
 has nothing to say ("0 countries have no page, because…"). The difference now says so in both places,
 so nobody reuses the §4 helper for a figure where zero is a result.
 
+### ★★ EVERY LINK ON EVERY PAGE, AND THE TWO ADDRESSES THE SWEEP DOES NOT BUILD
+
+The screenshot runner opens ONE page per shape — fifteen of sixty-seven — so a link pointing at a
+path nobody built survives on every page it never visits. `tools/localdev/check-links.py` reads the
+published files instead: 67 pages, 518 internal links, 150 published addresses, **no dangling
+links**. Falsified by removing a built page from a copy of the output, where it names the missing
+address and the pages that point at it.
+
+★★ **AND IT NAMES TWO ADDRESSES THE SWEEP CANNOT BUILD** — reported every run rather than filtered
+away, because they are the standard's dependency on its own authored pages:
+
+| Address | Linked from | What it is |
+|---|---|---|
+| `/` | all 67 pages | the site's home page — the header logo on every page |
+| `/verify/` | 40 pages | the **"Verify this score yourself"** card on every survey portrait |
+
+Neither is syndicated, so a scratch harness site does not have them and their absence here is
+correct. **In production they must exist as authored pages, and if `/verify/` ever stops existing,
+roughly six thousand survey pages point at nothing and no sweep of the published set can tell.**
+★ TO CHECK ON PROD, once it is reachable: `curl -o /dev/null -w '%{http_code}'
+https://codeassuranceindex.info/verify/` — this has not been verified, because the estate has been
+dark since 10:02 UTC.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health
