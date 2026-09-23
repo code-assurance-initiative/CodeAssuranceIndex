@@ -377,6 +377,31 @@ session inside one producer.
 Either scope the CMS token to CAI alone, or keep it open and accept that layout is negotiable.
 **[PROPOSED] — this is the owner's call, not the implementer's.**
 
+### ★★ VERIFIED IN PRODUCTION, 2026-09-23 07:00
+
+- **kennel prod runs `955b9cee9`** (`/api/system/info`), started 01:30 — the promote carried all three
+  producer facts. **`Registry` is absent from its module list**, and the `registrySweep` key is gone
+  from system-info: the producer no longer publishes pages and no longer claims to.
+- **CAI's publisher is live and correctly inert**: `0 built, 0 changed, 0 withdrawn, 0 failed,
+  at 06:55:52Z`. It sweeps hourly and touches nothing, because nothing is granted.
+- **The site is intact**: 10,149 URLs, unchanged.
+- One preprod job fails — `documentation-claims`, which the workflow's own comments exclude from
+  gating ("can be starved and nobody waits"). It was failing before this work and on other people's
+  commits; its self-test reports three arms masked by a missing PostgreSQL data directory on the
+  runner and one silently-passing arm. Not caused by, and not blocking, this move.
+
+### ★★ THE END-TO-END RENDER, AND WHAT IT CAUGHT
+
+`tools/localdev/run-corpus-e2e.sh` boots a local imprint, seeds a scratch registry, runs the REAL
+sweep into it, serves the projected files and screenshots every shape. 62 pages, 12 shapes, all 200.
+
+It found in one look what four kinds of test had passed over: the survey portrait handed `cai-trend`
+a comma-joined string and `cai-lens-gauges` a pipe-and-semicolon string where both islands parse
+JSON, so each rendered **its heading over a blank gap**. The node diff compares tags and sections;
+the island contract compares prop NAMES; neither reads a value. Fixed at `98bc9a4`, with the prop
+SHAPES now pinned against the producer's golden — and the harness's own emptiness check taught to
+look past the heading, which it had been counting as content.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health
