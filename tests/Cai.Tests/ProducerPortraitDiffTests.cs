@@ -86,6 +86,67 @@ public sealed class ProducerPortraitDiffTests
             StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// ★★ THE ISLANDS ARE HANDED THE SAME SHAPE OF VALUE, NOT JUST THE SAME PROP NAMES.
+    /// </summary>
+    /// <remarks>
+    /// <para>This test exists because four kinds of check passed over a page with two empty sections.
+    /// The node diff compares tags and sections; the island contract compares prop NAMES against the
+    /// site's manifest; neither reads a VALUE. The portrait was handing <c>cai-trend</c> a
+    /// comma-joined string and <c>cai-lens-gauges</c> a pipe-and-semicolon string where both islands
+    /// parse JSON — so each rendered its heading and nothing under it, which looks like a design
+    /// decision rather than a defect. A rendered screenshot caught it in one look.</para>
+    /// <para>★ The SHAPE is asserted, not the contents: the producer's numbers come from its own
+    /// fixture and the standard's from deliveries, so equal values would be a coincidence. What must
+    /// match is that both are arrays, and that the gauge objects carry the three keys the island
+    /// reads.</para>
+    /// </remarks>
+    [Fact]
+    public void The_islands_are_handed_the_shape_of_value_they_parse()
+    {
+        var producer = Producer();
+        var standard = Standard();
+
+        foreach (var (tag, prop) in new[] { ("cai-trend", "series"), ("cai-lens-gauges", "lenses") })
+        {
+            var theirs = PropOf(producer, tag, prop);
+            var ours = PropOf(standard, tag, prop);
+
+            Assert.StartsWith("[", theirs, StringComparison.Ordinal);
+            Assert.StartsWith("[", ours, StringComparison.Ordinal);
+
+            // It parses as JSON of the same kind, with the same number of entries.
+            var theirItems = JsonSerializer.Deserialize<JsonElement>(theirs);
+            var ourItems = JsonSerializer.Deserialize<JsonElement>(ours);
+            Assert.Equal(JsonValueKind.Array, ourItems.ValueKind);
+            Assert.Equal(theirItems[0].ValueKind, ourItems[0].ValueKind);
+        }
+
+        // And the gauge objects carry the keys the island reads.
+        var gauge = JsonSerializer.Deserialize<JsonElement>(PropOf(standard, "cai-lens-gauges", "lenses"))[0];
+        Assert.Equal(
+            ["label", "note", "value"],
+            gauge.EnumerateObject().Select(p => p.Name).Order(StringComparer.Ordinal));
+    }
+
+    private static string PropOf(JsonElement page, string tag, string prop)
+    {
+        string? found = null;
+        PageShape.Walk(page.GetProperty("Node"), node =>
+        {
+            if (node.TryGetProperty("type", out var type) && type.GetString() == "widget"
+                && node.TryGetProperty("tag", out var actual) && actual.GetString() == tag
+                && node.TryGetProperty("props", out var props)
+                && props.TryGetProperty(prop, out var value))
+            {
+                found = value.GetString();
+            }
+        });
+
+        Assert.NotNull(found);
+        return found!;
+    }
+
     /// <summary>★ And the page is at the same address, under the same title.</summary>
     [Fact]
     public void The_standard_publishes_it_at_the_same_address()

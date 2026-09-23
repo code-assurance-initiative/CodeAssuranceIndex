@@ -84,7 +84,7 @@ internal static class PageShape
         return found;
     }
 
-    private static void Walk(JsonElement node, Action<JsonElement> visit)
+    internal static void Walk(JsonElement node, Action<JsonElement> visit)
     {
         if (node.ValueKind == JsonValueKind.Object)
         {

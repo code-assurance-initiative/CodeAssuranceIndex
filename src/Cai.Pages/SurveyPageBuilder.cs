@@ -66,7 +66,12 @@ public static class SurveyPageBuilder
         // under one standard.
         if (record.Deliveries.Count > 1)
         {
-            var series = string.Join(",", record.Deliveries.Select(d => Number(d.Verdict.Cai)));
+            // ★★ JSON, NOT A JOINED STRING. The island parses this prop as an array; handed
+            //    "61.2,68.1,72.4" it renders a heading and nothing under it — a section that looks
+            //    like a design decision rather than a broken one. Four kinds of test passed over
+            //    that: the node diff compares TAGS and sections, the island contract compares prop
+            //    NAMES, and neither reads a value. A rendered screenshot caught it in one look.
+            var series = JsonSerializer.Serialize(record.Deliveries.Select(d => Math.Round(d.Verdict.Cai, 1)));
             sections.Add(PageNodes.Section(null, "trend", PageNodes.Widget(
                 "cai-trend",
                 ("heading", "How the score moved"),
@@ -80,9 +85,16 @@ public static class SurveyPageBuilder
         // the numbers travel as an attribute so a reader who never runs the script still finds them.
         if (latest.Verdict.Lenses.Count > 0)
         {
-            var gauges = string.Join(
-                ";",
-                verdict.Lenses.Select(l => $"{l.Lens}|{Number(l.Score)}|{l.Band}"));
+            // ★★ THE SAME DEFECT, AND THE SAME LESSON: the island reads {label, value, note}
+            //    objects, and a pipe-and-semicolon string renders as nothing at all.
+            // ★ The label is the STANDARD's own name for the lens (LensCatalog), not the key and not
+            //   the producer's wording — a lens's name is the standard's to give.
+            var gauges = JsonSerializer.Serialize(verdict.Lenses.Select(l => new
+            {
+                label = LensName(l.Lens),
+                value = Math.Round(l.Score, 1),
+                note = l.Band,
+            }));
             sections.Add(PageNodes.Section(null, "lenses", PageNodes.Widget(
                 "cai-lens-gauges",
                 ("heading", "What was measured, lens by lens"),
@@ -272,16 +284,24 @@ public static class SurveyPageBuilder
         + $"Assurance Index — {record.Latest.Verdict.Band}, measured at a pinned commit under "
         + $"{record.Latest.RubricVersion}, with the survey published in full.";
 
-    private static string TrendCaption(SurveyRecord record)
-    {
-        var first = record.Deliveries[0];
-        var last = record.Latest;
-        var delta = last.Verdict.Cai - first.Verdict.Cai;
-        var direction = delta >= 0 ? "up" : "down";
-        return $"{record.Deliveries.Count} measurements, from {MeasuredOn(first)} to {MeasuredOn(last)}: "
-             + $"{Number(first.Verdict.Cai)} to {Number(last.Verdict.Cai)} — {direction} "
-             + $"{Number(Math.Abs(delta))}. Every published measurement of this repository, oldest first.";
-    }
+    /// <summary>
+    /// The one thing the chart cannot say about itself.
+    /// </summary>
+    /// <remarks>
+    /// ★★ IT NO LONGER RESTATES THE MOVEMENT, because the island already does. Rendered, the section
+    /// carried two near-identical sentences — "3 measurements, from 25 June to 24 August: 54.0 to
+    /// 78.2 — up 24.2." from the island, and the same sentence again from here, differing only in
+    /// whether it wrote 54 or 54.0. A page that says one thing twice, slightly differently, invites a
+    /// reader to look for the difference. Caught by looking at a screenshot; no test could have,
+    /// because both halves were individually correct.
+    /// <para>★ WHAT SURVIVES IS THE PART THE CHART CANNOT SHOW: that this is EVERY published
+    /// measurement rather than a filtered climb. The producer's caption also explained why the
+    /// headline could sit above the newest point — that sentence is gone with the rule it described,
+    /// now that the page publishes the latest reading rather than the peak.</para>
+    /// </remarks>
+    private static string TrendCaption(SurveyRecord record) =>
+        "Every published measurement of this repository, oldest first — including the ones that went "
+        + "down. It is not a best-so-far line.";
 
     /// <summary>When the code was MEASURED — never when the delivery was signed.</summary>
     /// <remarks>
@@ -293,6 +313,16 @@ public static class SurveyPageBuilder
     /// </remarks>
     private static string MeasuredOn(DeliveryPayload delivery) =>
         Day(delivery.Measurement.ScannedAt is { Length: > 0 } scanned ? scanned : delivery.IssuedAt);
+
+    /// <summary>The standard's own name for a lens — never the key, which is an identifier.</summary>
+    /// <remarks>
+    /// ★ An unknown key passes through rather than being dropped: a lens this catalogue has not met
+    /// yet is still a lens that was measured, and a gauge missing from the page is worse than one
+    /// labelled with its key.
+    /// </remarks>
+    private static string LensName(string key) =>
+        LensCatalog.All.FirstOrDefault(l => string.Equals(l.Key, key, StringComparison.Ordinal))?.DisplayName
+        ?? key;
 
     private static string Number(double value) => value.ToString("0.#", CultureInfo.InvariantCulture);
 
