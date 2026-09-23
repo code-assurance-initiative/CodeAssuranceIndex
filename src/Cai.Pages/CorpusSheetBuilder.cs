@@ -479,6 +479,14 @@ public static class CorpusSheetBuilder
     /// recomputed from today's corpus — which the standard COULD do, and which would draw a line that never
     /// happened the first time a publication was withdrawn.</para>
     ///
+    /// <para>★★ AND WHEN IT IS ABSENT, §6 KEEPS ITS NUMBER — the sheet reads §1, §2, §3, §4, §6. That gap
+    /// is deliberate and must not be closed by renumbering: this page is "a citable observation of a single
+    /// reading and is never edited", so a citation of "§4 By country" has to mean the same section on every
+    /// reading ever published. Renumbering would make a section number depend on how many dated readings
+    /// the store happened to hold that day. Rendered and looked at with a single dated reading
+    /// (<c>CORPUS_E2E_WEEKS=1</c>): six islands rather than seven, no heading over a blank gap, and the
+    /// published HTML contains no §5 at all.</para>
+    ///
     /// <para>★ THE SECOND PAIR IS THE FIRST PAIR'S POPULATION, which is why neither restates it: "580 →
     /// 3,545 published measured codebases" IS what "across 580" and "across 3,545" say under the medians.
     /// Saying it twice is the redundancy; moving it behind a disclosure would be worse, because behind a

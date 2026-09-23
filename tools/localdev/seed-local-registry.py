@@ -29,6 +29,15 @@ COUNTRIES = ["Denmark", "Denmark", "Denmark", "Germany", "Germany", "United Stat
 ADVISORIES = ["GHSA-aaaa-bbbb-cccc", "CVE-2026-0001", "CVE-2026-0002"]
 PACKAGES = ["left-pad", "Acme.Widgets", "google.golang.org/grpc"]
 
+# ★★ ONE OF EACH SEEN TOO FEW TIMES TO GET A PAGE. Both indexes end with a sentence saying how many
+#    were HELD BACK — "N are not listed, because each was seen in fewer than 3 codebases... They are
+#    absent from the list rather than folded into it" — which is what stops a table of counts reading
+#    as a census of the corpus. Nothing had ever rendered it, because nothing here was ever below the
+#    floor. These two are carried by a single subject each.
+RARE_ADVISORY = "CVE-2026-0099"
+RARE_PACKAGE = "Acme.Rarely"
+RARE_ORDINAL = 6
+
 
 # The two subjects whose delivery count is deliberately short of the rest.
 ONCE_OWNER = "acme-once"
@@ -140,8 +149,15 @@ def payload(ordinal, at, rng):
         "pinnedActions": ordinal % 3 == 0,
         "advisoriesRead": True,
         "advisoryListComplete": ordinal % 13 != 0,
-        "advisories": ([{"advisoryId": ADVISORIES[ordinal % len(ADVISORIES)],
-                         "package": PACKAGES[ordinal % len(PACKAGES)],
+        # ★★ INDEXED BY ordinal // 3, NOT ordinal. `affected` is `ordinal % 3 == 0`, so indexing the
+        #    catalogue by `ordinal % 3` handed every affected subject entry [0] and the other two
+        #    advisories — and the other two packages — could never appear. The index published one row
+        #    and looked right. Two moduli that are the same modulus is a fixture that tests one case
+        #    while appearing to test three.
+        "advisories": ([{"advisoryId": (RARE_ADVISORY if ordinal == RARE_ORDINAL
+                                        else ADVISORIES[(ordinal // 3) % len(ADVISORIES)]),
+                         "package": (RARE_PACKAGE if ordinal == RARE_ORDINAL
+                                     else PACKAGES[(ordinal // 3) % len(PACKAGES)]),
                          "packageVersion": "1.3.0",
                          "inherited": ordinal % 2 == 0}] if affected else []),
     }

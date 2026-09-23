@@ -560,6 +560,31 @@ with the verdict, and the producer's own golden carries a full lens set. **The f
 the page.** It carries the same lenses as every other subject now, with a comment saying why, so the
 next reader does not file the report I nearly did.
 
+### ★★ TWO MORE STATES NOTHING HAD DRAWN — BOTH CORRECT, AND ONE FIXTURE FLAW BEHIND THEM
+
+**The held-back sentence had never rendered.** Both indexes end by saying how many advisories or
+packages were left out for being seen in fewer than three codebases — the sentence that stops a table
+of counts reading as a census. It had never appeared, because nothing in the seed was ever below the
+floor. The reason is worth more than the fix: `affected` is `ordinal % 3 == 0` and the catalogue was
+indexed by `ordinal % 3`, so **every affected subject got entry [0]** and the other two advisories
+and the other two packages could never appear. One row, and the page looked right. Two moduli that
+are the same modulus is a fixture that tests one case while appearing to test three.
+
+Indexed by `ordinal // 3` now, with one advisory and one package carried by a single subject each.
+Both indexes render three rows, one at exactly the floor of 3, and the held-back sentence reads
+correctly in both: *"25.0% of advisories this reading could see (1 of 4) are not listed, because each
+was seen in fewer than 3 codebases."*
+
+**§5 refuses a line through one point, and the sheet stays whole.** `CORPUS_E2E_WEEKS=1` (new
+passthrough) seeds a single dated reading: the sheet comes back with six islands instead of seven,
+no empty island, and no §5 in the published HTML at all. A unit test already held the refusal; what
+it could not see is the failure mode this harness exists for — a heading over a blank gap.
+
+★ And §6 keeps its number: the sheet reads §1, §2, §3, §4, §6. That gap is deliberate and is now
+written into `CorpusSheetBuilder` so nobody closes it — the sheet is "a citable observation of a
+single reading", so "§4 By country" must mean the same section on every reading ever published, and
+renumbering would make a section number depend on how many dated readings the store held that day.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health

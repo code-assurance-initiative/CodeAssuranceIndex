@@ -40,6 +40,11 @@ CAI_PORT="${CAI_PORT:-8190}"         # the CAI host that runs the sweep
 AUTHORING_TOKEN="${CORPUS_E2E_TOKEN:-corpus-e2e-local-token}"
 SITE_NAME="CAI E2E"
 SUBJECTS="${CORPUS_E2E_SUBJECTS:-40}"
+# ★ How many backdated corpus readings the seed writes. One of them is a state worth rendering on
+#   purpose: §5 must REFUSE to draw a line through a single point, and the failure mode if it ever
+#   stopped refusing is a heading over a blank gap — which is exactly what this harness catches and
+#   exactly what a unit test cannot see. CORPUS_E2E_WEEKS=1 renders it.
+WEEKS="${CORPUS_E2E_WEEKS:-8}"
 
 FRESH=0; KEEP=0
 while [ $# -gt 0 ]; do
@@ -187,7 +192,8 @@ stop_cai
 
 # ── 4. seed published subjects ───────────────────────────────────────────────────────────────
 echo "[4/7] seeding $SUBJECTS published subjects"
-python3 "$ROOT/tools/localdev/seed-local-registry.py" --db "$REGISTRY_DB" --subjects "$SUBJECTS"
+python3 "$ROOT/tools/localdev/seed-local-registry.py" --db "$REGISTRY_DB" --subjects "$SUBJECTS" \
+  --weeks "$WEEKS"
 
 # ── 5. the sweep ─────────────────────────────────────────────────────────────────────────────
 # The publish loop runs its first sweep AT STARTUP (SitePublishHostedService's do-while), so booting
