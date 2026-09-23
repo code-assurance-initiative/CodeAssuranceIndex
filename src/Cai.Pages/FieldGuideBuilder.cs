@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using Cai.Pages.Publishing;
 
 namespace Cai.Pages;
 
@@ -17,6 +18,9 @@ namespace Cai.Pages;
 /// </remarks>
 public static class FieldGuideBuilder
 {
+    /// <summary>How much of the index a survey resolved.</summary>
+    private static readonly Basis DepthBasis = Basis.Of("dimension", "dimensions");
+
     /// <summary>The guide for a field, or null when that field has no guide.</summary>
     /// <remarks>
     /// ★ THE NULL COMES FROM <see cref="LanguageField.GuidePath"/> AND NOWHERE ELSE. A second condition
@@ -48,12 +52,16 @@ public static class FieldGuideBuilder
                 // How deep the surveys of this field reached. Omitted rather than zeroed while no subject
                 // here records it — a band of three wraps 2+1 between roughly 560 and 720px, the band lays
                 // that out, and the omission stays an omission.
+                // ★ THE LABEL ASKS THE BASIS HOW MANY THERE ARE. A survey that resolved a single
+                //   dimension is a real, degraded survey, and a hardcoded plural published
+                //   "1 dimensions resolved, typically" — which is the defect Basis exists to prevent.
                 field.DepthMedian is { } depth
                     ? PageNodes.Stat(
                         PageProse.Count(depth),
                         field.DepthMeasured == ranked.Count
-                            ? "dimensions resolved, typically"
-                            : $"dimensions resolved, typically · recorded for {PageProse.Count(field.DepthMeasured)}")
+                            ? $"{DepthBasis.For(depth)} resolved, typically"
+                            : $"{DepthBasis.For(depth)} resolved, typically · recorded for "
+                                + PageProse.Count(field.DepthMeasured))
                     : null,
                 totalLoc > 0 ? PageNodes.Stat(PageProse.Compact(totalLoc), "lines in total") : null),
 

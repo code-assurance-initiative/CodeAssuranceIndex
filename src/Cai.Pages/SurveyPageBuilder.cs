@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using Cai.Delivery;
+using Cai.Pages.Publishing;
 using Cai.Scoring;
 
 namespace Cai.Pages;
@@ -23,6 +24,9 @@ namespace Cai.Pages;
 /// </remarks>
 public static class SurveyPageBuilder
 {
+    /// <summary>How many times this codebase has been measured.</summary>
+    private static readonly Basis MeasurementsBasis = Basis.Of("measurement over time", "measurements over time");
+
     /// <summary>The first path segment every survey page lives under.</summary>
     /// <remarks>
     /// NOT <c>registry</c>: the registry stores and distributes signed deliveries. These pages are the
@@ -232,9 +236,14 @@ public static class SurveyPageBuilder
                 others.Count > 0 ? $"with {string.Join(", ", others)}" : "primary language");
         }
 
+        // ★★ THE COUNT ASKS THE BASIS HOW MANY THERE ARE. A subject's FIRST delivery is its only one,
+        //    so a hardcoded plural here read "1 measurements over time" on the very first page ever
+        //    published about any codebase — the commonest state a portrait can be in, not an edge
+        //    case. This is the defect Basis exists to make unwritable, and it came back in the one
+        //    place a stat cell takes its label as a bare string.
         yield return PageNodes.Stat(
             record.Deliveries.Count.ToString(CultureInfo.InvariantCulture),
-            "measurements over time");
+            MeasurementsBasis.For(record.Deliveries.Count));
     }
 
     /// <summary>What the run recorded, and who recorded it.</summary>
