@@ -57,6 +57,10 @@ function shapes(paths) {
     ['survey-portrait', first(/^surveys\/github\/acme-(?!once|twice)/)],
     ['survey-portrait-once', first(/^surveys\/github\/acme-once\//)],
     ['survey-portrait-twice', first(/^surveys\/github\/acme-twice\//)],
+    // ★★ AND THE PAGE ALMOST EVERY SUBJECT WOULD GET TODAY. Every subject in the live registry holds
+    //    a MINOR 1.0 delivery — no languages, no origin, no security reading — so this is what the
+    //    standard publishes for them the moment publication is granted. It had never been drawn.
+    ['survey-portrait-thin', first(/^surveys\/github\/acme-thin\//)],
     ['field-guide', first(/^surveys\/lang\//)],
     ['corpus-sheet', 'state-of-the-corpus'],
     ['corpus-languages-index', first(/^state-of-the-corpus\/languages$/)],

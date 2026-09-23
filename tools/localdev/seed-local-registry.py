@@ -34,6 +34,13 @@ PACKAGES = ["left-pad", "Acme.Widgets", "google.golang.org/grpc"]
 ONCE_OWNER = "acme-once"
 TWICE_OWNER = "acme-twice"
 
+# ★★ AND ONE SUBJECT AS THE PRODUCER USED TO SEND THEM. Every one of the 6,276 subjects in the live
+#    registry holds a MINOR 1.0 delivery: no subject.languages, no subject.origin, no
+#    evidence.securityReading. That is the page the standard will publish for almost every codebase
+#    the moment publication is granted, and until now nothing had ever drawn one. A harness that only
+#    renders the newest shape proves the newest shape.
+THIN_OWNER = "acme-thin"
+
 
 def readings_for(ordinal, requested):
     """How many deliveries this subject gets — one, two, or the full run."""
@@ -42,6 +49,40 @@ def readings_for(ordinal, requested):
     if ordinal == 1:
         return min(2, requested)
     return requested
+
+
+def thin_payload(subject, cai, band, scanned, ordinal, at):
+    """A delivery in the shape the producer sent before MINOR 1.1: no languages, no origin, no
+    security reading. Everything the standard derives from those is absent from its page, which is
+    the point of rendering one."""
+    return {
+        "schemaVersion": "1.0",
+        "deliveryId": f"cd_local_{ordinal}_{int(at.timestamp())}",
+        "issuedAt": scanned,
+        "issuer": {"name": "codeassuranceindex.info", "keyId": "local"},
+        "producer": {"name": "watchdog.canine.dev", "scanner": "watchdog-surveyor",
+                     "scannerVersion": "local"},
+        "subject": subject,
+        "rubricVersion": "rubric-2026.08.15",
+        "measurement": {"measuredLoc": 12000, "productionLoc": 9000,
+                        "analyzableProjects": 4, "scannedAt": scanned},
+        # ★ THE SAME LENSES AS EVERY OTHER SUBJECT. What MINOR 1.0 lacks is subject.languages,
+        #   subject.origin and evidence.securityReading — the verdict is untouched by the version, so
+        #   giving this one fewer lenses would render a page the producer never sent and invite a
+        #   defect report about the lens note. (It did, for one render, before this comment existed.)
+        "verdict": {"cai": cai, "band": band, "aggregate": cai, "coherenceNote": "",
+                    "lenses": [{"lens": "codeHealth", "score": cai, "band": band, "weight": 0.5,
+                                "contribution": cai / 2, "criticalGated": False,
+                                "criticalContributors": [], "itemCount": 3},
+                               {"lens": "maturity", "score": max(0.0, cai - 8), "band": band,
+                                "weight": 0.5, "contribution": cai / 2, "criticalGated": False,
+                                "criticalContributors": [], "itemCount": 2}],
+                    "categories": []},
+        "evidence": {"rubricVersion": "rubric-2026.08.15", "commit": "3f9a1c2",
+                     "analyzableProjects": 4, "productionLoc": 9000, "headlineScore": cai,
+                     "dimensions": [{"id": "D1", "category": "code-quality",
+                                     "score": round(cai / 10, 2), "confidence": 0.95}]},
+    }
 
 
 def payload(ordinal, at, rng):
@@ -53,15 +94,21 @@ def payload(ordinal, at, rng):
     #    ONCE (its first survey) and the next most common is one measured twice. The one-reading
     #    page is where "1 measurements over time" was published for months. Named owners so the
     #    screenshot runner can ask for them by path rather than guess which ordinal is which.
-    owner = ONCE_OWNER if ordinal == 0 else TWICE_OWNER if ordinal == 1 else f"acme-{ordinal % 9}"
+    thin = ordinal == 2
+    owner = (ONCE_OWNER if ordinal == 0 else TWICE_OWNER if ordinal == 1
+             else THIN_OWNER if thin else f"acme-{ordinal % 9}")
     repository = f"{owner}/service-{ordinal}"
     cai = round(35 + rng.random() * 55, 1)
     band = "Exemplary" if cai >= 90 else "Strong" if cai >= 70 else "Adequate" if cai >= 50 else "Weak"
     affected = ordinal % 3 == 0
     scanned = at.isoformat().replace("+00:00", "Z")
 
-    subject = {"repository": repository, "commit": "3f9a1c2", "host": "github.com",
-               "languages": {"primary": language, "secondary": secondary}}
+    subject = {"repository": repository, "commit": "3f9a1c2", "host": "github.com"}
+    if thin:
+        # A 1.0 subject states where the code is and nothing about what it is.
+        return thin_payload(subject, cai, band, scanned, ordinal, at)
+
+    subject["languages"] = {"primary": language, "secondary": secondary}
     if country is not None:
         subject["origin"] = {"country": country, "declared": True, "resolvedBy": "countryName"}
     else:

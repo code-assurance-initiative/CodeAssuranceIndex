@@ -539,6 +539,27 @@ score, which almost always has a decimal. `ProducerPortraitDiffTests` pinned `"7
 `"71.0 |"` — that golden had been holding the defect in place, because the producer's `72.4` carries
 a decimal by luck and the asymmetry never showed.
 
+### ★★ AND THE PAGE ALMOST EVERY SUBJECT WOULD GET TODAY — NOW DRAWN, AND CORRECT
+
+Every subject in the live registry holds a MINOR 1.0 delivery: no `subject.languages`, no
+`subject.origin`, no `evidence.securityReading`. That is what the standard would publish for 6,276
+codebases the moment publication is granted, and the harness had never drawn one — every seeded
+subject was 1.1. The seed now includes one (`acme-thin`), and the shoot takes its portrait.
+
+**No defect. It is right, and the render is the first evidence of that.** The portrait drops the
+language cell rather than printing an empty one, and the sheet's two headline counts come apart the
+way they must: **40 codebases, 39 read for security**, with §1 taken over 39 rather than 40. A 1.0
+delivery is *measured but not read for security*, which is a different thing from read-and-clean —
+the distinction the sheet's whole §1 exists to make. Until this fixture the two counts were always
+equal and nothing proved the standard could tell them apart.
+
+★ One near-miss worth recording. The first version of the fixture gave the thin subject a single
+lens, and its page then listed the five model-aware lenses as dark while silently omitting four CORE
+ones — which looked exactly like a defect in `DarkLensNote`. It was not: MINOR 1.0 has nothing to do
+with the verdict, and the producer's own golden carries a full lens set. **The fixture was wrong, not
+the page.** It carries the same lenses as every other subject now, with a comment saying why, so the
+next reader does not file the report I nearly did.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health
