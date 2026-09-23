@@ -446,7 +446,7 @@ six was found at 1280px in the light scheme, because that is the only way anythi
 looked at. `shoot.mjs` takes `--theme dark` and `--width`, and `run-corpus-e2e.sh` runs all twelve
 shapes three times: desktop light, desktop dark, and 390px. The first dark pass found the seventh
 defect immediately — the trend chart's end label, the one number a reader looks for, at **1.11:1**
-on the survey portrait and the country page. `.ink-healthy` sets `color`; an SVG `<text>` ignores it
+on the survey portrait and in the sheet's §5 series. `.ink-healthy` sets `color`; an SVG `<text>` ignores it
 and takes the default fill, which is black. Correct on white, invisible on #0F1115. Fixed in the
 renderer with one declaration (imprint `ed81642`, `fill: currentColor`), which also gives the label
 the band colour it was always written to carry.
@@ -460,7 +460,8 @@ had rendered, the text was in the DOM, and axe does not check SVG text.
 **1. The trend chart's labels are drawn at 5px on a phone.** The plot is a 720-unit viewBox at
 `width: 100%`, so everything inside scales with the container: an 11px cutline is 11px on a desktop
 and **5px** at a 390px viewport, and a 15px end label is 6.8px. Six labels on the survey portrait,
-five on a country page. Nothing in the DOM or the computed style says so — `getComputedStyle` still
+five in the corpus sheet's §5 series. (Not a group page: those carry no trend at all — see the known
+difference above, which is the reason.) Nothing in the DOM or the computed style says so — `getComputedStyle` still
 reports 11px — which is why the widget's own comment records it as *"reported as unreadable by a
 person rather than caught by a rule"*. There is a rule now: the harness measures every `<text>`
 through its own screen matrix and prints the drawn size.
@@ -478,6 +479,35 @@ The noun is hardcoded in `cai-survey-list` (its prop is even called `projects`) 
 "project" is the product's word, shares the widget. The standard's word is **codebase** — that is
 what every `Basis` on these pages says. Making it a prop is a small change; making it unilaterally
 would reword another site's pages, so it is named here rather than done.
+
+### ★★ AXE HAD NEVER SEEN THESE PAGES, AND WHAT IT ABSTAINS ON MATTERS MORE
+
+The producer's console has had an axe gate for months. The standard's own pages — the public
+artefact — had none, so the harness now runs axe over all twelve shapes in both themes and at 390px,
+twice each (top and scrolled: the header is translucent, so what sits behind a heading depends on
+scroll position and an unscrolled pass reports clean).
+
+**Thirty-six page-visits, one violation.** `cai-share-bars` in its wide layout put white on
+`--accent`, which is #4682b4 in the light theme: **4.1:1** behind an 11.5px bold label where AA asks
+4.5. Fixed in the renderer (imprint `d72598f`) by using `--accent-strong`, the token every other
+filled-and-labelled surface already uses — 9.1:1, light only, dark was already at 7:1.
+
+★★ **AND THE INCOMPLETE ARRAY IS WHERE THE REST HIDES.** axe moves an element to `incomplete` the
+moment it cannot resolve what is behind it, and almost nobody reads that array — so a page reports
+zero violations while some of its text was never checked at all. Every page here has 1–8 such nodes.
+The harness now resolves each one through its shadow path and measures it with the same ratio, and
+reports what it finds rather than shrugging:
+
+| Node | Measured | Floor | Where |
+|---|---|---|---|
+| `button[data-theme-toggle]` | 3.45:1 | 4.5:1 | every page, both themes (24 visits) |
+| `.ip-nav-burger > span` | 3.45:1 | 4.5:1 | every page at 390px (12 visits) |
+| `.ip-brand` | 1.18:1 | 4.5:1 | **one** visit of 36 — inconsistent, so an artefact, not a defect |
+
+★ **FOR THE OWNER, NOT FIXED HERE.** These are the site chrome's, shared with canine.dev, and the
+measurement carries axe's own limitation: the header is translucent, so a flat backdrop walk is
+measuring against one layer rather than the composite. The number is a reason to look, not a verdict
+— settling it needs the rendered pixels. What is certain is that nothing was looking before.
 
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 

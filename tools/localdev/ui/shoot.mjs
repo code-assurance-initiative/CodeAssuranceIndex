@@ -63,6 +63,10 @@ function shapes(paths) {
   ].filter(([, p]) => Boolean(p)).map(([name, p]) => [name, `/${p}/`]);
 }
 
+// ★ axe-core comes from the MAIN kennel checkout by absolute path, for the same reason Playwright does.
+const axeSource = await readFile(
+  '/home/jimmy/RiderProjects/kennel.canine.dev/tools/localdev/ui/node_modules/axe-core/axe.min.js', 'utf8');
+
 const browser = await chromium.launch();
 let failures = 0;
 const found = [];
@@ -152,14 +156,28 @@ try {
           if ((el.textContent ?? '').trim() === '') { continue; }
           const fill = parse(getComputedStyle(el).fill);
           if (!fill || fill.alpha === 0) { continue; }
+          // ★★ THE THRESHOLD IS THE ONE AA ACTUALLY SETS, AND IT DEPENDS ON THE DRAWN SIZE — 3:1 only
+          //    for large text (24px, or 18.66px bold), 4.5:1 for everything else. An SVG scales its
+          //    own coordinate system, so "large" has to be measured after that scaling, not read off
+          //    the stylesheet: a 16px bar label inside a 720-unit viewBox is 8px on a phone and needs
+          //    4.5:1 there. axe cannot make this call at all — it does not check SVG text.
+          const style = getComputedStyle(el);
+          const matrix = el.getScreenCTM?.();
+          const zoom = matrix ? Math.sqrt(Math.abs((matrix.a * matrix.d) - (matrix.b * matrix.c))) : 1;
+          const size = parseFloat(style.fontSize) * zoom;
+          const bold = (parseInt(style.fontWeight, 10) || 400) >= 700;
+          const large = size >= 24 || (size >= 18.66 && bold);
+          const floor = large ? 3 : 4.5;
           const contrast = ratio(fill.rgb, backdrop(el));
-          if (contrast < 3) {
+          if (contrast < floor) {
             texts.push({
               text: el.textContent.trim().slice(0, 24),
               owner: el.closest('svg')?.getAttribute('class') ?? el.getAttribute('class') ?? 'svg',
               fill: `rgb(${fill.rgb.join(',')})`,
               behind: `rgb(${backdrop(el).join(',')})`,
               contrast: Math.round(contrast * 100) / 100,
+              needs: floor,
+              size: Math.round(size * 10) / 10,
             });
           }
         }
@@ -200,9 +218,96 @@ try {
       return found;
     });
 
+    // ★★ AND WHAT AXE MAKES OF IT, IN BOTH THEMES — nothing had ever run it over these pages. The
+    //    producer's console has had an axe gate for months; the standard's own pages, which are the
+    //    public artefact, had none. Run TWICE, at the top and scrolled: the header is translucent, so
+    //    what sits behind a heading depends on scroll position and an unscrolled pass reports clean
+    //    (CLAUDE.md, "RUN AXE AFTER SCROLLING").
+    const violations = [];
+    const unchecked = [];
+    for (const offset of [0, 400]) {
+      await page.evaluate((y) => window.scrollTo(0, y), offset);
+      await page.waitForTimeout(150);
+      await page.addScriptTag({ content: axeSource });
+      const run = await page.evaluate(async () => {
+        const result = await window.axe.run(document, {
+          runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
+        });
+        // ★★ WHAT AXE COULD NOT DECIDE IS NOT THE SAME AS WHAT IT PASSED, and only the violations
+        //    array is usually read. Its colour-contrast rule moves an element to `incomplete` the
+        //    moment it cannot resolve what is behind it — a gradient, an image, a translucent
+        //    overlay — so a page can report zero violations while nobody has checked its text at
+        //    all. Carried through as its own line rather than folded in or dropped.
+        // ★★ AND THEN MEASURE THEM OURSELVES. "Could not decide" is where a contrast defect hides:
+        //    nobody reads the incomplete array, so the page reports clean. axe hands back a shadow
+        //    PATH (outermost host first), so each one is resolved by walking the roots and then run
+        //    through the same ratio the SVG check uses. Reported rather than failed — axe abstained
+        //    for a reason (a gradient, an image, a translucent overlay), and a flat backdrop walk can
+        //    be wrong about exactly those. A number somebody can check beats a shrug.
+        const luminance = ([r, g, b]) => {
+          const channel = (v) => (v / 255 <= 0.03928 ? v / 255 / 12.92 : (((v / 255) + 0.055) / 1.055) ** 2.4);
+          return (0.2126 * channel(r)) + (0.7152 * channel(g)) + (0.0722 * channel(b));
+        };
+        const parse = (colour) => {
+          const parts = (colour ?? '').match(/[\d.]+/g)?.map(Number);
+          return parts && parts.length >= 3 ? { rgb: parts.slice(0, 3), alpha: parts[3] ?? 1 } : null;
+        };
+        const resolve = (path) => {
+          let node = document;
+          for (const step of [path].flat()) {
+            node = (node.shadowRoot ?? node).querySelector(step);
+            if (!node) { return null; }
+          }
+          return node;
+        };
+
+        window.__axeIncomplete = result.incomplete
+          .filter(v => v.id === 'color-contrast')
+          .flatMap(v => v.nodes.map((n) => {
+            const el = resolve(n.target);
+            const reading = { id: v.id, where: [n.target].flat().join(' '), contrast: null, needs: null };
+            if (!el) { return reading; }
+
+            const style = getComputedStyle(el);
+            const ink = parse(style.color);
+            if (!ink) { return reading; }
+
+            let behind = [255, 255, 255];
+            for (let at = el; at; at = at.parentElement ?? at.getRootNode()?.host) {
+              const painted = parse(getComputedStyle(at).backgroundColor);
+              if (painted && painted.alpha > 0) { behind = painted.rgb; break; }
+            }
+
+            const size = parseFloat(style.fontSize);
+            const bold = (parseInt(style.fontWeight, 10) || 400) >= 700;
+            const [hi, lo] = [luminance(ink.rgb), luminance(behind)].sort((a, b) => b - a);
+            reading.contrast = Math.round(((hi + 0.05) / (lo + 0.05)) * 100) / 100;
+            reading.needs = size >= 24 || (size >= 18.66 && bold) ? 3 : 4.5;
+            return reading;
+          }));
+        // ★ The first node's selector and axe's own summary travel WITH the count. A violation id and a
+        //   tally sends the next person back to the browser to find out what it was about.
+        return result.violations.map(v => ({
+          id: v.id,
+          impact: v.impact,
+          nodes: v.nodes.length,
+          where: v.nodes[0]?.target?.join(' ') ?? '',
+          why: (v.nodes[0]?.failureSummary ?? '').split('\n').filter(Boolean).pop() ?? '',
+        }));
+      });
+      for (const v of run) {
+        if (!violations.some(seen => seen.id === v.id)) { violations.push(v); }
+      }
+      const undecided = await page.evaluate(() => window.__axeIncomplete ?? []);
+      for (const v of undecided) {
+        if (!unchecked.some(seen => seen.where === v.where)) { unchecked.push(v); }
+      }
+    }
+    await page.evaluate(() => window.scrollTo(0, 0));
+
     // Empty = nothing but (at most) a heading. That is the shape a wrongly-formatted prop produces.
     const empty = islands.filter(i => i.body === 0);
-    found.push({ name, url, status, islands: islands.length, emptyIslands: empty.length, faint, tiny, file });
+    found.push({ name, url, status, islands: islands.length, emptyIslands: empty.length, faint, tiny, violations, unchecked, file });
 
     if (status !== 200) { failures++; }
     console.log(`${status === 200 ? 'ok  ' : 'FAIL'} ${name.padEnd(18)} ${String(status).padEnd(4)} ` +
@@ -212,7 +317,8 @@ try {
       failures++;
     }
     for (const t of faint) {
-      console.log(`     ★ SVG TEXT AT ${t.contrast}:1 — "${t.text}" ${t.fill} on ${t.behind} (${t.owner})`);
+      console.log(`     ★ SVG TEXT AT ${t.contrast}:1, NEEDS ${t.needs}:1 — "${t.text}" ${t.size}px `
+        + `${t.fill} on ${t.behind} (${t.owner})`);
       failures++;
     }
     // ▲ REPORTED EVERY RUN, AND DELIBERATELY NOT A FAILURE. The cause is known and written down in the
@@ -222,6 +328,19 @@ try {
     //   states the endpoints, or re-scale the labels from a measured container width. Until somebody
     //   decides, failing the run every time would teach a reader to ignore the whole report, and passing
     //   silently would publish 5px text. So it says the number, loudly, and leaves the exit code alone.
+    for (const v of violations) {
+      console.log(`     ★ AXE ${v.impact ?? 'unknown'}: ${v.id} on ${v.nodes} node(s) — ${v.where}`);
+      if (v.why) { console.log(`       ${v.why}`); }
+      failures++;
+    }
+    if (unchecked.length > 0) {
+      const short = unchecked.filter(v => v.contrast !== null && v.contrast < v.needs);
+      console.log(`     ▲ AXE COULD NOT DECIDE contrast on ${unchecked.length} node(s); `
+        + `measured here: ${short.length} under their floor`);
+      for (const v of short) {
+        console.log(`       ${v.contrast}:1 needs ${v.needs}:1 — ${v.where}`);
+      }
+    }
     if (tiny.length > 0) {
       const worst = tiny.reduce((a, b) => (a.rendered <= b.rendered ? a : b));
       console.log(`     ▲ ${tiny.length} SVG label(s) RENDER UNDER 9px — smallest "${worst.text}" `
