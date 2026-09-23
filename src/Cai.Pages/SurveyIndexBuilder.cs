@@ -73,14 +73,14 @@ public static class SurveyIndexBuilder
         var withGuides = fields.Where(f => f.GuidePath is not null).ToList();
         var acrossLanguages = withGuides.Count == 0
             ? null
-            : Figure.Scalar(
+            : Figure.Score(
                 SurveyCorpus.Median([.. withGuides.Select(f => f.Median)]), withGuides.Count, LanguagesBasis, takenAt);
 
         // ONE VOTE PER CODEBASE, so the largest fields pull it hardest. Taken over every measured subject,
         // including the ones whose producer named no language — they were measured the same way.
         var acrossCodebases = records.Count == 0
             ? null
-            : Figure.Scalar(
+            : Figure.Score(
                 SurveyCorpus.Median(SurveyCorpus.Scores(records)), records.Count, CodebasesBasis, takenAt);
 
         // The corpus-wide depth is the median of the per-language medians, over the languages that HAVE one:

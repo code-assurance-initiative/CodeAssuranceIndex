@@ -280,7 +280,7 @@ public static class CorpusSheetBuilder
                 PageNodes.Column(
                     cut.Codebases == 0
                         ? null
-                        : Figure.Scalar(cut.MedianHeadline, cut.Codebases, written, reading.TakenAt)),
+                        : Figure.Score(cut.MedianHeadline, cut.Codebases, written, reading.TakenAt)),
                 PageNodes.Column(Figure.Count(cut.Reading.VulnMeasurable, here, reading.TakenAt)),
                 PageNodes.Column(Figure.Count(
                     cut.Reading.DisclosureMeasured - cut.Reading.DisclosurePolicy,
@@ -381,7 +381,7 @@ public static class CorpusSheetBuilder
                 PageNodes.Column(
                     cut.Codebases == 0
                         ? null
-                        : Figure.Scalar(cut.MedianHeadline, cut.Codebases, CountryCodebases, reading.TakenAt)),
+                        : Figure.Score(cut.MedianHeadline, cut.Codebases, CountryCodebases, reading.TakenAt)),
                 PageNodes.Column(Figure.Count(cut.Reading.VulnMeasurable, CountryResolvable, reading.TakenAt)),
                 PageNodes.Column(Figure.Count(
                     cut.Reading.DisclosureMeasured - cut.Reading.DisclosurePolicy,

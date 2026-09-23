@@ -13,6 +13,20 @@ public enum FigureKind
     Scalar = 2,
 
     /// <summary>
+    /// A reading on the index's own 0–100 scale — a CAI, or a median of them — which is published to one
+    /// decimal wherever it appears.
+    /// </summary>
+    /// <remarks>
+    /// ★★ ITS OWN KIND RATHER THAN A <see cref="Scalar"/>, because the two disagree about digits and a
+    /// scalar carries totals as well. "One decimal at most" is right for 63,266 findings and wrong for a
+    /// score: a language whose median landed on a whole number published <c>66</c> in the corpus sheet's
+    /// table and <c>66.0</c> on the page that table links to, in a column beside <c>64.4</c>. The same
+    /// number, spelled two ways, on two surfaces of one standard. A kind rather than a format flag so that
+    /// every renderer's switch has to decide, rather than falling through to the scalar arm.
+    /// </remarks>
+    Score = 4,
+
+    /// <summary>
     /// A LOWER BOUND on a tally, taken over a population part of which could not be looked at — <c>at least
     /// 240 surveys carrying this advisory, and a further 1,204 whose lists were cut short</c>.
     /// </summary>

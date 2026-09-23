@@ -179,6 +179,6 @@ public sealed record CorpusSeries
 
     private static Figure? Median(DatedReading reading) =>
         reading.MedianCai is { } median && reading.Codebases > 0
-            ? Figure.Scalar(median, reading.Codebases, CodebasesBasis, reading.TakenAt)
+            ? Figure.Score(median, reading.Codebases, CodebasesBasis, reading.TakenAt)
             : null;
 }

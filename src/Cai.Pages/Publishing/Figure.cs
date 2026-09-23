@@ -42,6 +42,10 @@ public sealed record Figure
     /// <summary>A share, always to one decimal — <c>76.8</c>, and <c>100.0</c> when it is all of them.</summary>
     private const string ShareFormat = "0.0";
 
+    /// <summary>A score on the 0–100 scale, always to one decimal — <c>64.4</c>, and <c>70.0</c> when it lands
+    /// on a whole number. The same format <see cref="PageProse.Score"/> uses, because it is the same quantity.</summary>
+    private const string ScoreFormat = "0.0";
+
     /// <summary>An unambiguous day, the same in every locale a reader might be in.</summary>
     private const string DayFormat = "d MMMM yyyy";
 
@@ -250,6 +254,38 @@ public sealed record Figure
     }
 
     /// <summary>
+    /// A reading on the index's own 0–100 scale, taken over a population — a CAI, or a median of them.
+    /// </summary>
+    /// <param name="value">The score. Finite, and on the scale the index publishes.</param>
+    /// <param name="population">How many codebases it was taken over. Positive.</param>
+    /// <param name="basis">What that population is, in a reader's words.</param>
+    /// <param name="takenAt">When the reading was taken.</param>
+    /// <returns>The figure, which writes itself to one decimal wherever it is rendered.</returns>
+    /// <remarks>
+    /// ★★ SEPARATE FROM <see cref="Scalar"/> BECAUSE THE DIGITS DIFFER. A scalar carries totals too, so its
+    /// format is "one decimal at most" — right for 63,266 findings, wrong for a score that lands on a whole
+    /// number. Use this for anything on the 0–100 scale and <see cref="Scalar"/> for everything else.
+    /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// The value is not finite, or the population is not positive — the median of nothing is not a score.
+    /// </exception>
+    public static Figure Score(double value, long population, Basis basis, DateTimeOffset takenAt)
+    {
+        if (double.IsNaN(value) || double.IsInfinity(value))
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), value, "a score must be a finite number");
+        }
+
+        if (population <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(population), population, "a score is taken over a population, which cannot be empty");
+        }
+
+        return new Figure(FigureKind.Score, value, null, population, null, Named(basis), Dated(takenAt));
+    }
+
+    /// <summary>
     /// The reading with its population, for a headline or a stat: <c>76.8% of projects whose dependencies
     /// resolved (1,219 of 1,588)</c>, <c>52.6 across 3,464 surveyed repositories</c>, <c>3,464 surveyed
     /// repositories</c>, <c>at least 240 surveys carrying this advisory — a further 1,204 could not be
@@ -274,6 +310,9 @@ public sealed record Figure
           + $"{UnseenPopulation!.Value.ToString(CountFormat, CultureInfo.InvariantCulture)} could not be checked",
         FigureKind.Scalar =>
             $"{Value.ToString(ReadingFormat, CultureInfo.InvariantCulture)} across "
+          + $"{Population.ToString(CountFormat, CultureInfo.InvariantCulture)} {Counted()}",
+        FigureKind.Score =>
+            $"{Value.ToString(ScoreFormat, CultureInfo.InvariantCulture)} across "
           + $"{Population.ToString(CountFormat, CultureInfo.InvariantCulture)} {Counted()}",
         _ => throw new NotSupportedException($"no way to write down a {Kind} figure has been decided"),
     };
@@ -398,6 +437,9 @@ public sealed record Figure
           + $"{UnseenPopulation!.Value.ToString(CountFormat, CultureInfo.InvariantCulture)} could not be checked"),
         FigureKind.Scalar => new(
             Value.ToString(ReadingFormat, CultureInfo.InvariantCulture),
+            $"across {Population.ToString(CountFormat, CultureInfo.InvariantCulture)} {Counted()}"),
+        FigureKind.Score => new(
+            Value.ToString(ScoreFormat, CultureInfo.InvariantCulture),
             $"across {Population.ToString(CountFormat, CultureInfo.InvariantCulture)} {Counted()}"),
         _ => throw new NotSupportedException($"no way to split a {Kind} figure across a stat cell has been decided"),
     };
