@@ -494,20 +494,26 @@ filled-and-labelled surface already uses — 9.1:1, light only, dark was already
 
 ★★ **AND THE INCOMPLETE ARRAY IS WHERE THE REST HIDES.** axe moves an element to `incomplete` the
 moment it cannot resolve what is behind it, and almost nobody reads that array — so a page reports
-zero violations while some of its text was never checked at all. Every page here has 1–8 such nodes.
-The harness now resolves each one through its shadow path and measures it with the same ratio, and
-reports what it finds rather than shrugging:
+zero violations while some of its text was never checked at all. Every page here has 1–8 such nodes:
+the theme toggle, the nav burger, and the trend's own SVG labels, which axe does not check at all.
 
-| Node | Measured | Floor | Where |
-|---|---|---|---|
-| `button[data-theme-toggle]` | 3.45:1 | 4.5:1 | every page, both themes (24 visits) |
-| `.ip-nav-burger > span` | 3.45:1 | 4.5:1 | every page at 390px (12 visits) |
-| `.ip-brand` | 1.18:1 | 4.5:1 | **one** visit of 36 — inconsistent, so an artefact, not a defect |
+★★ **AND THE FIRST ANSWER TO THAT WAS WRONG, WHICH IS THE LESSON.** Resolving each of those nodes
+and measuring its computed colour against the first painted ancestor put the theme toggle at
+**3.45:1** on every page, in both themes — a site-wide AA failure, reported here as one. It is not
+one. Measured from the rendered pixels it is **6.05:1** in light and **7.47:1** in dark, comfortably
+over the 4.5:1 floor. A backdrop walk answers with ONE LAYER, and the reason axe abstained is that
+there is no one layer: the header is translucent, so the glyph sits on a composite the DOM cannot
+report. **A number derived from the very assumption axe refused to make is a guess wearing a number,
+and it manufactures findings.**
 
-★ **FOR THE OWNER, NOT FIXED HERE.** These are the site chrome's, shared with canine.dev, and the
-measurement carries axe's own limitation: the header is translucent, so a flat backdrop walk is
-measuring against one layer rather than the composite. The number is a reason to look, not a verdict
-— settling it needs the rendered pixels. What is certain is that nothing was looking before.
+So the harness now reports the COUNT of undecided nodes and no ratio, and
+`tools/localdev/ui/pixel-contrast.mjs` settles one from the render: it shoots the element at
+deviceScaleFactor 4 while scrolled — the state axe could not resolve — insets past the button's own
+ring, and takes the modal colour as the background and the furthest-in-luminance colour covering 2%
+of the core as the ink. Checked against a heading it returns 17.8:1, and against a selector that
+does not exist it says so instead of answering.
+
+**The chrome is fine. Nothing here needs fixing, and the retracted 3.45:1 is the finding.**
 
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 

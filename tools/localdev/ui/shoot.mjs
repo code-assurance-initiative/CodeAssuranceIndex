@@ -238,53 +238,21 @@ try {
         //    moment it cannot resolve what is behind it — a gradient, an image, a translucent
         //    overlay — so a page can report zero violations while nobody has checked its text at
         //    all. Carried through as its own line rather than folded in or dropped.
-        // ★★ AND THEN MEASURE THEM OURSELVES. "Could not decide" is where a contrast defect hides:
-        //    nobody reads the incomplete array, so the page reports clean. axe hands back a shadow
-        //    PATH (outermost host first), so each one is resolved by walking the roots and then run
-        //    through the same ratio the SVG check uses. Reported rather than failed — axe abstained
-        //    for a reason (a gradient, an image, a translucent overlay), and a flat backdrop walk can
-        //    be wrong about exactly those. A number somebody can check beats a shrug.
-        const luminance = ([r, g, b]) => {
-          const channel = (v) => (v / 255 <= 0.03928 ? v / 255 / 12.92 : (((v / 255) + 0.055) / 1.055) ** 2.4);
-          return (0.2126 * channel(r)) + (0.7152 * channel(g)) + (0.0722 * channel(b));
-        };
-        const parse = (colour) => {
-          const parts = (colour ?? '').match(/[\d.]+/g)?.map(Number);
-          return parts && parts.length >= 3 ? { rgb: parts.slice(0, 3), alpha: parts[3] ?? 1 } : null;
-        };
-        const resolve = (path) => {
-          let node = document;
-          for (const step of [path].flat()) {
-            node = (node.shadowRoot ?? node).querySelector(step);
-            if (!node) { return null; }
-          }
-          return node;
-        };
-
+        // ★★ WHAT AXE COULD NOT DECIDE IS NOT WHAT IT PASSED, and only the violations array is
+        //    usually read. Its colour-contrast rule moves an element to `incomplete` the moment it
+        //    cannot resolve what is behind it — a gradient, an image, a translucent header — so a
+        //    page can report zero violations while some of its text was never checked at all.
+        //
+        //    ★★ THE COUNT IS REPORTED AND NO RATIO IS. An earlier version of this resolved each node
+        //    and measured its computed colour against the first painted ancestor, which put the
+        //    theme toggle at 3.45:1 and read as a site-wide AA failure. It was not one: the pixels
+        //    say 6.05:1 in light and 7.47:1 in dark. A backdrop walk answers with ONE LAYER, and the
+        //    reason axe abstained is that there is no one layer — the header is translucent. A
+        //    number derived from the assumption axe refused to make is a guess wearing a number, and
+        //    it manufactures findings. `pixel-contrast.mjs` beside this file settles one properly.
         window.__axeIncomplete = result.incomplete
           .filter(v => v.id === 'color-contrast')
-          .flatMap(v => v.nodes.map((n) => {
-            const el = resolve(n.target);
-            const reading = { id: v.id, where: [n.target].flat().join(' '), contrast: null, needs: null };
-            if (!el) { return reading; }
-
-            const style = getComputedStyle(el);
-            const ink = parse(style.color);
-            if (!ink) { return reading; }
-
-            let behind = [255, 255, 255];
-            for (let at = el; at; at = at.parentElement ?? at.getRootNode()?.host) {
-              const painted = parse(getComputedStyle(at).backgroundColor);
-              if (painted && painted.alpha > 0) { behind = painted.rgb; break; }
-            }
-
-            const size = parseFloat(style.fontSize);
-            const bold = (parseInt(style.fontWeight, 10) || 400) >= 700;
-            const [hi, lo] = [luminance(ink.rgb), luminance(behind)].sort((a, b) => b - a);
-            reading.contrast = Math.round(((hi + 0.05) / (lo + 0.05)) * 100) / 100;
-            reading.needs = size >= 24 || (size >= 18.66 && bold) ? 3 : 4.5;
-            return reading;
-          }));
+          .flatMap(v => v.nodes.map(n => ({ id: v.id, where: [n.target].flat().join(' ') })));
         // ★ The first node's selector and axe's own summary travel WITH the count. A violation id and a
         //   tally sends the next person back to the browser to find out what it was about.
         return result.violations.map(v => ({
@@ -334,12 +302,10 @@ try {
       failures++;
     }
     if (unchecked.length > 0) {
-      const short = unchecked.filter(v => v.contrast !== null && v.contrast < v.needs);
-      console.log(`     ▲ AXE COULD NOT DECIDE contrast on ${unchecked.length} node(s); `
-        + `measured here: ${short.length} under their floor`);
-      for (const v of short) {
-        console.log(`       ${v.contrast}:1 needs ${v.needs}:1 — ${v.where}`);
-      }
+      const names = [...new Set(unchecked.map(v => v.where.replace(/^.*[ ,]/, '')))];
+      console.log(`     ▲ AXE COULD NOT DECIDE contrast on ${unchecked.length} node(s): `
+        + `${names.slice(0, 4).join(', ')}${names.length > 4 ? `, +${names.length - 4} more` : ''}`);
+      console.log('       (not a finding — settle one with pixel-contrast.mjs, which reads the render)');
     }
     if (tiny.length > 0) {
       const worst = tiny.reduce((a, b) => (a.rendered <= b.rendered ? a : b));
