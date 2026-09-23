@@ -455,6 +455,30 @@ The guard went with it: for every drawn `<text>`, the harness now resolves the f
 painted background above it and fails under 3:1. Nothing else could have caught this — the island
 had rendered, the text was in the DOM, and axe does not check SVG text.
 
+### ★★ TWO MORE FOR THE OWNER, FOUND AT 390px — BOTH THE RENDERER'S, NEITHER CHANGED UNILATERALLY
+
+**1. The trend chart's labels are drawn at 5px on a phone.** The plot is a 720-unit viewBox at
+`width: 100%`, so everything inside scales with the container: an 11px cutline is 11px on a desktop
+and **5px** at a 390px viewport, and a 15px end label is 6.8px. Six labels on the survey portrait,
+five on a country page. Nothing in the DOM or the computed style says so — `getComputedStyle` still
+reports 11px — which is why the widget's own comment records it as *"reported as unreadable by a
+person rather than caught by a rule"*. There is a rule now: the harness measures every `<text>`
+through its own screen matrix and prints the drawn size.
+
+It is **reported, not failed**, because the answer is a design decision rather than a defect with a
+settled fix, and it is the renderer's to take: either hide the axis below the width where it stops
+being legible — the chart's summary sentence already states both endpoints and both dates, which is
+the design's own philosophy — or re-scale the labels from a measured container width, which needs a
+ResizeObserver in a widget two sites share. A harness that goes red every run over an undecided
+question teaches a reader to ignore the whole report.
+
+**2. One page, two nouns for one number.** A field guide states "10 measured codebases" in its stat
+band and "10 projects" in the list beneath it, with a search box reading "Search these projects".
+The noun is hardcoded in `cai-survey-list` (its prop is even called `projects`) and canine.dev, where
+"project" is the product's word, shares the widget. The standard's word is **codebase** — that is
+what every `Basis` on these pages says. Making it a prop is a small change; making it unilaterally
+would reword another site's pages, so it is named here rather than done.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health

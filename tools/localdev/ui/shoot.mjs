@@ -168,9 +168,41 @@ try {
       return texts;
     });
 
+    // ★★ AND HOW BIG IT ACTUALLY CAME OUT. An SVG scales its whole coordinate system to the container,
+    //    so a label set in "12px" inside a 720-unit viewBox is 12px on a desktop and 6.5px on a phone —
+    //    the same markup, the same stylesheet, and a number a reader cannot see. Nothing in the DOM
+    //    changes, so this is only ever visible in a render at that width. Measured through the element's
+    //    own screen matrix rather than assumed from the CSS.
+    const tiny = await page.evaluate(() => {
+      const found = [];
+      const walk = (root) => {
+        for (const el of root.querySelectorAll('*')) {
+          if (el.shadowRoot) { walk(el.shadowRoot); }
+          if (el.tagName.toLowerCase() !== 'text') { continue; }
+          if ((el.textContent ?? '').trim() === '') { continue; }
+          const matrix = el.getScreenCTM?.();
+          if (!matrix) { continue; }
+          const scale = Math.sqrt(Math.abs((matrix.a * matrix.d) - (matrix.b * matrix.c)));
+          const declared = parseFloat(getComputedStyle(el).fontSize);
+          const rendered = declared * scale;
+          // 9px is where a chart label stops being readable on a phone at arm's length. No standard
+          // fixes it, so the number is reported rather than merely judged.
+          if (rendered < 9) {
+            found.push({
+              text: el.textContent.trim().slice(0, 24),
+              declared: Math.round(declared * 10) / 10,
+              rendered: Math.round(rendered * 10) / 10,
+            });
+          }
+        }
+      };
+      walk(document);
+      return found;
+    });
+
     // Empty = nothing but (at most) a heading. That is the shape a wrongly-formatted prop produces.
     const empty = islands.filter(i => i.body === 0);
-    found.push({ name, url, status, islands: islands.length, emptyIslands: empty.length, faint, file });
+    found.push({ name, url, status, islands: islands.length, emptyIslands: empty.length, faint, tiny, file });
 
     if (status !== 200) { failures++; }
     console.log(`${status === 200 ? 'ok  ' : 'FAIL'} ${name.padEnd(18)} ${String(status).padEnd(4)} ` +
@@ -182,6 +214,18 @@ try {
     for (const t of faint) {
       console.log(`     ★ SVG TEXT AT ${t.contrast}:1 — "${t.text}" ${t.fill} on ${t.behind} (${t.owner})`);
       failures++;
+    }
+    // ▲ REPORTED EVERY RUN, AND DELIBERATELY NOT A FAILURE. The cause is known and written down in the
+    //   renderer (imprint `cai-trend.js`: "an SVG drawn 329px wide draws them at 5.5px... reported as
+    //   unreadable by a person rather than caught by a rule") and the answer is a design decision about
+    //   what a 720-unit chart does at phone width — hide the axis and lean on the sentence that already
+    //   states the endpoints, or re-scale the labels from a measured container width. Until somebody
+    //   decides, failing the run every time would teach a reader to ignore the whole report, and passing
+    //   silently would publish 5px text. So it says the number, loudly, and leaves the exit code alone.
+    if (tiny.length > 0) {
+      const worst = tiny.reduce((a, b) => (a.rendered <= b.rendered ? a : b));
+      console.log(`     ▲ ${tiny.length} SVG label(s) RENDER UNDER 9px — smallest "${worst.text}" `
+        + `declared ${worst.declared}px, drawn at ${worst.rendered}px (open: see the plan)`);
     }
   }
 
