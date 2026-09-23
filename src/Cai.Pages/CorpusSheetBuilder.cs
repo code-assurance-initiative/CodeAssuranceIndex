@@ -457,7 +457,17 @@ public static class CorpusSheetBuilder
             + codebases.Headline() + " in this reading sit behind " + owners.Headline() + ".";
     }
 
-    /// <summary>A share, or null when there is nothing to take it over — never a zero standing in for one.</summary>
+    /// <summary>A share for one of §4's three sentences, or null when the sentence should not be written.</summary>
+    /// <remarks>
+    /// ★★ NULL ON A ZERO NUMERATOR TOO, WHICH IS NOT WHAT <see cref="CorpusReading"/>'S SHARE DOES — and the
+    /// difference is deliberate. Each of the three readings taken through here introduces a SENTENCE that
+    /// only exists when it has something to say: how many owners could be placed, how much of the corpus the
+    /// rows reach, how many countries were held back. "0 countries have no page, because they hold fewer
+    /// than ten measured codebases" is a sentence about nobody. A measured share is the opposite case: "0.0%
+    /// carry a known-vulnerable component (0 of 34)" is the most valuable thing §2 can say, so
+    /// <see cref="CorpusReading"/> refuses a share only when its DENOMINATOR is empty. Do not reuse this
+    /// helper for a figure where zero is a result.
+    /// </remarks>
     private static Figure? Share(int numerator, int denominator, Basis basis, DateTimeOffset takenAt) =>
         denominator == 0 || numerator == 0 ? null : Figure.Ratio(numerator, denominator, basis, takenAt);
 

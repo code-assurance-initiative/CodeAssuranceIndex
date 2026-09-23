@@ -16,6 +16,7 @@ delivery carries languages, an origin and a security reading.
 
 import argparse
 import json
+import os
 import random
 import sqlite3
 import sys
@@ -109,7 +110,11 @@ def payload(ordinal, at, rng):
     repository = f"{owner}/service-{ordinal}"
     cai = round(35 + rng.random() * 55, 1)
     band = "Exemplary" if cai >= 90 else "Strong" if cai >= 70 else "Adequate" if cai >= 50 else "Weak"
-    affected = ordinal % 3 == 0
+    # ★ CORPUS_E2E_CLEAN renders the corpus nobody has drawn: one where NOTHING is affected, so every
+    #   share in §2 is a true zero. A zero share is the most valuable thing the sheet can say, and it is
+    #   also the easiest to drop by accident — CorpusReading refuses a share only when its DENOMINATOR is
+    #   empty, and this is what proves that in a render rather than in a unit test.
+    affected = ordinal % 3 == 0 and os.environ.get("CORPUS_E2E_CLEAN") != "1"
     scanned = at.isoformat().replace("+00:00", "Z")
 
     subject = {"repository": repository, "commit": "3f9a1c2", "host": "github.com"}

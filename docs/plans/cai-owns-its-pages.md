@@ -585,6 +585,28 @@ written into `CorpusSheetBuilder` so nobody closes it — the sheet is "a citabl
 single reading", so "§4 By country" must mean the same section on every reading ever published, and
 renumbering would make a section number depend on how many dated readings the store held that day.
 
+### ★★ A CORPUS WHERE NOTHING IS AFFECTED — RENDERED, AND RIGHT ON ALL THREE COUNTS
+
+`CORPUS_E2E_CLEAN=1` seeds a corpus in which no codebase carries a known-vulnerable component. It is
+the reading a small or well-kept estate would produce, and nothing had ever drawn it. Three things
+could have gone wrong and none did:
+
+- **§2 publishes the zero.** "0.0% carry a known-vulnerable component · 0 of 33 surveys whose
+  dependencies a scanner could resolve", with the same zero carried through its tip for High/Critical
+  and Critical, and "0 findings were found across the 33". A share of zero is the most valuable thing
+  this page can say and the easiest to drop by accident; `CorpusReading` refuses a share only when its
+  DENOMINATOR is empty, which is what makes the difference.
+- **The advisory and package families disappear rather than publishing empty indexes** — eleven shapes
+  instead of fifteen.
+- **§6 links only what was built.** Its two remaining cards are By language and By country; the
+  advisory and package cards are simply absent. No dangling link.
+
+★ While checking that, one thing needed writing down rather than changing. `CorpusSheetBuilder` has
+its own private `Share` that returns null on a ZERO NUMERATOR as well, unlike `CorpusReading`'s — and
+that is correct for its three uses, because each introduces a SENTENCE that should not exist when it
+has nothing to say ("0 countries have no page, because…"). The difference now says so in both places,
+so nobody reuses the §4 helper for a figure where zero is a result.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health
