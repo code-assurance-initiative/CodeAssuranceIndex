@@ -111,6 +111,22 @@ internal static class ApiRateLimiting
     /// a scraper does not.</summary>
     public const int RegistryPublicPermitsPerMinute = 300;
 
+    /// <summary>
+    /// The endpoints that carry <see cref="ApiTrafficClass.RegistryPublic"/>, as one list so the classifier
+    /// and the API reference cannot drift apart about which of them a monitor may poll.
+    /// </summary>
+    /// <remarks>
+    /// ★★ <c>/api/health/detail</c> IS ON THIS LIST BECAUSE OF WHAT IT SAYS IT IS FOR. Its own comment reads
+    /// "Anonymous and cheap on purpose: it is polled by the operator console, and a probe that needs a
+    /// credential is one that stops being polled" — and it fell through to the open budget of 1/s, 3/min and
+    /// 15/day per IP, so a console polling it every thirty seconds died eight minutes into the day and showed
+    /// the operator 429s from the standard, which looks exactly like the outage they opened the page to check.
+    /// This class's own comment already describes that traffic: "monitors poll health". Found by exhausting
+    /// the day's fifteen while watching production come back from an outage.
+    /// </remarks>
+    public static readonly string[] RegistryPublicPaths =
+        ["/api/registry/keys", "/api/registry/health", "/api/health/detail"];
+
     /// <summary>The per-IP budget for the anonymous self-service checks: 60/min (1 rps sustained). A reader working
     /// through a stack of deliveries by hand never approaches it; a scripted flood of folds still meets a ceiling.
     /// Deliberately lower than the registry probes' 300/min because a fold costs real work, where a key fetch does not.</summary>
@@ -235,7 +251,7 @@ internal static class ApiRateLimiting
         }
 
         var clientIp = ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-        if (path.StartsWithSegments("/api/registry/keys") || path.StartsWithSegments("/api/registry/health"))
+        if (RegistryPublicPaths.Any(p => path.StartsWithSegments(p)))
         {
             return new(ApiTrafficClass.RegistryPublic, clientIp);
         }

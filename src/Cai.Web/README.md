@@ -13,14 +13,18 @@ the standard and exposes the rubric + scoring **JSON API**.
   - `POST /api/score` — fold an evidence bundle to a CAI headline + per-lens contributions.
   - `POST /api/verify` — check a published headline reproduces from its evidence.
 - **Referenceable** — `/llms.txt` and `/glossary.jsonld` (schema.org `DefinedTermSet`).
-- **Ops** — `GET /health` readiness probe.
+- **Ops** — `GET /health` readiness probe (one word, for the deploy gate), and `GET /api/health/detail`
+  (JSON, anonymous, on the monitor budget rather than the 15/day one — see `ApiRateLimiting`).
 
 ## How it's wired
 
 - Scoring is delegated to [`Cai.Scoring`](../Cai.Scoring) — the one deterministic authority.
 - Rubric catalogs are loaded from `rubrics/` via `RubricCatalogStore` (configurable with `Rubrics:Root`).
 - Public read API is gated by a chained rate limiter (per-IP, 1/s · 3/min · 15/day), not auth; the
-  surveyor's aggregate stats are fetched server-side through a resilient `HttpClient`.
+  surveyor's aggregate stats are fetched server-side through a resilient `HttpClient`. The paths a
+  MONITOR polls — the key set, the registry health check and `/api/health/detail` — carry their own
+  per-IP budget (`ApiRateLimiting.RegistryPublicPaths`), because fifteen a day is sized for fetching
+  an immutable catalogue once, not for a probe.
 - Observability: structured `ILogger`, OpenTelemetry tracing + metrics (OTLP exporter active only when
   `OTEL_EXPORTER_OTLP_ENDPOINT` is set), and the `/health` check.
 - Security: default-deny authorization with explicit public opt-out, security response headers (CSP,

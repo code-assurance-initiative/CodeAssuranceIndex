@@ -127,6 +127,31 @@ public sealed class RateLimitingTests(RateLimitingFixture fx) : IClassFixture<Ra
     }
 
     [Fact]
+    public async Task STAR_The_OPERATOR_Health_Probe_Is_Not_On_The_Fifteen_A_Day_Budget()
+    {
+        // ★★ THE ENDPOINT SAYS WHAT IT IS FOR AND THE BUDGET CONTRADICTED IT. `/api/health/detail` carries
+        // the comment "Anonymous and cheap on purpose: it is polled by the operator console, and a probe
+        // that needs a credential is one that stops being polled" — while falling through to the open
+        // budget of 1/s, 3/min and 15/day per IP. A console polling it every thirty seconds dies eight
+        // minutes into the day, and what an operator then sees is 429s from the standard, which looks
+        // exactly like the outage they opened the page to check.
+        //
+        // ★ Found the hard way: polling it through one afternoon's monitoring exhausted the day's fifteen.
+        // The registry-public class already exists for precisely this traffic — its own comment says
+        // "monitors poll health" — so the probe joins it rather than getting a new budget.
+        //
+        // Four in a row is already past the open budget's minute window, so this fails the moment the probe
+        // falls back into ApiTrafficClass.Public.
+        using var client = fx.Client(token: null, ip: "203.0.113.92");
+
+        for (var i = 0; i < 4; i++)
+        {
+            var res = await client.GetAsync("/api/health/detail", Ct);
+            Assert.NotEqual(HttpStatusCode.TooManyRequests, res.StatusCode);
+        }
+    }
+
+    [Fact]
     public async Task STAR_The_PUBLISHED_Documents_Are_Not_On_The_Fifteen_A_Day_Budget()
     {
         // ★★ THE BUDGET AND THE NO-CACHE RULE WERE INCOMPATIBLE, and the collision only shows in production.
