@@ -65,6 +65,29 @@ public sealed class CountsNameTheirOwnPluralTests
         Assert.Contains("dimensions resolved", json, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// ★★ THE SAME DEFECT ON THE INDEX, MISSED BY MY OWN FIX because the search that found the others was
+    /// truncated with `head` and I treated the visible subset as complete. The surveys index states the
+    /// corpus-wide depth in exactly the same words, and a corpus whose surveys resolve one dimension
+    /// publishes it on the highest-traffic page there is.
+    /// </summary>
+    [Fact]
+    public void The_index_says_dimension_when_the_corpus_resolved_one()
+    {
+        var json = Json(SurveyIndexBuilder.Build(Corpus(dimensions: 1), TakenAt));
+
+        Assert.Contains("dimension resolved", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("1 dimensions", json, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void The_index_says_dimensions_when_the_corpus_resolved_several()
+    {
+        var json = Json(SurveyIndexBuilder.Build(Corpus(dimensions: 18), TakenAt));
+
+        Assert.Contains("dimensions resolved", json, StringComparison.Ordinal);
+    }
+
     // ---------------------------------------------------------------- fixtures
 
     private static readonly DateTimeOffset TakenAt = new(2026, 9, 23, 0, 0, 0, TimeSpan.Zero);
@@ -74,6 +97,10 @@ public sealed class CountsNameTheirOwnPluralTests
         Assert.NotNull(page);
         return PageText.Json(page);
     }
+
+    private static List<SurveyRecord> Corpus(int dimensions) =>
+        [.. Enumerable.Range(0, 6)
+            .Select(i => SurveyRecord.From([Reading("2026-08-30T09:00:00Z", 60 + i, dimensions, i)]))];
 
     private static LanguageField Field(int dimensions)
     {

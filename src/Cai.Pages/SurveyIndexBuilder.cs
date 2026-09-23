@@ -30,6 +30,17 @@ public static class SurveyIndexBuilder
     /// this index against anything else needs to know which one it is. Adopted from the producer's own
     /// basis, which said so first and which the phase-6 diff caught this one dropping.
     /// </remarks>
+    /// <summary>
+    /// How much of the index a survey resolved.
+    /// </summary>
+    /// <remarks>
+    /// ★ THE SAME BASIS THE FIELD GUIDE USES, AND IT WAS MISSED HERE when the others were fixed: the
+    /// search that found them was truncated with `head` and the visible subset was taken for the whole. A
+    /// corpus whose surveys resolve one dimension published "1 dimensions resolved" on the
+    /// highest-traffic page there is.
+    /// </remarks>
+    private static readonly Basis DepthBasis = Basis.Of("dimension", "dimensions");
+
     internal static readonly Basis CodebasesBasis = Basis.Of(
         "published measured codebase",
         "published measured codebases");
@@ -118,7 +129,9 @@ public static class SurveyIndexBuilder
                 // ★ "TYPICALLY" IS VAGUE ON A PAGE WHOSE ARGUMENT IS THAT A STATISTIC MUST NAME WHAT IT IS.
                 // If it is a median, the label says median.
                 overallDepth is { } depth
-                    ? PageNodes.Stat(PageProse.Count(depth), "dimensions resolved, median across the corpus")
+                    ? PageNodes.Stat(
+                        PageProse.Count(depth),
+                        $"{DepthBasis.For(depth)} resolved, median across the corpus")
                     : null),
 
             TwoMedians(acrossLanguages, acrossCodebases, codebases),
