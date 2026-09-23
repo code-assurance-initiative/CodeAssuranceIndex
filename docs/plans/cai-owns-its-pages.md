@@ -424,6 +424,23 @@ the island contract compares prop NAMES; neither reads a value. Fixed at `98bc9a
 SHAPES now pinned against the producer's golden — and the harness's own emptiness check taught to
 look past the heading, which it had been counting as content.
 
+★★ **AND IT KEPT FINDING THEM — six now, none caught by any test, every one found by LOOKING.**
+After the two blank islands: a count that named the wrong plural on the survey portrait and the
+field guides (`1 measurements over time`), then *the same defect on the surveys index*, which the
+first fix missed because the search that found the others was piped through `head -12` and the
+visible subset was treated as the whole set (`13352e5`). Then two more (`1cadf94`): the coverage
+sentence on both family indexes and on §3 of the sheet named what was left out — "The rest are
+codebases carrying no primary language this reading could read" — when the reading had placed
+everything and that class was empty; and the preamble the advisory and package indexes share
+substitutes the noun but kept the article literal, so the package index read "**An** package
+survives only in a survey's readable list".
+
+The pattern under all six: **the numbers were right and the prose around them was not**. A test that
+asserts a figure cannot see a sentence that mis-describes it, and there is no assertion to add in
+general — only the habit of rendering the page. The three prose fixes each carry their guard AND its
+opposite (an empty remainder is silent, a real one is still named; "a package" and "an advisory"),
+so neither direction can regress.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health
