@@ -66,6 +66,37 @@ public sealed class ScoresAreWrittenToOneDecimalTests
         Assert.DoesNotContain("70 across", json, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// ★★ AND THE SAME DEFECT ON THE SCORE ITSELF, on the page a reader reaches first. A portrait's
+    /// headline, the band-scale marker beside it and the "Where N sits on the scale" heading all went
+    /// through a private "0.#" formatter, so a codebase scoring exactly 54 published <c>54</c> where
+    /// every other surface — its own lens gauges two sections below, the field guide it belongs to,
+    /// the index that lists it — says <c>54.0</c>.
+    /// <para>★ Invisible until a whole-numbered score was rendered: the seed gave every subject a
+    /// random score with a decimal. Found by teaching the harness to publish a subject measured ONCE,
+    /// which is the most common portrait in production and had never been drawn.</para>
+    /// </summary>
+    [Fact]
+    public void A_portrait_of_a_whole_numbered_score_keeps_its_decimal()
+    {
+        var json = PageText.Json(SurveyPageBuilder.Build(SurveyRecord.From([Scored(54)])));
+
+        Assert.Contains("54.0", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("Where 54 sits", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("scored 54 on", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("\\\"54\\\"", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>★ The other half: a score that already has a decimal is untouched.</summary>
+    [Fact]
+    public void A_portrait_of_a_fractional_score_is_unchanged()
+    {
+        var json = PageText.Json(SurveyPageBuilder.Build(SurveyRecord.From([Scored(78.2)])));
+
+        Assert.Contains("Where 78.2 sits", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("78.20", json, StringComparison.Ordinal);
+    }
+
     /// <summary>★★ The other half: a TOTAL keeps its own spelling and gains no decimal.</summary>
     [Fact]
     public void A_total_is_not_dragged_along_with_the_scores()
@@ -80,6 +111,19 @@ public sealed class ScoresAreWrittenToOneDecimalTests
     private static readonly DateTimeOffset TakenAt = new(2026, 9, 23, 0, 0, 0, TimeSpan.Zero);
 
     private static int _ordinal;
+
+    /// <summary>One delivery at a given score — the shape of a repository's first survey.</summary>
+    private static DeliveryPayload Scored(double cai) => new()
+    {
+        DeliveryId = $"cd_score_page_{Interlocked.Increment(ref _ordinal)}",
+        IssuedAt = "2026-09-01T10:00:00Z",
+        RubricVersion = "rubric-2026.08.15",
+        Subject = new DeliverySubject { Repository = "acme/once", Host = "github.com", Commit = "3f9a1c2" },
+        Producer = new DeliveryProducer { Name = "watchdog.canine.dev", Scanner = "watchdog-surveyor" },
+        Measurement = new DeliveryMeasurement { ScannedAt = "2026-09-01T10:00:00Z", ProductionLoc = 9000 },
+        Verdict = new DeliveryVerdict { Cai = cai, Band = "Adequate" },
+        Evidence = new EvidenceBundle { RubricVersion = "rubric-2026.08.15", ProductionLoc = 9000 },
+    };
 
     /// <summary>Twelve codebases, one language, one country, every score 70 — so every median is 70 exactly.</summary>
     private static List<SurveyRecord> Corpus() =>

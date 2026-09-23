@@ -333,7 +333,18 @@ public static class SurveyPageBuilder
         LensCatalog.All.FirstOrDefault(l => string.Equals(l.Key, key, StringComparison.Ordinal))?.DisplayName
         ?? key;
 
-    private static string Number(double value) => value.ToString("0.#", CultureInfo.InvariantCulture);
+    /// <summary>
+    /// A CAI as this index publishes one: always to a decimal, even when it lands on a whole number.
+    /// </summary>
+    /// <remarks>
+    /// ★★ THIS WAS "0.#" — one decimal AT MOST — so a codebase scoring exactly 54 published <c>54</c>
+    /// in its headline, on its band-scale marker and in the "Where N sits on the scale" heading, while
+    /// its own lens gauges two sections below, the field guide it belongs to and the index that lists
+    /// it all said <c>54.0</c>. The score is the first thing a reader looks at and it was the one
+    /// figure on the page not written the standard's way. It delegates rather than restating the
+    /// format, so there is one place that decides what a score looks like.
+    /// </remarks>
+    private static string Number(double value) => PageProse.Score(value);
 
     private static string Compact(int value) =>
         value >= 1000 ? $"{(value / 1000d).ToString("0.#", CultureInfo.InvariantCulture)}k"

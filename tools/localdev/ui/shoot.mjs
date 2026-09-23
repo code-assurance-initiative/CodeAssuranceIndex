@@ -49,7 +49,14 @@ function shapes(paths) {
 
   return [
     ['surveys-index', 'surveys'],
-    ['survey-portrait', first(/^surveys\/github\//)],
+    // ★★ THREE PORTRAITS, BECAUSE A PORTRAIT'S SHAPE IS ITS NUMBER OF MEASUREMENTS. One reading is
+    //    the most common state in production — every repository's first survey — and it is the page
+    //    that published "1 measurements over time" for months; two readings is the shortest trend
+    //    the chart will draw. Neither had ever been rendered here: the seed gave every subject the
+    //    same three deliveries, so only the three-point form was ever looked at.
+    ['survey-portrait', first(/^surveys\/github\/acme-(?!once|twice)/)],
+    ['survey-portrait-once', first(/^surveys\/github\/acme-once\//)],
+    ['survey-portrait-twice', first(/^surveys\/github\/acme-twice\//)],
     ['field-guide', first(/^surveys\/lang\//)],
     ['corpus-sheet', 'state-of-the-corpus'],
     ['corpus-languages-index', first(/^state-of-the-corpus\/languages$/)],

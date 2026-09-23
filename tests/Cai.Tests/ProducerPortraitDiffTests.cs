@@ -70,7 +70,11 @@ public sealed class ProducerPortraitDiffTests
         var standard = PageShape.Stats(Standard())[0];
 
         Assert.StartsWith("72.4 |", producer, StringComparison.Ordinal);
-        Assert.StartsWith("71 |", standard, StringComparison.Ordinal);
+        // ★ "71.0", not "71". This read "71 |" until the portrait's own formatter was fixed: it wrote a
+        //   score with one decimal AT MOST, so 71.0 lost its digit while 72.4 kept one by luck — and the
+        //   asymmetry was invisible here because the two numbers being compared are different anyway.
+        //   The producer's cell is its own golden and is untouched.
+        Assert.StartsWith("71.0 |", standard, StringComparison.Ordinal);
 
         // And the difference is exactly peak-versus-latest, not a rounding or a different fold: the peak is
         // in the sequence, and it is not the last reading in it.

@@ -30,10 +30,30 @@ ADVISORIES = ["GHSA-aaaa-bbbb-cccc", "CVE-2026-0001", "CVE-2026-0002"]
 PACKAGES = ["left-pad", "Acme.Widgets", "google.golang.org/grpc"]
 
 
+# The two subjects whose delivery count is deliberately short of the rest.
+ONCE_OWNER = "acme-once"
+TWICE_OWNER = "acme-twice"
+
+
+def readings_for(ordinal, requested):
+    """How many deliveries this subject gets — one, two, or the full run."""
+    if ordinal == 0:
+        return 1
+    if ordinal == 1:
+        return min(2, requested)
+    return requested
+
+
 def payload(ordinal, at, rng):
     language, secondary = LANGUAGES[ordinal % len(LANGUAGES)]
     country = COUNTRIES[ordinal % len(COUNTRIES)]
-    owner = f"acme-{ordinal % 9}"
+    # ★★ THE FIRST TWO SUBJECTS ARE NAMED, BECAUSE THEY ARE THE STATES NOTHING RENDERED. Every
+    #    seeded subject used to get the same three deliveries, so the harness only ever drew a
+    #    three-point trend — while the most common portrait in production is a repository measured
+    #    ONCE (its first survey) and the next most common is one measured twice. The one-reading
+    #    page is where "1 measurements over time" was published for months. Named owners so the
+    #    screenshot runner can ask for them by path rather than guess which ordinal is which.
+    owner = ONCE_OWNER if ordinal == 0 else TWICE_OWNER if ordinal == 1 else f"acme-{ordinal % 9}"
     repository = f"{owner}/service-{ordinal}"
     cai = round(35 + rng.random() * 55, 1)
     band = "Exemplary" if cai >= 90 else "Strong" if cai >= 70 else "Adequate" if cai >= 50 else "Weak"
@@ -134,8 +154,9 @@ def main():
             return 2
 
         for ordinal in range(args.subjects):
-            for reading in range(args.readings):
-                at = now - timedelta(days=(args.readings - reading) * 30)
+            readings = readings_for(ordinal, args.readings)
+            for reading in range(readings):
+                at = now - timedelta(days=(readings - reading) * 30)
                 p = payload(ordinal, at, rng)
                 connection.execute(
                     "INSERT OR REPLACE INTO deliveries (delivery_id, owner_org_id, repository, "
@@ -174,7 +195,8 @@ def main():
                 (at, codebases, median, json.dumps({"codebases": codebases})))
 
         connection.commit()
-        print(f"seeded {args.subjects} published subjects × {args.readings} readings, "
+        print(f"seeded {args.subjects} published subjects × up to {args.readings} readings "
+              f"(one measured once, one twice), "
               f"and {args.weeks} backdated corpus readings, into {args.db}")
         return 0
     finally:

@@ -515,6 +515,30 @@ does not exist it says so instead of answering.
 
 **The chrome is fine. Nothing here needs fixing, and the retracted 3.45:1 is the finding.**
 
+### ★★ THE HARNESS HAD NEVER DRAWN THE MOST COMMON PAGE THERE IS
+
+Every seeded subject got the same three deliveries, so the only portrait ever rendered was the
+three-point one. In production the most common portrait by far is a repository measured **once** —
+its first survey — and the next is one measured twice. Neither had been looked at, and the
+one-reading page is exactly where "1 measurements over time" was published for months.
+
+The seed now gives subject 0 a single delivery and subject 1 two, under named owners
+(`acme-once`, `acme-twice`) so the runner can ask for them by path, and the shoot takes all three
+portraits. Fourteen shapes, forty-two captures.
+
+The first render of the one-reading page found the fourteenth defect, and it is the largest number
+on the page: a codebase scoring exactly **54** published `54` in its headline, on its band-scale
+marker and in "Where 54 sits on the scale", while its own lens gauges two sections below, the field
+guide it belongs to and the index that lists it all said `54.0`. The portrait's private formatter
+was `"0.#"` — one decimal at most — the same shape as the median defect two commits earlier, in the
+one place a reader looks first. It now delegates to `PageProse.Score`, so one place decides what a
+score looks like.
+
+★ It was invisible until a whole-numbered score was rendered: the seed gives every subject a random
+score, which almost always has a decimal. `ProducerPortraitDiffTests` pinned `"71 |"` and now pins
+`"71.0 |"` — that golden had been holding the defect in place, because the producer's `72.4` carries
+a decimal by luck and the asymmetry never showed.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health
