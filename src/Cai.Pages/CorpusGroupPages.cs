@@ -186,17 +186,22 @@ public static class CorpusGroupPages
                                     + "and never a legal entity.")
                         // ★★ THE ROWS DO NOT ADD UP TO THE CORPUS AND THE PAGE SAYS SO, on the index as well
                         //    as on the sheet: a reader who arrives here directly meets the same claim.
+                        // ★ The clause after the share is only true when something was left out: at full
+                        //   coverage it names two empty classes. See Figure.Remainder.
                         + (coverage is null
                             ? string.Empty
                             : PageProse.Paragraph(
-                                $"{PageProse.Escape(coverage.Headline())} are on this page. The rest are "
-                                + (language
-                                    ? "codebases carrying no primary language this reading could read, which "
-                                        + "is a limit of the indexing behind it and never a fact about the "
-                                        + "codebases, or languages holding too few codebases to read as a "
-                                        + "group."
-                                    : "codebases whose owner declared nothing placeable, or countries "
-                                        + "holding too few codebases to read as a place."))))),
+                                $"{PageProse.Escape(coverage.Headline())} are on this page."
+                                + (coverage.Remainder is > 0 ? " The rest are " : string.Empty)
+                                + (coverage.Remainder is not > 0
+                                    ? string.Empty
+                                    : language
+                                        ? "codebases carrying no primary language this reading could read, "
+                                            + "which is a limit of the indexing behind it and never a fact "
+                                            + "about the codebases, or languages holding too few codebases "
+                                            + "to read as a group."
+                                        : "codebases whose owner declared nothing placeable, or countries "
+                                            + "holding too few codebases to read as a place."))))),
                 PageNodes.Section(
                     null,
                     language ? "languages" : "countries",

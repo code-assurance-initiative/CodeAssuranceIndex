@@ -102,6 +102,57 @@ public sealed class CorpusGroupPagesTests
         Assert.Contains("6 of 10", json, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// ★★ A REMAINDER NOBODY IS IN IS NOT NAMED. The coverage sentence ends "The rest are codebases
+    /// carrying no primary language this reading could read, ... or languages holding too few codebases to
+    /// read as a group" — two exclusion classes a reader is invited to hold the number against. When the
+    /// reading placed every codebase, both classes are empty and the sentence sends that reader after
+    /// nothing. Found by LOOKING at a rendered language index, which read "100.0% of measured codebases
+    /// (40 of 40) are on this page. The rest are ...".
+    /// </summary>
+    [Fact]
+    public void The_language_index_does_not_send_a_reader_after_an_empty_remainder()
+    {
+        var records = Group("csharp", "Denmark", 6, "acme");
+
+        var json = PageText.Json(CorpusGroupPages.Build(records, TakenAt)
+            .Single(p => p.Path == "state-of-the-corpus/languages"));
+
+        Assert.Contains("6 of 6", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("The rest are", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>★ The other half of the guard: a real remainder is still named, so the fix cannot be "drop the sentence".</summary>
+    [Fact]
+    public void The_language_index_still_names_a_remainder_that_exists()
+    {
+        var records = new List<SurveyRecord>();
+        records.AddRange(Group("csharp", "Denmark", 6, "acme"));
+        records.AddRange(Group(null, null, 4, "beta"));
+
+        var json = PageText.Json(CorpusGroupPages.Build(records, TakenAt)
+            .Single(p => p.Path == "state-of-the-corpus/languages"));
+
+        Assert.Contains("The rest are", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// ★ The country index says it in the same words and has the same empty case. Twelve, not six: a country
+    /// needs more codebases than a language before it may be read as a place, so a six-codebase fixture
+    /// builds no country page at all and the index is never written.
+    /// </summary>
+    [Fact]
+    public void The_country_index_does_not_send_a_reader_after_an_empty_remainder()
+    {
+        var records = Group("csharp", "Denmark", 12, "acme");
+
+        var json = PageText.Json(CorpusGroupPages.Build(records, TakenAt)
+            .Single(p => p.Path == "state-of-the-corpus/countries"));
+
+        Assert.Contains("12 of 12", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("The rest are", json, StringComparison.Ordinal);
+    }
+
     // ---------------------------------------------------------------- fixtures
 
     private static readonly DateTimeOffset TakenAt = new(2026, 9, 22, 0, 0, 0, TimeSpan.Zero);

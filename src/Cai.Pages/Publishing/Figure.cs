@@ -111,6 +111,20 @@ public sealed record Figure
     public DateTimeOffset TakenAt { get; }
 
     /// <summary>
+    /// How many of the population this figure's numerator does NOT account for — <c>369</c> of the
+    /// <c>1,588</c> when <c>1,219</c> were counted — and <c>null</c> for a kind that has no numerator.
+    /// </summary>
+    /// <remarks>
+    /// ★★ PROSE THAT NAMES THE REMAINDER MUST ASK WHETHER THERE IS ONE. Both corpus surfaces that state a
+    /// coverage share follow it with a sentence about what is left out — "The rest are codebases carrying no
+    /// primary language this reading could read...". When the reading placed everything, that class is empty
+    /// and the sentence sends a reader after nothing; the share itself stays honest, which is why no test of
+    /// the number caught it and a rendered page did. Asking THIS rather than re-deriving
+    /// <c>Population - Numerator</c> at each call site keeps the two surfaces answering the same question.
+    /// </remarks>
+    public long? Remainder => Numerator is { } counted ? Population - counted : null;
+
+    /// <summary>
     /// How many members of the population could NOT be looked at, so that the reading above them is a lower
     /// bound: <c>1,204</c> surveys whose advisory list was cut short, any of which may belong to the count
     /// without having been countable. Positive for a <see cref="FigureKind.Floor"/> and <c>null</c> for every

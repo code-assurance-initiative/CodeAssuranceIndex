@@ -51,6 +51,23 @@ internal static class PageProse
     public static string Link(string href, string text) =>
         $"<a href=\"{Escape(href)}\">{Escape(text)}</a>";
 
+    /// <summary>
+    /// The indefinite article a noun takes — <c>"an"</c> before advisory, <c>"a"</c> before package.
+    /// </summary>
+    /// <remarks>
+    /// ★★ A SENTENCE PARAMETERISED BY A NOUN MUST TAKE ITS ARTICLE FROM THE NOUN. The advisory and package
+    /// indexes share one preamble with the noun substituted in; the article was written for "advisory" and
+    /// stayed literal, so the package index read "An package survives only in...". Nothing about the numbers
+    /// was wrong, which is why every test of that page passed and a rendered screenshot found it.
+    /// <para>
+    /// This is a SPELLING rule, not a phonetic one: it would say "a hour" and "an unit". The nouns on these
+    /// pages are a closed set the tests name, and a caller with a noun whose sound and spelling disagree
+    /// should write the article rather than ask for one.
+    /// </para>
+    /// </remarks>
+    public static string An(string noun) =>
+        noun.Length > 0 && "aeiou".Contains(char.ToLowerInvariant(noun[0])) ? "an" : "a";
+
     /// <summary>A score as a reader writes it — one decimal, never a float's full expansion.</summary>
     public static string Score(double value) => value.ToString("0.0", CultureInfo.InvariantCulture);
 

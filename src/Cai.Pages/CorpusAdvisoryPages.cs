@@ -312,10 +312,14 @@ public static class CorpusAdvisoryPages
     /// </remarks>
     private static string Preamble(AdvisoryCut cut, Figure? held, string one, string many)
     {
+        // ★ The article comes from the noun, because the noun is substituted in. See PageProse.An.
+        var article = PageProse.An(one);
+        var opening = char.ToUpperInvariant(article[0]) + article[1..];
+
         return PageProse.Paragraph(
-            $"Every count here is a floor. An {one} survives only in a survey's readable list of affected "
+            $"Every count here is a floor. {opening} {one} survives only in a survey's readable list of affected "
             + "locations, which stops after a fixed number of entries without the count above it changing, so "
-            + $"a survey may carry an {one} without being counted for it. "
+            + $"a survey may carry {article} {one} without being counted for it. "
             + $"{PageProse.Count(cut.SurveysTruncated)} of {PageProse.Count(cut.Surveys)} surveys read for "
             + "advisories had a list cut short that way.")
         + (held is null

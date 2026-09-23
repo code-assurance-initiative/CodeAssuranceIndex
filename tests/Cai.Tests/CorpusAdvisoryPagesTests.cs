@@ -119,6 +119,35 @@ public sealed class CorpusAdvisoryPagesTests
         Assert.Contains("2 of 3", json, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// ★★ ONE PREAMBLE, TWO NOUNS, ONE HARDCODED ARTICLE. The advisory index and the package index share the
+    /// sentence that says every count is a floor, parameterised by the noun — and the article in front of it
+    /// was written for "advisory" and left there, so the package index published "An package survives only in
+    /// a survey's readable list" and "a survey may carry an package". Found by LOOKING at the rendered index;
+    /// every test of that page asserted on counts, which were right.
+    /// </summary>
+    [Fact]
+    public void The_package_index_puts_the_right_article_in_front_of_its_noun()
+    {
+        var json = PageText.Json(CorpusAdvisoryPages.Build(Reading(Carrying("CVE-2026-0001", 4)), TakenAt)
+            .Single(p => p.Path == "state-of-the-corpus/packages"));
+
+        Assert.DoesNotContain("An package", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("an package", json, StringComparison.Ordinal);
+        Assert.Contains("A package survives", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>★ The other half: the advisory index keeps the article its noun actually takes.</summary>
+    [Fact]
+    public void The_advisory_index_still_reads_an_advisory()
+    {
+        var json = PageText.Json(CorpusAdvisoryPages.Build(Reading(Carrying("CVE-2026-0001", 4)), TakenAt)
+            .Single(p => p.Path == "state-of-the-corpus/advisories"));
+
+        Assert.Contains("An advisory survives", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("A advisory", json, StringComparison.Ordinal);
+    }
+
     // ---------------------------------------------------------------- fixtures
 
     private static readonly DateTimeOffset TakenAt = new(2026, 9, 22, 0, 0, 0, TimeSpan.Zero);

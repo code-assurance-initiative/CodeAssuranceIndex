@@ -167,6 +167,32 @@ public sealed class CorpusSheetTests
         Assert.Contains("never recomputed from today's corpus", json, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// ★★ §3 SAYS "The rest carry no primary language this reading could read" — AND SOMETIMES THERE IS NO
+    /// REST. The share is honest either way, but the clause after it names an exclusion class that is empty
+    /// and invites a reader to hold the number against it. The language index says the same thing in the
+    /// same words and had the same defect; both are fixed at the one place the remainder is known.
+    /// </summary>
+    [Fact]
+    public void The_language_fold_does_not_name_an_empty_remainder()
+    {
+        var json = Json(CorpusSheetBuilder.Build(Placed(6), TakenAt));
+
+        Assert.Contains("6 of 6", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("The rest carry", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>★ The other half: a corpus nobody could place still gets the sentence.</summary>
+    [Fact]
+    public void The_language_fold_still_names_a_remainder_that_exists()
+    {
+        List<SurveyRecord> records = [.. Placed(6), .. FullCorpus()];
+
+        var json = Json(CorpusSheetBuilder.Build(records, TakenAt));
+
+        Assert.Contains("The rest carry", json, StringComparison.Ordinal);
+    }
+
     // ---------------------------------------------------------------- fixtures
 
     private static readonly DateTimeOffset TakenAt = new(2026, 9, 22, 0, 0, 0, TimeSpan.Zero);
@@ -220,6 +246,35 @@ public sealed class CorpusSheetTests
             },
             new() { VulnScanFailed = true },
         }.Select(Record),
+    ];
+
+    /// <summary>A corpus every one of whose codebases carries a language §3 can place.</summary>
+    private static List<SurveyRecord> Placed(int count) =>
+    [
+        .. Enumerable.Range(0, count).Select(_ =>
+        {
+            var ordinal = Interlocked.Increment(ref _ordinal);
+            return SurveyRecord.From([new DeliveryPayload
+            {
+                DeliveryId = $"cd_placed_{ordinal}",
+                IssuedAt = "2026-09-01T10:00:00Z",
+                RubricVersion = "rubric-2026.08.15",
+                Subject = new DeliverySubject
+                {
+                    Repository = $"acme/placed-{ordinal}",
+                    Host = "github.com",
+                    Languages = new SubjectLanguages { Primary = "csharp" },
+                },
+                Producer = new DeliveryProducer { Name = "watchdog.canine.dev" },
+                Verdict = new DeliveryVerdict { Cai = 70, Band = "Strong" },
+                Evidence = new EvidenceBundle
+                {
+                    RubricVersion = "rubric-2026.08.15",
+                    ProductionLoc = 1000,
+                    SecurityReading = new SecurityReading { VulnMeasurable = true, DisclosureMeasured = true },
+                },
+            }]);
+        }),
     ];
 
     private static SurveyRecord Record(SecurityReading reading)

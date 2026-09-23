@@ -301,11 +301,15 @@ public static class CorpusSheetBuilder
             + "\n\n**Affected is taken over Measurable, never over Surveys.** A language that resolves few of "
             + "its dependencies shows a shorter bar. Less was looked at, which is not the same as less being "
             + "there."
+            // ★ ... and the sentence about what was left out is only written when something was. See
+            //   Figure.Remainder: at full coverage "The rest" named nobody.
             + (coverage is null
                 ? string.Empty
-                : "\n\n" + coverage.Headline() + " could be placed in a language at all. The rest carry no "
-                    + "primary language this reading could read, which is a limit of the indexing behind this "
-                    + "reading and never a fact about the codebases themselves."),
+                : "\n\n" + coverage.Headline() + " could be placed in a language at all."
+                    + (coverage.Remainder is > 0
+                        ? " The rest carry no primary language this reading could read, which is a limit of "
+                            + "the indexing behind this reading and never a fact about the codebases themselves."
+                        : string.Empty)),
             null,
             null,
             "Language",
