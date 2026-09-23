@@ -61,6 +61,12 @@ public static class RegistryEndpoints
         registry.MapGet("/deliveries", ListDeliveries).RequireAuthorization();
 
         // ── Access grants (seller → buyer) ───────────────────────────────────────────────────────────────────────
+        // ── Publication (owner → the standard's own pages) ───────────────────────────────────────────────────────
+        // ★★ PRODUCER-GATED, LIKE PUBLISHING A DELIVERY, because it is the same kind of claim about the same
+        // evidence: this org measured that codebase, and now says the standard may publish a page about it.
+        registry.MapPost("/publications", SetPublicationAsync).RequireAuthorization(RegistryClaims.ProducerPolicy);
+        registry.MapGet("/publications", ListPublications).RequireAuthorization(RegistryClaims.ProducerPolicy);
+
         registry.MapPost("/grants", CreateGrantAsync).RequireAuthorization();
         registry.MapGet("/grants", ListGrants).RequireAuthorization();
         registry.MapDelete("/grants/{grantId}", RevokeGrant).RequireAuthorization();
@@ -470,6 +476,124 @@ public static class RegistryEndpoints
         Results.Json(new { error }, statusCode: StatusCodes.Status422UnprocessableEntity);
 
     private static string? Normalize(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    /// <summary>
+    /// Grant — or withdraw — publication for subjects this org holds deliveries for.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ THE DEFAULT IS A DRY RUN, AND THAT IS THE POINT RATHER THAN A CONVENIENCE. Granting
+    /// publication is what makes pages appear on a public website, for thousands of subjects at once. The
+    /// house rule for anything of that shape is to run the predicate FIRST and compare its count to a
+    /// number you expected before anything is written — so this answers with what it WOULD do unless the
+    /// caller says otherwise, and the answer carries the count to compare.</para>
+    ///
+    /// <para>★★ A SUBJECT THIS ORG HOLDS NO DELIVERY FOR IS NAMED, NEVER SILENTLY GRANTED. Publication is
+    /// a claim about somebody's repository; granting one for a subject this org never measured would let a
+    /// producer publish a page about code it has no evidence for. They come back in <c>unknown</c> rather
+    /// than as an error, because a caller listing six thousand repositories needs to know WHICH ones did
+    /// not land, not merely that something did not.</para>
+    ///
+    /// <para>★ WITHDRAWAL IS THE SAME SHAPE, because publication is a grant and a grant can be taken back.
+    /// The row survives it — what was public, and when it stopped being, is a fact somebody may later need
+    /// to establish.</para>
+    /// </remarks>
+    private static IResult SetPublicationAsync(
+        HttpContext http, IRegistryStore store, PublicationRequest request)
+    {
+        var org = RegistryClaims.OrgOf(http.User);
+        if (org is null)
+        {
+            return Results.Forbid();
+        }
+
+        var repositories = (request.Repositories ?? [])
+            .Select(r => r?.Trim())
+            .Where(r => !string.IsNullOrWhiteSpace(r))
+            .Distinct(StringComparer.Ordinal)
+            .Cast<string>()
+            .ToList();
+
+        if (repositories.Count == 0)
+        {
+            return Results.BadRequest(new { error = "repositories must name at least one subject" });
+        }
+
+        // ★ OWNERSHIP IS PROVEN BY EVIDENCE, not asserted by the caller: this org must already hold a
+        //   delivery for the subject. That is the same test `POST /grants` applies to a delivery ref.
+        var owned = store.ListByOwnerAndRepositories(org, repositories)
+            .Select(d => d.Repository)
+            .ToHashSet(StringComparer.Ordinal);
+        var unknown = repositories.Where(r => !owned.Contains(r)).ToList();
+        var actionable = repositories.Where(owned.Contains).ToList();
+
+        var withdraw = request.Withdraw ?? false;
+        var dryRun = request.DryRun ?? true;
+        var at = DateTimeOffset.UtcNow.ToString(TimestampFormat, CultureInfo.InvariantCulture);
+
+        if (dryRun)
+        {
+            var already = actionable.Count(r => store.GetPublication(org, r)?.Status == "granted");
+            return Results.Ok(new
+            {
+                dryRun = true,
+                matched = actionable.Count,
+                wouldGrant = withdraw ? 0 : actionable.Count - already,
+                wouldWithdraw = withdraw ? already : 0,
+                alreadyGranted = already,
+                unknown,
+            });
+        }
+
+        var changed = 0;
+        foreach (var repository in actionable)
+        {
+            if (withdraw)
+            {
+                store.WithdrawPublication(org, repository, at);
+            }
+            else
+            {
+                store.GrantPublication(org, repository, at);
+            }
+
+            changed++;
+        }
+
+        return Results.Ok(new
+        {
+            dryRun = false,
+            matched = actionable.Count,
+            granted = withdraw ? 0 : changed,
+            withdrawn = withdraw ? changed : 0,
+            unknown,
+        });
+    }
+
+    /// <summary>Every subject this org has granted publication for.</summary>
+    private static IResult ListPublications(HttpContext http, IRegistryStore store)
+    {
+        var org = RegistryClaims.OrgOf(http.User);
+        if (org is null)
+        {
+            return Results.Forbid();
+        }
+
+        var mine = store.ListPublishedSubjects()
+            .Where(p => string.Equals(p.OwnerOrgId, org, StringComparison.Ordinal))
+            .Select(p => new { p.Repository, p.Status, p.GrantedAt })
+            .ToList();
+
+        return Results.Ok(new { count = mine.Count, published = mine });
+    }
+
+    /// <summary>What a caller asks of <c>POST /publications</c>.</summary>
+    /// <param name="Repositories">The subjects, as the producer names them.</param>
+    /// <param name="DryRun">Report without writing. ★ Defaults to TRUE when absent — see the handler.</param>
+    /// <param name="Withdraw">Take publication back instead of granting it.</param>
+    public sealed record PublicationRequest(
+        IReadOnlyList<string>? Repositories,
+        bool? DryRun = null,
+        bool? Withdraw = null);
 }
 
 /// <summary>The grant-creation request body.</summary>

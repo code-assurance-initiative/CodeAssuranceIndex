@@ -179,6 +179,110 @@ public sealed class RegistryApiTests(RegistryApiFixture fx) : IClassFixture<Regi
         ],
     };
 
+    // ── publication: which measured codebases the standard may publish a page about ──────────────────────
+
+    /// <summary>
+    /// ★★ A SUBJECT IS PUBLIC WHEN ITS OWNER SAYS SO, AND UNTIL THIS EXISTED NOBODY COULD SAY IT. The
+    /// store has held publication since the sweep was built, and nothing could write to it — the standard
+    /// was told "granting publication is the owner's call" while offering the owner no way to make it.
+    /// </summary>
+    [Fact]
+    public async Task Publication_is_granted_for_subjects_the_caller_owns()
+    {
+        var repository = $"acme/publish-{Guid.NewGuid():N}";
+        await PublishAsync(Mint(NewId("cd_pub"), repository));
+
+        // ★ AS THE ORG THAT OWNS THE EVIDENCE. A delivery is published BY the producer but owned by the
+        //   customer org named in the push, and publication is the OWNER's claim — so the producer grants
+        //   on that org's behalf, through the same header it already uses to act for a customer.
+        using var client = fx.Client(RegistryApiFixture.ProducerToken, RegistryApiFixture.SellerOrg);
+        var response = await client.PostAsJsonAsync(
+            "/api/registry/publications", new { repositories = new[] { repository }, dryRun = false }, Ct);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var body = await Json(response);
+        Assert.Equal(1, body.RootElement.GetProperty("granted").GetInt32());
+        Assert.Equal(0, body.RootElement.GetProperty("unknown").GetArrayLength());
+    }
+
+    /// <summary>
+    /// ★★ THE DRY RUN IS THE POINT, NOT A CONVENIENCE. Granting publication for thousands of subjects is
+    /// what makes pages appear on a public website; CLAUDE.md's rule for anything of that shape is to run
+    /// the predicate first and compare the count to an expected number BEFORE writing. So the default is
+    /// dry, and a dry call writes nothing.
+    /// </summary>
+    [Fact]
+    public async Task A_dry_run_reports_what_it_would_grant_and_writes_nothing()
+    {
+        var repository = $"acme/dry-{Guid.NewGuid():N}";
+        await PublishAsync(Mint(NewId("cd_dry"), repository));
+
+        using var client = fx.Client(RegistryApiFixture.ProducerToken, RegistryApiFixture.SellerOrg);
+        var dry = await client.PostAsJsonAsync(
+            "/api/registry/publications", new { repositories = new[] { repository } }, Ct);
+
+        using var body = await Json(dry);
+        Assert.True(body.RootElement.GetProperty("dryRun").GetBoolean());
+        Assert.Equal(1, body.RootElement.GetProperty("wouldGrant").GetInt32());
+
+        // Nothing was written: a second dry run still reports it as not yet granted.
+        var again = await client.PostAsJsonAsync(
+            "/api/registry/publications", new { repositories = new[] { repository } }, Ct);
+        using var second = await Json(again);
+        Assert.Equal(1, second.RootElement.GetProperty("wouldGrant").GetInt32());
+    }
+
+    /// <summary>
+    /// ★★ A SUBJECT THE CALLER HOLDS NO DELIVERY FOR IS NAMED, NEVER SILENTLY GRANTED. Publication is a
+    /// claim about somebody's repository; granting one for a subject this org never measured would let a
+    /// producer publish a page about code it has no evidence for.
+    /// </summary>
+    [Fact]
+    public async Task A_subject_the_caller_owns_no_delivery_for_is_refused_and_named()
+    {
+        using var client = fx.Client(RegistryApiFixture.ProducerToken, RegistryApiFixture.SellerOrg);
+        var response = await client.PostAsJsonAsync(
+            "/api/registry/publications",
+            new { repositories = new[] { "someone-else/not-ours" }, dryRun = false },
+            Ct);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var body = await Json(response);
+        Assert.Equal(0, body.RootElement.GetProperty("granted").GetInt32());
+        Assert.Equal("someone-else/not-ours", body.RootElement.GetProperty("unknown")[0].GetString());
+    }
+
+    /// <summary>★ Withdrawal is the same shape — publication is a grant, and a grant can be taken back.</summary>
+    [Fact]
+    public async Task Publication_can_be_withdrawn()
+    {
+        var repository = $"acme/withdraw-{Guid.NewGuid():N}";
+        await PublishAsync(Mint(NewId("cd_wd"), repository));
+
+        using var client = fx.Client(RegistryApiFixture.ProducerToken, RegistryApiFixture.SellerOrg);
+        await client.PostAsJsonAsync(
+            "/api/registry/publications", new { repositories = new[] { repository }, dryRun = false }, Ct);
+
+        var response = await client.PostAsJsonAsync(
+            "/api/registry/publications",
+            new { repositories = new[] { repository }, dryRun = false, withdraw = true },
+            Ct);
+
+        using var body = await Json(response);
+        Assert.Equal(1, body.RootElement.GetProperty("withdrawn").GetInt32());
+    }
+
+    /// <summary>★ And it is producer-gated, like publishing a delivery.</summary>
+    [Fact]
+    public async Task Publication_needs_a_producer_credential()
+    {
+        using var client = fx.Client(RegistryApiFixture.BuyerToken);
+        var response = await client.PostAsJsonAsync(
+            "/api/registry/publications", new { repositories = new[] { "acme/anything" } }, Ct);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
     private DeliveryPackage Mint(string deliveryId, string repository, string commit = "3f9a1c2", DeliveryKeyPair? key = null,
         Func<DeliveryPayload, DeliveryPayload>? mutateBeforeSigning = null)
     {
