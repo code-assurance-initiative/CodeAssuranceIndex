@@ -54,7 +54,10 @@ function shapes(paths) {
     //    that published "1 measurements over time" for months; two readings is the shortest trend
     //    the chart will draw. Neither had ever been rendered here: the seed gave every subject the
     //    same three deliveries, so only the three-point form was ever looked at.
-    ['survey-portrait', first(/^surveys\/github\/acme-(?!once|twice)/)],
+    // ★ NOT `acme-…`: the named fixtures below are excluded by name, and everything else — invented or
+    //   IMPORTED FROM PRODUCTION — is a candidate. Keyed on `acme-`, this shape silently vanished the
+    //   first time the harness rendered real subjects, and a missing shape reports as a shorter list.
+    ['survey-portrait', first(/^surveys\/github\/(?!acme-once\/|acme-twice\/|acme-thin\/)/)],
     ['survey-portrait-once', first(/^surveys\/github\/acme-once\//)],
     ['survey-portrait-twice', first(/^surveys\/github\/acme-twice\//)],
     // ★★ AND THE PAGE ALMOST EVERY SUBJECT WOULD GET TODAY. Every subject in the live registry holds

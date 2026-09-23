@@ -192,8 +192,14 @@ stop_cai
 
 # ── 4. seed published subjects ───────────────────────────────────────────────────────────────
 echo "[4/7] seeding $SUBJECTS published subjects"
-python3 "$ROOT/tools/localdev/seed-local-registry.py" --db "$REGISTRY_DB" --subjects "$SUBJECTS" \
-  --weeks "$WEEKS"
+if [ -n "${CORPUS_E2E_IMPORT:-}" ]; then
+  # ★ Render what production would publish, from production's own deliveries — a read-only export.
+  python3 "$ROOT/tools/localdev/seed-local-registry.py" --db "$REGISTRY_DB" \
+    --import-deliveries "$CORPUS_E2E_IMPORT"
+else
+  python3 "$ROOT/tools/localdev/seed-local-registry.py" --db "$REGISTRY_DB" --subjects "$SUBJECTS" \
+    --weeks "$WEEKS"
+fi
 
 # ── 5. the sweep ─────────────────────────────────────────────────────────────────────────────
 # The publish loop runs its first sweep AT STARTUP (SitePublishHostedService's do-while), so booting

@@ -194,6 +194,41 @@ def payload(ordinal, at, rng):
     }
 
 
+def import_deliveries(connection, path, now):
+    """Load real registry rows and grant each subject publication.
+
+    ★★ THE ONE THING THE HARNESS COULD NOT DO WAS RENDER A REAL SUBJECT. Everything else it draws is
+       invented, which proves the composition handles the shapes I thought of. Production's own
+       deliveries carry the shapes nobody thought of — an owner whose profile line has no country, a
+       language with no display mapping, an advisory list twenty-nine long — and they are public
+       artefacts, so a read-only export of them is the truest fixture there is.
+    """
+    with open(path, encoding="utf-8") as handle:
+        rows = json.load(handle)
+
+    for row in rows:
+        connection.execute(
+            "INSERT OR REPLACE INTO deliveries (delivery_id, owner_org_id, repository, commit_sha, "
+            "host, producer, rubric_version, cai, band, issued_at, key_id, canonical_sha256, "
+            "signature_value, package_json, published_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (row["deliveryId"], row["ownerOrgId"], row["repository"], row["commitSha"], row["host"],
+             row["producer"], row["rubricVersion"], row["cai"], row["band"], row["issuedAt"],
+             row["keyId"], row["canonicalSha256"], row["signatureValue"], row["packageJson"],
+             row["publishedAt"]))
+
+    subjects = sorted({(r["ownerOrgId"], r["repository"]) for r in rows})
+    for org, repository in subjects:
+        connection.execute(
+            "INSERT OR REPLACE INTO publications (owner_org_id, repository, status, granted_at, "
+            "withdrawn_at) VALUES (?,?,?,?,NULL)",
+            (org, repository, "granted", now.isoformat().replace("+00:00", "Z")))
+
+    connection.commit()
+    print(f"imported {len(rows)} real deliveries over {len(subjects)} subjects from {path}, "
+          f"each granted publication")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--db", required=True)
@@ -202,6 +237,11 @@ def main():
                         help="deliveries per subject, so a portrait can draw a trend")
     parser.add_argument("--weeks", type=int, default=8,
                         help="backdated corpus readings, so the sheet's series has more than one day")
+    parser.add_argument("--import-deliveries", metavar="FILE",
+                        help="render REAL production deliveries instead of invented ones: a JSON array of "
+                             "registry rows exported read-only from the live store. Subjects are granted "
+                             "publication exactly as the invented ones are, so the sweep composes the pages "
+                             "production WOULD publish for them")
     args = parser.parse_args()
 
     rng = random.Random(20260923)
@@ -220,6 +260,9 @@ def main():
                   f"against it once so the registry creates its own schema, then seed.",
                   file=sys.stderr)
             return 2
+
+        if args.import_deliveries:
+            return import_deliveries(connection, args.import_deliveries, now)
 
         for ordinal in range(args.subjects):
             readings = readings_for(ordinal, args.readings)

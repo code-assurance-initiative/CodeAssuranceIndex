@@ -630,6 +630,31 @@ roughly six thousand survey pages point at nothing and no sweep of the published
 https://codeassuranceindex.info/verify/` — this has not been verified, because the estate has been
 dark since 10:02 UTC.
 
+### ★★★ THE CUTOVER IS BLOCKED ON A FOURTH PRODUCER FACT: `subject.host`
+
+Rendering production's OWN deliveries — a read-only export of the 126 subjects re-delivered since the
+promote, imported into the harness with `CORPUS_E2E_IMPORT` — composed 99 pages and **not one survey
+portrait**. The cause is one missing field:
+
+`SurveyAddress.For(host, repository)` returns null without a host, so `SurveyPageBuilder.Build`
+returns null and `Compose` drops the page. Production's deliveries carry no `subject.host`:
+**15,587 of 16,758** have none, and of the 6,261 subjects in the registry **6,042 would get no
+portrait**. Proved by re-importing the same 126 deliveries with `"host": "github.com"` added — the
+portraits appear.
+
+★ It is not the standard's to guess. The delivery carries only `subject.repository`, and the corpus
+is 6,129 GitHub plus 66 GitLab, so inventing a forge would address 66 codebases wrongly and for ever.
+The producer knows it: `ScanRun.Host` comes from `ScanRequest.Host`, which the dispatcher fills with
+`ProviderHosts.HostOrNull(repo.Provider)` — and that returns **null for `GitProvider.PublicClone`**,
+which is how every OSS corpus repo is onboarded ("PublicClone is a clone METHOD and carries its own
+URL"). `ProviderHosts.ForgeOf(provider, cloneUrl)` already resolves it, and `OwnerLocationResolver`
+already calls exactly that to know which forge to ask about an owner.
+
+★★ **IT IS ALSO URGENT, BECAUSE THE RESCAN IS RUNNING.** Deliveries are landing at ~14/hour and every
+one of them is minted without a host, so each is a subject that will need scanning AGAIN before it can
+have a page. Fixing the dispatcher first costs nothing; fixing it later costs a second pass over
+everything scanned in between.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health
