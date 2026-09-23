@@ -441,6 +441,20 @@ general — only the habit of rendering the page. The three prose fixes each car
 opposite (an empty remainder is silent, a real one is still named; "a package" and "an advisory"),
 so neither direction can regress.
 
+★★ **A SECOND READING IS A DIFFERENT READING — the harness now shoots three.** Every one of those
+six was found at 1280px in the light scheme, because that is the only way anything had ever been
+looked at. `shoot.mjs` takes `--theme dark` and `--width`, and `run-corpus-e2e.sh` runs all twelve
+shapes three times: desktop light, desktop dark, and 390px. The first dark pass found the seventh
+defect immediately — the trend chart's end label, the one number a reader looks for, at **1.11:1**
+on the survey portrait and the country page. `.ink-healthy` sets `color`; an SVG `<text>` ignores it
+and takes the default fill, which is black. Correct on white, invisible on #0F1115. Fixed in the
+renderer with one declaration (imprint `ed81642`, `fill: currentColor`), which also gives the label
+the band colour it was always written to carry.
+
+The guard went with it: for every drawn `<text>`, the harness now resolves the fill and the first
+painted background above it and fails under 3:1. Nothing else could have caught this — the island
+had rendered, the text was in the DOM, and axe does not check SVG text.
+
 ### ★★ THE STATE ON 2026-09-22 NIGHT, AND WHAT ACTUALLY REMAINS
 
 Kennel is promoted (its publisher is gone). CAI is deployed and its publisher is LIVE — the health

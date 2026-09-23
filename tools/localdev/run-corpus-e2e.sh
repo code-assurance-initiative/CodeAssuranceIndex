@@ -247,8 +247,22 @@ set +e
 node "$ROOT/tools/localdev/ui/shoot.mjs" \
   --base "$SITE_BASE" --out "$SHOTS/$STAMP" --paths "$LOGS/published-paths.json"
 RESULT=$?
+
+# ★★ THREE READINGS, NOT ONE. Every defect this harness has caught was found at 1280px in the light
+#    scheme, because that is the only way anything was ever looked at. The dark scheme is chosen by
+#    the BROWSER here (the site follows prefers-color-scheme through CSS light-dark()), and 390px is
+#    a phone — the width where a stat band or a table has nowhere to go. Same shapes, same emptiness
+#    check, same published-path list, so the three cannot drift apart.
+node "$ROOT/tools/localdev/ui/shoot.mjs" \
+  --base "$SITE_BASE" --out "$SHOTS/$STAMP/dark" --paths "$LOGS/published-paths.json" --theme dark
+RESULT=$(( RESULT + $? ))
+node "$ROOT/tools/localdev/ui/shoot.mjs" \
+  --base "$SITE_BASE" --out "$SHOTS/$STAMP/narrow" --paths "$LOGS/published-paths.json" --width 390
+RESULT=$(( RESULT + $? ))
 set -e
 
 echo
 echo "screenshots: $SHOTS/$STAMP   (LOOK at them — a green report over an unviewed screenshot is worthless)"
+echo "             $SHOTS/$STAMP/dark      the same shapes in the dark scheme"
+echo "             $SHOTS/$STAMP/narrow    the same shapes at 390px"
 exit "$RESULT"
