@@ -390,6 +390,28 @@ Either scope the CMS token to CAI alone, or keep it open and accept that layout 
   commits; its self-test reports three arms masked by a missing PostgreSQL data directory on the
   runner and one silently-passing arm. Not caused by, and not blocking, this move.
 
+### ★★ KNOWN DIFFERENCE, FOR THE OWNER: THE GROUP PAGES HAVE NO TREND
+
+Found 2026-09-23 by looking at a rendered country page and then diffing it against the producer's
+golden — phase 6 had diffed the SHEET's sections and the page ADDRESSES, but nobody had diffed a
+language or country page's own structure.
+
+The producer draws a **trend on every language and country page**. The standard cannot: its readings
+store records the corpus-wide reading — codebases, and the median across them — and nothing per
+group, so there is no per-language or per-country series to draw.
+
+★★ **It is deliberately NOT worked around.** A line could be derived from today's deliveries, and
+that is exactly the "line that never happened" the readings store exists to prevent: publication is
+withdrawable, so a recomputed past is not the past. Giving each recorded reading a per-group series
+is a schema decision, and it belongs to the owner rather than to a page fix.
+
+`ProducerCorpusDiffTests.The_group_pages_differ_from_the_producers_in_ways_that_are_written_down`
+pins this, so it cannot quietly change in either direction. The other differences it pins are
+wording and anchors.
+
+★ The group pages also carry no link cards — but neither do the producer's, so that is parity rather
+than something lost in the move.
+
 ### ★★ THE END-TO-END RENDER, AND WHAT IT CAUGHT
 
 `tools/localdev/run-corpus-e2e.sh` boots a local imprint, seeds a scratch registry, runs the REAL

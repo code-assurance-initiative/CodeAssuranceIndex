@@ -63,6 +63,47 @@ public sealed class ProducerCorpusDiffTests
         Assert.Equal(WidgetProps(Producer("state-of-the-corpus"), "cai-trend"), WidgetProps(Standard(Sheet()), "cai-trend"));
     }
 
+    /// <summary>
+    /// ★★ THE GROUP PAGES DIFFER FROM THE PRODUCER'S, AND THE DIFFERENCES ARE NAMED HERE RATHER THAN
+    /// LEFT TO BE DISCOVERED. Phase 6 diffed the SHEET's sections and the page ADDRESSES; nobody had
+    /// diffed a language or country page's own structure, so these went unseen until one was looked at.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ THE ONE THAT IS NOT COSMETIC: the producer draws a TREND on every language and country
+    /// page, and the standard cannot. Its readings store records the corpus-wide reading — codebases and
+    /// the median across them — and nothing per group, so there is no per-language or per-country series
+    /// to draw. Building one means the recorded reading carrying a series per group, which is a schema
+    /// decision and not a page fix. Recorded in the plan; NOT worked around by deriving a line from
+    /// today's data, which is exactly the "line that never happened" the whole readings store exists to
+    /// prevent.</para>
+    /// <para>★ The rest are wording and anchors — a heading of "Denmark" against "Denmark in the corpus",
+    /// and a caveat anchored `census` against `what-a-country-is`. They are pinned so a later change has
+    /// to mean it.</para>
+    /// </remarks>
+    [Fact]
+    public void The_group_pages_differ_from_the_producers_in_ways_that_are_written_down()
+    {
+        var producerCountry = PageShape.Sections(Producer("state-of-the-corpus/country/denmark"));
+        var ourCountry = PageShape.Sections(Standard(CountryPage()));
+
+        // The producer draws a trend per group; the standard has no per-group series to draw.
+        Assert.Contains("-/trend", producerCountry);
+        Assert.DoesNotContain("-/trend", ourCountry);
+        Assert.DoesNotContain("cai-trend", PageShape.Widgets(Standard(CountryPage())));
+
+        // And the caveat is present on both, under different anchors.
+        Assert.Contains("Note/census", producerCountry);
+        Assert.Contains("Note/what-a-country-is", ourCountry);
+
+        // The claim itself is what matters, and it survives the rename.
+        var json = PageText.Json(CountryPage());
+        Assert.Contains("places an owner", json, StringComparison.Ordinal);
+        Assert.Contains("never a legal entity", json, StringComparison.Ordinal);
+    }
+
+    private static SurveyPage CountryPage() =>
+        CorpusGroupPages.Build(Corpus(), TakenAt).Single(p => p.Path.EndsWith("country/denmark", StringComparison.Ordinal));
+
     // ---------------------------------------------------------------- readers
 
     private static List<string> WidgetProps(JsonElement page, string tag)
