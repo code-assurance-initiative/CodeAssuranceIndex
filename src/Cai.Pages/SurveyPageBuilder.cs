@@ -34,6 +34,31 @@ public static class SurveyPageBuilder
     /// </remarks>
     public const string Root = "surveys";
 
+    /// <summary>
+    /// Whether <paramref name="path"/> addresses ONE subject's portrait, rather than a page about many.
+    /// </summary>
+    /// <remarks>
+    /// ★★ THE LINE A MIGRATION HAS TO DRAW. A portrait describes its own subject and is right the
+    /// moment it arrives; every other page under this root — the index, the field guides — describes
+    /// the WHOLE corpus and is wrong until the whole corpus is there. A publisher refilling the
+    /// registry one scan at a time needs to tell them apart, or it republishes "6,276 measured
+    /// codebases" as a reading over the three that happen to have been rescanned.
+    /// <para>★ Shape, not a list: <c>surveys/{forge}/{owner}/{name}</c> is three segments under the
+    /// root and <c>surveys/lang/{language}</c> is two, so the guide family can never be mistaken for a
+    /// subject however many languages appear.</para>
+    /// </remarks>
+    public static bool IsPortrait(string? path)
+    {
+        var trimmed = (path ?? string.Empty).Trim('/');
+        if (!trimmed.StartsWith(Root + "/", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        var segments = trimmed.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        return segments.Length >= 4 && !string.Equals(segments[1], "lang", StringComparison.Ordinal);
+    }
+
     /// <summary>The page for one measured subject, or null when the subject cannot be addressed.</summary>
     public static SurveyPage? Build(SurveyRecord record)
     {

@@ -15,7 +15,19 @@ namespace Cai.Web.Registry;
 /// site. Zero on an ordinary sweep. ★ Carried so a refusal cannot be mistaken for a sweep with nothing to
 /// withdraw — both otherwise report zero withdrawals.
 /// </param>
-public sealed record SiteSweep(int Built, int Changed, int Withdrawn, int Failed, int WithdrawalRefused = 0);
+public sealed record SiteSweep(int Built, int Changed, int Withdrawn, int Failed, int WithdrawalRefused = 0)
+{
+    /// <summary>
+    /// How many corpus-wide pages were composed but NOT published, because the granted corpus is still
+    /// a fraction of the one the site serves.
+    /// </summary>
+    /// <remarks>
+    /// ★★ ZERO IS THE STEADY STATE, and anything else means a migration is in progress. It is on the
+    /// sweep so an operator can see the hold rather than infer it from a sheet that stopped moving —
+    /// a page holding its old reading and a publisher that has died look identical from outside.
+    /// </remarks>
+    public int AggregatesHeld { get; init; }
+}
 
 /// <summary>
 /// Composes every page the standard stands behind and reconciles the site against them.
@@ -120,7 +132,39 @@ public sealed class SitePublishService(
         }
 
         var pages = Compose(records, takenAt);
-        var pushed = await PushAsync(pages, cancellationToken).ConfigureAwait(false);
+
+        // ★★ THE AGGREGATES ARE HELD WHILE THE GRANTED CORPUS IS A FRACTION OF THE PUBLISHED ONE, and
+        //    this is the only guard that stands between a cutover and a public regression. Every
+        //    aggregate — the corpus sheet, the surveys index, the language and country families — is
+        //    composed over the subjects granted RIGHT NOW. During a migration those arrive one scan at
+        //    a time, so the first granted subject would rebuild "6,276 published measured codebases"
+        //    as a reading over ONE, push it over the sheet the site is serving, and climb back over the
+        //    weeks the re-delivery takes. Each reading would be honest about its own population and the
+        //    page would still be wrong: nobody asked for the corpus to be re-described as it refilled.
+        //
+        // ★ Portraits are unaffected and keep publishing: a per-subject page describes its own subject
+        //   and is right the moment it arrives. It is only the pages that describe the WHOLE that need
+        //   the whole to be there.
+        //
+        // ★ Held pages stay WANTED, so the reconciliation below never mistakes "not published yet" for
+        //   "nothing stands behind this any more" and withdraws the version the site is serving.
+        var portraitsServed = serving?.Count(SurveyPageBuilder.IsPortrait) ?? 0;
+        var holdingAggregates = portraitsServed >= CatastropheFloor
+            && records.Count < portraitsServed * MostOfTheSite;
+        var pushing = holdingAggregates
+            ? pages.Where(p => SurveyPageBuilder.IsPortrait(p.Path)).ToList()
+            : pages;
+
+        if (holdingAggregates)
+        {
+            logger.LogWarning(
+                "Holding the corpus-wide pages: {Granted} subject(s) are granted against {Served} survey pages "
+                + "the site already serves. Portraits publish; the sheet, the index and the group pages keep the "
+                + "reading they have until the granted corpus is comparable.",
+                records.Count, portraitsServed);
+        }
+
+        var pushed = await PushAsync(pushing, cancellationToken).ConfigureAwait(false);
 
         // ★ THE WANTED SET IS EVERY PAGE THIS SWEEP COMPOSED, not every page it managed to push. A page whose
         //   push failed is still a page the standard stands behind, and withdrawing it because a single PUT
@@ -132,7 +176,10 @@ public sealed class SitePublishService(
 
         RecordReading(records, takenAt);
 
-        var sweep = new SiteSweep(pages.Count, pushed.Changed, withdrawn, pushed.Failed, refused);
+        var sweep = new SiteSweep(pushing.Count, pushed.Changed, withdrawn, pushed.Failed, refused)
+        {
+            AggregatesHeld = holdingAggregates ? pages.Count - pushing.Count : 0,
+        };
 
         // ★ REMEMBERED BEFORE IT IS LOGGED. A log line on a deployed host is not a surface anyone reads on a
         //   normal day, and "the publisher stopped" looks exactly like "nothing changed" from outside.

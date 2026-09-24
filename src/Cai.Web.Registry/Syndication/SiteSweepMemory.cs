@@ -59,7 +59,16 @@ public sealed class SiteSweepMemory
             ? string.Empty
             : $", {last.Sweep.WithdrawalRefused} withdrawals REFUSED (composing far less than the site serves)";
 
+        // ★★ AND A HOLD IS SAID OUT LOUD FOR THE SAME REASON. A corpus page that keeps its old reading
+        //    and a publisher that has died look identical from outside — both are a page that stopped
+        //    moving. This is the reading that tells an operator which one they are looking at, and it
+        //    is zero in the steady state.
+        var held = last.Sweep.AggregatesHeld == 0
+            ? string.Empty
+            : $", {last.Sweep.AggregatesHeld} corpus-wide page(s) HELD (the granted corpus is still a "
+              + "fraction of the site's)";
+
         return $"{last.Sweep.Built} built, {last.Sweep.Changed} changed, {last.Sweep.Withdrawn} withdrawn, "
-             + $"{last.Sweep.Failed} failed{refused}, at {when}";
+             + $"{last.Sweep.Failed} failed{refused}{held}, at {when}";
     }
 }
