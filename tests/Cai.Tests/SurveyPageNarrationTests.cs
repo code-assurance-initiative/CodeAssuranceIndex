@@ -165,6 +165,42 @@ public sealed class SurveyPageNarrationTests
         Assert.Contains("How it is put together", json, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// ★★ WHOSE PROSE IT IS, SAID ON THE PAGE THAT PUBLISHES IT. Everything else on a survey is the
+    /// standard's own fold of published evidence; this is a description WRITTEN BY THE PRODUCER'S model
+    /// from the codebase's history, and a reader who cannot tell the two apart reads generated prose as
+    /// the standard's judgement. The producer's own copy carried a note saying so — addressed to an
+    /// internal reviewer, and stripped before it could be published — so the disclosure has to be made
+    /// here, in the standard's words, or it is not made at all.
+    /// </summary>
+    [Fact]
+    public void The_page_says_whose_prose_this_is()
+    {
+        var json = Json(Page(new DeliveryNarration
+        {
+            SystemOverview = "A payments API.",
+            Changelog = "- It moved",
+        }));
+
+        Assert.Contains(Attribution, json, StringComparison.Ordinal);
+        // ★ And it NAMES the producer, because "the producer" is not an attribution.
+        Assert.Contains("watchdog.canine.dev", json, StringComparison.Ordinal);
+    }
+
+    /// <summary>★ And no note where there is no prose — a footnote under a section that is not there is
+    /// the same blank-gap failure one line further down.</summary>
+    [Fact]
+    public void The_note_does_not_appear_without_the_prose()
+    {
+        var json = Json(Page(narration: null));
+
+        Assert.DoesNotContain(Attribution, json, StringComparison.Ordinal);
+    }
+
+    /// <summary>The distinctive half of the note — the producer's NAME is on the page anyway, under
+    /// "About this page", so asserting on that alone would pass with no note at all.</summary>
+    private const string Attribution = "Written by";
+
     private static SurveyPage? Page(DeliveryNarration? narration) => SurveyPageBuilder.Build(SurveyRecord.From(
         [Reading("2026-05-02T09:00:00Z", 6.4, null), Reading("2026-07-01T10:32:04Z", 7.5, narration)]));
 

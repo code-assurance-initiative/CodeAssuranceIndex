@@ -133,8 +133,10 @@ public static class SurveyPageBuilder
 
         // What the codebase IS, and how it got to this number — the producer's own two documents, carried
         // inside the signed payload so the signature that covers the score covers the description too.
-        sections.Add(Prose("system-overview", "What this system is", latest.Narration?.SystemOverview));
-        sections.Add(Prose("changelog", "How this codebase got here", latest.Narration?.Changelog));
+        sections.Add(Prose(
+            "system-overview", "What this system is", latest.Narration?.SystemOverview, latest.Producer));
+        sections.Add(Prose(
+            "changelog", "How this codebase got here", latest.Narration?.Changelog, latest.Producer));
 
         // ★ AFTER THE MEASUREMENT AND BEFORE THE PROVENANCE. A reader who got this far and liked what
         //   they read has nowhere to go; an invitation that INTERRUPTS the evidence is an advert, and
@@ -174,7 +176,7 @@ public static class SurveyPageBuilder
     /// any markup around it. The page spec carries no markup of its own — see that type for the grammar the
     /// CMS holds it to.</para>
     /// </remarks>
-    private static object? Prose(string anchor, string heading, string? markdown)
+    private static object? Prose(string anchor, string heading, string? markdown, DeliveryProducer producer)
     {
         var nodes = ProseFromMarkdown.Nodes(markdown);
 
@@ -191,7 +193,26 @@ public static class SurveyPageBuilder
 
         return nodes.Count == 0
             ? null
-            : PageNodes.Section(null, anchor, [PageNodes.Heading(2, heading), .. nodes]);
+            : PageNodes.Section(
+                null,
+                anchor,
+                [
+                    PageNodes.Heading(2, heading),
+                    .. nodes,
+                    // ★★ WHOSE PROSE THIS IS, SAID ON THE PAGE THAT PUBLISHES IT. Everything else on this
+                    //    page is the standard's own fold of published evidence; this is a description
+                    //    written by the PRODUCER from the codebase's history, and a reader who cannot tell
+                    //    the two apart reads generated prose as the standard's judgement. The producer's
+                    //    own copy carried a note saying so and it was addressed to an internal reviewer —
+                    //    "Review before publishing" — so it is stripped before it can be published, which
+                    //    means this disclosure is made here or it is not made at all.
+                    PageNodes.RichText(PageProse.Paragraph(
+                        // ★ Short, because it is said under BOTH prose sections. Either can appear alone —
+                        //   a survey narrated on one half and not the other is ordinary — so a note shared
+                        //   between them would be attached to whichever happened to be there.
+                        $"Written by {producer.Name} from the codebase's own history, inside the signed "
+                        + "delivery this page is composed from.")),
+                ]);
     }
 
     /// <summary>
