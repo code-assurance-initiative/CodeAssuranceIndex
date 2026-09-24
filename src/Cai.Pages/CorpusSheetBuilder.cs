@@ -67,7 +67,7 @@ public static class CorpusSheetBuilder
                 PageNodes.Heading(1, "The state of the corpus"),
                 PageNodes.RichText(PageProse.Paragraph(
                     $"Every codebase measured against the Codebase Assurance Index, read together on "
-                    + $"{PageProse.DayAndTime(reading.TakenAt)}. Each figure below carries the population it "
+                    + $"{PageProse.Day(reading.TakenAt)}. Each figure below carries the population it "
                     + "was taken over, because the populations are not the same."))),
             Masthead(reading),
             Population(reading),
@@ -569,7 +569,11 @@ public static class CorpusSheetBuilder
             "masthead",
             "head",
             null,
-            PageProse.DayAndTime(reading.TakenAt),
+            // ★ THE DAY, NOT THE MINUTE, where a reader meets it. This page is republished hourly, so a
+            //   timestamp in the masthead changed all day and said nothing a reader could use — and the
+            //   reading it describes is a day's reading. The exact instant is kept at the foot of the
+            //   page, in the note that makes the figure citable, which is the only place it has work to do.
+            PageProse.Day(reading.TakenAt),
             null,
             PageNodes.Reading(codebases, "Codebases"),
             reading.SecurityReadings == 0

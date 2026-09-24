@@ -39,8 +39,14 @@ public sealed record Figure
     /// <summary>A reading as a reader writes it: one decimal at most, thousands separated for a large total.</summary>
     private const string ReadingFormat = "#,0.#";
 
-    /// <summary>A share, always to one decimal — <c>76.8</c>, and <c>100.0</c> when it is all of them.</summary>
-    private const string ShareFormat = "0.0";
+    /// <summary>A share, as a whole percent — <c>77</c>, and <c>100</c> when it really is all of them.</summary>
+    /// <remarks>
+    /// ★★ ONE DECIMAL CLAIMED A PRECISION THE MEASUREMENT DOES NOT HAVE. "65.5% carry a known-vulnerable
+    /// component" reads as though the tenth means something; it is 184 of 281, and the next scan moves it
+    /// by more than a tenth. The counts are printed beside every share anyway, so a reader who wants the
+    /// exact quantity has it. Owner's ruling, 2026-09-24.
+    /// </remarks>
+    private const string ShareFormat = "0";
 
     /// <summary>A score on the 0–100 scale, always to one decimal — <c>64.4</c>, and <c>70.0</c> when it lands
     /// on a whole number. The same format <see cref="PageProse.Score"/> uses, because it is the same quantity.</summary>
@@ -299,7 +305,7 @@ public sealed record Figure
     public string Headline() => Kind switch
     {
         FigureKind.Ratio =>
-            $"{(Value * 100d).ToString(ShareFormat, CultureInfo.InvariantCulture)}% of {Counted()} "
+            $"{Percent()} of {Counted()} "
           + $"({Numerator!.Value.ToString(CountFormat, CultureInfo.InvariantCulture)} of "
           + $"{Population.ToString(CountFormat, CultureInfo.InvariantCulture)})",
         FigureKind.Count => $"{Population.ToString(CountFormat, CultureInfo.InvariantCulture)} {Counted()}",
@@ -427,7 +433,7 @@ public sealed record Figure
             : Kind switch
     {
         FigureKind.Ratio => new(
-            $"{(Value * 100d).ToString(ShareFormat, CultureInfo.InvariantCulture)}%",
+            Percent(),
             $"{Numerator!.Value.ToString(CountFormat, CultureInfo.InvariantCulture)} of "
           + $"{Population.ToString(CountFormat, CultureInfo.InvariantCulture)} {Counted()}"),
         FigureKind.Count => new(Population.ToString(CountFormat, CultureInfo.InvariantCulture), Counted()),
@@ -472,6 +478,33 @@ public sealed record Figure
             + $"{TakenAt.UtcDateTime.ToString(InstantFormat, CultureInfo.InvariantCulture)}";
 
     /// <summary>The whole reading in one line: <see cref="Headline"/> plus the day it was taken.</summary>
+    /// <summary>This share as a whole percent, with the two roundings that would lie refused.</summary>
+    /// <remarks>
+    /// ★★ ROUNDING LIES AT THE ENDS, AND ONLY AT THE ENDS. Three of seven hundred is 0.43%, and "0%"
+    /// says NOBODY when the answer is three; six hundred and ninety-nine of seven hundred is 99.86%, and
+    /// "100%" says EVERY ONE when one is missing. Those are the two statements this index must never make
+    /// by accident, so they are the two this refuses to make — <c>&lt;1%</c> and <c>&gt;99%</c>. A true
+    /// zero and a true whole still print plainly, because then they are the answer rather than a rounding
+    /// of it.
+    /// </remarks>
+    private string Percent()
+    {
+        var share = Value * 100d;
+        var rounded = Math.Round(share, MidpointRounding.AwayFromZero);
+
+        if (rounded <= 0 && share > 0)
+        {
+            return "<1%";
+        }
+
+        if (rounded >= 100 && share < 100)
+        {
+            return ">99%";
+        }
+
+        return rounded.ToString(ShareFormat, CultureInfo.InvariantCulture) + "%";
+    }
+
     public override string ToString() =>
         $"{Headline()}, measured {TakenAt.UtcDateTime.ToString(DayFormat, CultureInfo.InvariantCulture)}";
 
