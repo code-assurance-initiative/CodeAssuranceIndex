@@ -500,7 +500,21 @@ public static class RegistryEndpoints
     private static IResult SetPublicationAsync(
         HttpContext http, IRegistryStore store, PublicationRequest request)
     {
-        var org = RegistryClaims.OrgOf(http.User);
+        // ★★ THE OWNING ORG COMES FROM THE BODY, AS IT DOES ON A DELIVERY PUSH — and reading it from the
+        //    CLAIM instead is how this endpoint accepted every call and granted nothing. `POST /deliveries`
+        //    takes `ownerOrgId` from the body: one producer files for many orgs (its own corpus, and every
+        //    customer it measures for), so the org a delivery belongs to is never the principal's own. This
+        //    endpoint asked the claim, got the producer's own org name, found no deliveries under it, and
+        //    returned 200 with every subject listed as `unknown` — a success that did nothing, four times an
+        //    hour, in silence, while the corpus re-delivered.
+        //
+        // ★ It gives nothing away: the caller is producer-gated exactly as the push is, and the evidence
+        //   test below still refuses any subject that org does not already hold a delivery for. What changes
+        //   is only WHICH org is asked about, and the answer now matches the one the deliveries were filed
+        //   under.
+        var org = string.IsNullOrWhiteSpace(request.OwnerOrgId)
+            ? RegistryClaims.OrgOf(http.User)
+            : request.OwnerOrgId.Trim();
         if (org is null)
         {
             return Results.Forbid();
@@ -590,10 +604,15 @@ public static class RegistryEndpoints
     /// <param name="Repositories">The subjects, as the producer names them.</param>
     /// <param name="DryRun">Report without writing. ★ Defaults to TRUE when absent — see the handler.</param>
     /// <param name="Withdraw">Take publication back instead of granting it.</param>
+    /// <param name="OwnerOrgId">The org whose deliveries these are — the same value the delivery push
+    /// carries. ★ Optional, falling back to the caller's own org, because a producer filing only for
+    /// itself has nothing to say here. Never a way to reach another org's subjects: the handler still
+    /// refuses any repository that org holds no delivery for.</param>
     public sealed record PublicationRequest(
         IReadOnlyList<string>? Repositories,
         bool? DryRun = null,
-        bool? Withdraw = null);
+        bool? Withdraw = null,
+        string? OwnerOrgId = null);
 }
 
 /// <summary>The grant-creation request body.</summary>

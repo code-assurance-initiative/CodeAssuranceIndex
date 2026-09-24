@@ -206,6 +206,60 @@ public sealed class RegistryApiTests(RegistryApiFixture fx) : IClassFixture<Regi
     }
 
     /// <summary>
+    /// ★★ THE WAY THE PRODUCER ACTUALLY CALLS IT: the owning org in the BODY, and no org header at all.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ THIS IS WHY IT SILENTLY GRANTED NOTHING IN PRODUCTION. A delivery is filed under the
+    /// <c>ownerOrgId</c> the PUSH BODY names — one producer files for its own corpus and for every
+    /// customer it measures — so the org a delivery belongs to is never the calling principal's own.
+    /// This endpoint read the CLAIM, found no deliveries under the producer's own org name, and
+    /// answered 200 with every subject listed as <c>unknown</c>: a success that did nothing, four times
+    /// an hour, while the corpus re-delivered and the site stayed frozen.</para>
+    ///
+    /// <para>★ The test above passes an org HEADER, which the real client never sends — so it was green
+    /// throughout. A fixture that speaks differently from the caller it stands for is a test that
+    /// proves the fixture.</para>
+    /// </remarks>
+    [Fact]
+    public async Task Publication_is_granted_when_the_owning_org_rides_in_the_body()
+    {
+        var repository = $"acme/body-org-{Guid.NewGuid():N}";
+        await PublishAsync(Mint(NewId("cd_body"), repository));
+
+        // No org header — exactly what the producer's registry client sends.
+        using var client = fx.Client(RegistryApiFixture.ProducerToken);
+        var response = await client.PostAsJsonAsync(
+            "/api/registry/publications",
+            new { ownerOrgId = RegistryApiFixture.SellerOrg, repositories = new[] { repository }, dryRun = false },
+            Ct);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var body = await Json(response);
+        Assert.Equal(1, body.RootElement.GetProperty("granted").GetInt32());
+        Assert.Equal(0, body.RootElement.GetProperty("unknown").GetArrayLength());
+    }
+
+    /// <summary>★ And the evidence test still refuses a subject that org holds no delivery for.</summary>
+    [Fact]
+    public async Task An_org_named_in_the_body_still_cannot_publish_what_it_never_measured()
+    {
+        using var client = fx.Client(RegistryApiFixture.ProducerToken);
+        var response = await client.PostAsJsonAsync(
+            "/api/registry/publications",
+            new
+            {
+                ownerOrgId = RegistryApiFixture.SellerOrg,
+                repositories = new[] { "someone-else/never-measured" },
+                dryRun = false,
+            },
+            Ct);
+
+        using var body = await Json(response);
+        Assert.Equal(0, body.RootElement.GetProperty("granted").GetInt32());
+        Assert.Equal(1, body.RootElement.GetProperty("unknown").GetArrayLength());
+    }
+
+    /// <summary>
     /// ★★ THE DRY RUN IS THE POINT, NOT A CONVENIENCE. Granting publication for thousands of subjects is
     /// what makes pages appear on a public website; CLAUDE.md's rule for anything of that shape is to run
     /// the predicate first and compare the count to an expected number BEFORE writing. So the default is
