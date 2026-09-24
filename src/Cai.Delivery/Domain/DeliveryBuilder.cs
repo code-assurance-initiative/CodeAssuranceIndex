@@ -22,6 +22,16 @@ public sealed record DeliveryBuildRequest
     /// <summary>Measurement-scale provenance; derived from the evidence when omitted.</summary>
     public DeliveryMeasurement? Measurement { get; init; }
 
+    /// <summary>
+    /// The prose this measurement was written up as — the changelog and the system overview. Null when the
+    /// run was not narrated, which is most of a corpus scanned without a model route.
+    /// </summary>
+    /// <remarks>
+    /// ★ It rides beside the evidence and never through it: narration is not an input to the fold and cannot
+    /// move the verdict. Adding it changes what the artifact SAYS, never what it scored.
+    /// </remarks>
+    public DeliveryNarration? Narration { get; init; }
+
     /// <summary>The standard's own issuer identity — the name stamped into a payload this build mints.
     /// <para>★ NAMED, because more than one thing has to agree on it: the builder stamps it, and the tool that
     /// regenerates the published example reads it from here rather than repeating the string. It moved once
@@ -77,6 +87,7 @@ public static class DeliveryBuilder
             RubricContentHash = rubric.ContentHash,
             QualityBar = evidence.QualityBar,
             Measurement = measurement,
+            Narration = request.Narration,
             Verdict = ToVerdict(score),
             Evidence = evidence,
         };

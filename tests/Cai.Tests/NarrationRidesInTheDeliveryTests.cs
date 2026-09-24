@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Cai.Delivery;
+using Cai.Scoring;
 using Xunit;
 
 namespace Cai.Tests;
@@ -84,6 +85,38 @@ public sealed class NarrationRidesInTheDeliveryTests
         var properties = narration.GetProperty("properties");
         Assert.True(properties.TryGetProperty("changelog", out _));
         Assert.True(properties.TryGetProperty("systemOverview", out _));
+    }
+
+    /// <summary>
+    /// ★★ AND IT SURVIVES THE BUILDER, which is the only path a real delivery takes. A field on the
+    /// payload record that the builder does not copy is a field no signed package ever carries — the
+    /// producer would set it, the fold would drop it, and every page would look exactly as it does now.
+    /// </summary>
+    [Fact]
+    public void The_builder_carries_narration_into_the_payload_it_folds()
+    {
+        var payload = DeliveryBuilder.Build(
+            new EvidenceBundle
+            {
+                RubricVersion = "rubric-2026.08.15",
+                ProductionLoc = 900,
+                HeadlineScore = 70,
+                // ★ The builder FOLDS before it stamps, so a bundle with nothing to score never reaches the
+                //   line under test. One dimension is the least that makes this a delivery rather than a shell.
+                Dimensions = [new DimensionScore("D1", "code-quality", 7.0, 0.95)],
+            },
+            ResolvedRubric.FromCatalog(new RubricCatalog { RubricVersion = "rubric-2026.08.15" }),
+            new DeliveryBuildRequest
+            {
+                DeliveryId = "cd_build",
+                IssuedAt = "2026-09-24T20:00:00Z",
+                Subject = new DeliverySubject { Repository = "acme/widgets", Host = "github.com" },
+                Producer = new DeliveryProducer { Name = "watchdog.canine.dev" },
+                Narration = new DeliveryNarration { Changelog = "## Score", SystemOverview = "# System overview" },
+            });
+
+        Assert.Equal("## Score", payload.Narration?.Changelog);
+        Assert.Equal("# System overview", payload.Narration?.SystemOverview);
     }
 
     /// <summary>★ Adding a field additively is a MINOR bump, and the version says so.</summary>
