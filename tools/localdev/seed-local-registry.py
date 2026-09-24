@@ -167,8 +167,40 @@ def payload(ordinal, at, rng):
                          "inherited": ordinal % 2 == 0}] if affected else []),
     }
 
-    return {
-        "schemaVersion": "1.1",
+    # ★★ NARRATION ON EVERY SHAPE BUT ONE, AND THE ONE IS DELIBERATE. `acme-twice` (ordinal 1) is left
+    #    UNNARRATED so the render shows both states side by side: about half of any real corpus is
+    #    scanned with no model route, and "absent renders nothing" is a claim only a screenshot can
+    #    settle — a heading over a blank gap is what a unit test cannot see and a reader cannot miss.
+    #
+    # ★ The markdown exercises the converter rather than reading prettily: a heading, wrapped prose, a
+    #   bulleted list, an inline link, emphasis, and the REDACTOR'S OWN blockquote notice, which is the
+    #   one line the published changelog adds and the one a reader most needs to reach them.
+    narration = None if ordinal == 1 else {
+        "systemOverview": (
+            f"## What {repository.split('/')[1]} is\n\n"
+            f"A {language} service that takes payment intents off a queue, holds them against a\n"
+            f"ledger, and settles them in batches. It has been **in production since 2023** and its\n"
+            "public surface is a single HTTP API.\n\n"
+            "### How it is put together\n\n"
+            "- A queue consumer, which owns retries\n"
+            "- A ledger, which owns the money and nothing else\n"
+            "- A settlement job, run nightly\n\n"
+            "The rubric it was scored under is published at "
+            "[codeassuranceindex.info](https://codeassuranceindex.info/rubric/)."),
+        "changelog": (
+            "# Health changelog\n\n"
+            "> **This is the PUBLIC form of this artifact. The details of SECURITY findings are "
+            "deliberately withheld.**\n\n"
+            "- High: security finding (details withheld)\n"
+            "- Duplication fell in the cart (src/Cart.cs)\n"
+            "- Test coverage rose to *71%*\n"),
+    }
+
+    # ★ OMITTED, NOT NULL, when there is none: the payload schema declares `narration` as an object and
+    #   refuses additional properties, so a null would be a delivery the registry's own gate rejects —
+    #   a fixture that cannot be ingested tests the ingest and nothing else.
+    body = {
+        "schemaVersion": "1.2" if narration else "1.1",
         "deliveryId": f"cd_local_{ordinal}_{int(at.timestamp())}",
         "issuedAt": scanned,
         "issuer": {"name": "codeassuranceindex.info", "keyId": "local"},
@@ -192,6 +224,11 @@ def payload(ordinal, at, rng):
                                      "score": round(cai / 10, 2), "confidence": 0.95}],
                      "securityReading": reading},
     }
+
+    if narration:
+        body["narration"] = narration
+
+    return body
 
 
 def import_deliveries(connection, path, now):

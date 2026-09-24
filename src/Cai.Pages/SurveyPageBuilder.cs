@@ -131,6 +131,11 @@ public static class SurveyPageBuilder
                 ("footnote", DarkLensNote(verdict)))));
         }
 
+        // What the codebase IS, and how it got to this number — the producer's own two documents, carried
+        // inside the signed payload so the signature that covers the score covers the description too.
+        sections.Add(Prose("system-overview", "What this system is", latest.Narration?.SystemOverview));
+        sections.Add(Prose("changelog", "How this codebase got here", latest.Narration?.Changelog));
+
         // ★ AFTER THE MEASUREMENT AND BEFORE THE PROVENANCE. A reader who got this far and liked what
         //   they read has nowhere to go; an invitation that INTERRUPTS the evidence is an advert, and
         //   this page's whole claim is that it is evidence first.
@@ -149,6 +154,44 @@ public static class SurveyPageBuilder
             PageNodes.Widget("cai-link-cards", ("links", Destinations(record)))));
 
         return new SurveyPage(path, title, MetaDescription(record), PageNodes.Section([.. sections]));
+    }
+
+    /// <summary>
+    /// One of the producer's documents as a section — or NOTHING when the run was not narrated.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ ABSENT RENDERS NOTHING, INCLUDING THE HEADING. Narration needs a model route and about half
+    /// of any large corpus is scanned without one, so this is the common case rather than the edge. A
+    /// heading over a blank gap is a failure this page has already had once, and to everyone but the person
+    /// who wrote it, it is indistinguishable from a renderer that broke.</para>
+    ///
+    /// <para>★ THE LATEST FILING'S PROSE, NEVER AN OLDER ONE'S. The portrait describes the reading it leads
+    /// with; borrowing a previous reading's description for this one would attribute prose to a measurement
+    /// it was not written about, and no reader could tell.</para>
+    ///
+    /// <para>★ The prose is markdown from somebody else's document about a repository nobody here controls,
+    /// so it goes through <see cref="ProseFromMarkdown"/>, which escapes every run of text before composing
+    /// any markup around it. The page spec carries no markup of its own — see that type for the grammar the
+    /// CMS holds it to.</para>
+    /// </remarks>
+    private static object? Prose(string anchor, string heading, string? markdown)
+    {
+        var nodes = ProseFromMarkdown.Nodes(markdown);
+
+        // ★★ THE DOCUMENT'S OWN TITLE IS A STUTTER UNDER THE SECTION'S. Both documents open with a title
+        //   — "# Health changelog", "## What acme/api is" — written for a file that arrives on its own.
+        //   Under a section already headed "How this codebase got here" that renders as two headings in a
+        //   row saying the same thing. Only the LEADING one goes: a heading further down is a section of
+        //   the document, not a second name for it.
+        if (nodes.Count > 0 && nodes[0] is Dictionary<string, object?> first
+            && first.TryGetValue("type", out var kind) && (kind as string) == "heading")
+        {
+            nodes = [.. nodes.Skip(1)];
+        }
+
+        return nodes.Count == 0
+            ? null
+            : PageNodes.Section(null, anchor, [PageNodes.Heading(2, heading), .. nodes]);
     }
 
     /// <summary>
