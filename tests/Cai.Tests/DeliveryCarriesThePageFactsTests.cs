@@ -74,10 +74,15 @@ public sealed class DeliveryCarriesThePageFactsTests
     /// and a verifier that meets an unknown field under a version that does not admit it has no way to know
     /// whether to ignore it. A higher MINOR is forward-compatible; the MAJOR is what verification refuses.
     /// </summary>
+    /// <remarks>
+    /// ★ 1.2 SINCE THE NARRATION BLOCK. The three facts this class pins arrived at 1.1; the prose a survey
+    /// is made of — the changelog and the system overview — arrived at 1.2, additively and by the same rule.
+    /// See <c>NarrationRidesInTheDeliveryTests</c>.
+    /// </remarks>
     [Fact]
     public void The_additions_announce_themselves_as_a_higher_minor()
     {
-        Assert.Equal("1.1", DeliverySchema.Current);
+        Assert.Equal("1.2", DeliverySchema.Current);
         Assert.Equal(1, DeliverySchema.MajorOf(DeliverySchema.Current));
     }
 

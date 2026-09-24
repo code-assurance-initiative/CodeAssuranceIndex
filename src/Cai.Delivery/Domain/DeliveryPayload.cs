@@ -68,6 +68,28 @@ public sealed record DeliveryPayload
     /// inputs to the fold beyond what <see cref="Evidence"/> already carries.</summary>
     [JsonPropertyName("measurement")] public DeliveryMeasurement Measurement { get; init; } = new();
 
+    /// <summary>
+    /// The prose a survey is made of — what this system is, and how it got to this score. ADDED AT MINOR 1.2.
+    /// Null when the run was not narrated.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ THE PRODUCER WROTE IT AND HAD NOWHERE TO SEND IT. Every run bundle holds a changelog, and about
+    /// half hold a system overview written from the codebase's whole history; the producer's own public survey
+    /// showed both, and the standard's survey page showed neither, because 1.1 has no field for prose. Nothing
+    /// was dropping it — it was never picked up.</para>
+    ///
+    /// <para>★★ IN THE ENVELOPE, NOT BESIDE IT. A page composed from a URL the producer serves would be the
+    /// standard repeating something it cannot check, which is the one thing moving composition here was meant to
+    /// end. Prose inside the package is covered by the same signature as the score, so a reader can verify it came
+    /// from the measurement it claims to describe.</para>
+    ///
+    /// <para>★ NULL, NEVER EMPTY. Narration needs the model route and about half the corpus was scanned without
+    /// it. "No prose" is a fact about the scan; empty prose reads as a fact about the codebase.</para>
+    /// </remarks>
+    [JsonPropertyName("narration")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DeliveryNarration? Narration { get; init; }
+
     /// <summary>The CAI verdict cai recomputed from <see cref="Evidence"/> — the headline, band and per-lens/per-category
     /// roll-up. This is what a reader consumes; <see cref="Evidence"/> is what lets them reproduce it.</summary>
     [JsonPropertyName("verdict")] public DeliveryVerdict Verdict { get; init; } = new();
@@ -197,6 +219,27 @@ public sealed record SubjectLanguages
 
     /// <summary>The languages that materially share the codebase, dominant first.</summary>
     [JsonPropertyName("secondary")] public IReadOnlyList<string> Secondary { get; init; } = [];
+}
+
+/// <summary>
+/// The written account of one measurement: what the system is, and how it got here.
+/// </summary>
+/// <remarks>
+/// ★ TWO FIELDS, BOTH OPTIONAL, BECAUSE A RUN CAN HAVE EITHER. A changelog needs a previous reading to compare
+/// against, so a repository's first survey has none; a system overview needs the model route, which about half
+/// the corpus was scanned without. Each is carried when it exists and omitted when it does not.
+/// </remarks>
+public sealed record DeliveryNarration
+{
+    /// <summary>How this codebase got to this score since the reading before it — markdown. Null on a first survey.</summary>
+    [JsonPropertyName("changelog")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Changelog { get; init; }
+
+    /// <summary>What this system IS, written from the codebase's whole history — markdown. Null when not narrated.</summary>
+    [JsonPropertyName("systemOverview")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? SystemOverview { get; init; }
 }
 
 /// <summary>Measurement-scale provenance shown to a reader (never re-folded into the score).</summary>

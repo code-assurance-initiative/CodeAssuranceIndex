@@ -37,9 +37,9 @@
         "schemaVersion": {
           "type": "string",
           "pattern": "^[0-9]+\\.[0-9]+$",
-          "description": "Package format version MAJOR.MINOR. This document describes MAJOR 1.",
+          "description": "Package format version MAJOR.MINOR. This document describes MAJOR 1, currently MINOR 2.",
           "examples": [
-            "1.0"
+            "1.2"
           ]
         },
         "deliveryId": {
@@ -234,6 +234,21 @@
               "format": "date-time"
             }
           }
+        },
+        "narration": {
+          "type": "object",
+          "description": "The written account of this measurement: what the system IS, and how it got to this score. ADDED AT MINOR 1.2 because the producer writes both for every narrated run and had nowhere in the package to put them — its own public survey showed them while the standard's showed neither. Carried INSIDE the signed payload rather than fetched from the producer at render time: prose a reader cannot check against the measurement it describes is the standard repeating a claim instead of publishing evidence, and the same signature that covers the score covers this. Absent, never empty, when a run was not narrated — narration needs a model route and about half of a large corpus is scanned without one, so empty prose would state something about the codebase when the truth is about the scan.",
+          "properties": {
+            "changelog": {
+              "type": "string",
+              "description": "How this codebase got to this score since the reading before it, as markdown. Absent on a repository's first survey, which has no previous reading to compare against."
+            },
+            "systemOverview": {
+              "type": "string",
+              "description": "What this system is, as markdown, written from the codebase's whole history rather than from this run's diff. Absent when the run was not narrated."
+            }
+          },
+          "additionalProperties": false
         },
         "verdict": {
           "$ref": "#/$defs/verdict"
