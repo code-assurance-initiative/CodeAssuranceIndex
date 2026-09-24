@@ -44,6 +44,60 @@ public sealed record SurveyRecord
             throw new ArgumentException("Every delivery in a survey record must be about the same subject.", nameof(deliveries));
         }
 
-        return new SurveyRecord(ordered);
+        return new SurveyRecord(OneReadingPerMeasurement(ordered));
+    }
+
+    /// <summary>
+    /// Fold deliveries that describe the SAME measurement into one reading, keeping the latest filing.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ A DELIVERY IS IMMUTABLE, SO SAYING MORE ABOUT A MEASUREMENT MEANS FILING AGAIN. The
+    /// producer filed thousands of deliveries under MINOR 1.0 — a schema with no language, no origin and
+    /// no security reading — while holding all three in its own run bundles. The only way those facts can
+    /// reach a page is a second delivery about the same scan: same commit, same instant, more said about
+    /// it. Nothing can be edited or withdrawn, and that is the design.</para>
+    ///
+    /// <para>★★ WITHOUT THIS FOLD THAT SECOND FILING LIES ABOUT THE TRAJECTORY. A portrait counts
+    /// deliveries as measurements over time and plots one point each, so a corpus-wide backfill would
+    /// double every repository's history overnight — "2 measurements" for one scan, two points on one
+    /// date, a trend drawn through a duplicate. The page would be reporting the FILING rather than the
+    /// MEASURING, and those are not the same event.</para>
+    ///
+    /// <para>★ THE KEY IS THE MEASUREMENT, NOT THE FILING: the commit measured and the instant it was
+    /// measured at. Two readings of one commit taken on different days are genuinely two measurements and
+    /// stay two.</para>
+    ///
+    /// <para>★ AND A DELIVERY THAT CANNOT PROVE SAMENESS IS KEPT. Missing a commit or a scan instant is
+    /// not evidence of being a duplicate, and losing a real reading is worse than carrying a duplicate —
+    /// only one of those two is recoverable.</para>
+    /// </remarks>
+    private static List<DeliveryPayload> OneReadingPerMeasurement(List<DeliveryPayload> ordered)
+    {
+        var kept = new List<DeliveryPayload>(ordered.Count);
+        var byMeasurement = new Dictionary<(string Commit, string ScannedAt), int>();
+
+        foreach (var delivery in ordered)
+        {
+            var commit = delivery.Subject.Commit;
+            var scannedAt = delivery.Measurement?.ScannedAt;
+            if (string.IsNullOrWhiteSpace(commit) || string.IsNullOrWhiteSpace(scannedAt))
+            {
+                kept.Add(delivery);
+                continue;
+            }
+
+            var key = (commit, scannedAt);
+            if (byMeasurement.TryGetValue(key, out var at))
+            {
+                // Ordered by issuance, so a later one is always the fuller telling of the same measurement.
+                kept[at] = delivery;
+                continue;
+            }
+
+            byMeasurement[key] = kept.Count;
+            kept.Add(delivery);
+        }
+
+        return kept;
     }
 }
