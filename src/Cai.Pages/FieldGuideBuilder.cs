@@ -134,6 +134,6 @@ public static class FieldGuideBuilder
             : null;
 
     private static string Description(string name, int count, double median) =>
-        $"{PageProse.Count(count)} {name} codebases measured against the Codebase Assurance Index, "
+        $"{PageProse.Count(count)} {name} codebases measured against the Code Assurance Index, "
         + $"median score {PageProse.Score(median)}.";
 }

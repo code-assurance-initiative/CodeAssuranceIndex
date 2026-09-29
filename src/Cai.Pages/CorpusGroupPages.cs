@@ -147,7 +147,7 @@ public static class CorpusGroupPages
 
     private static string MetaDescription(CorpusSlice cut, GroupKind kind) =>
         kind == GroupKind.Language
-            ? $"{PageProse.Count(cut.Codebases)} {cut.Name} codebases measured against the Codebase Assurance "
+            ? $"{PageProse.Count(cut.Codebases)} {cut.Name} codebases measured against the Code Assurance "
                 + $"Index, median {PageProse.Score(cut.MedianHeadline)} — and what was found in them."
             : $"{PageProse.Count(cut.Codebases)} measured codebases whose owner declared {cut.Name}, median "
                 + $"{PageProse.Score(cut.MedianHeadline)} — and what was found in them.";

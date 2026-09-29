@@ -16,7 +16,7 @@
             },
             {
               "type": "richtext",
-              "html": "\u003Cp\u003EEvery codebase here was scored under the \u003Ca href=\u0022https://codeassuranceindex.info/spec/\u0022\u003ECodebase Assurance Index\u003C/a\u003E, an open standard. A score is a measurement, never a certificate, and these readings were produced by an \u003Ca href=\u0022https://codeassuranceindex.info/implementations/\u0022\u003Eimplementation of the standard\u003C/a\u003E.\u003C/p\u003E"
+              "html": "\u003Cp\u003EEvery codebase here was scored under the \u003Ca href=\u0022https://codeassuranceindex.info/spec/\u0022\u003ECode Assurance Index\u003C/a\u003E, an open standard. A score is a measurement, never a certificate, and these readings were produced by an \u003Ca href=\u0022https://codeassuranceindex.info/implementations/\u0022\u003Eimplementation of the standard\u003C/a\u003E.\u003C/p\u003E"
             }
           ]
         },

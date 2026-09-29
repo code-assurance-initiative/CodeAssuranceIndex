@@ -66,7 +66,7 @@ public static class CorpusSheetBuilder
             PageNodes.Section(
                 PageNodes.Heading(1, "The state of the corpus"),
                 PageNodes.RichText(PageProse.Paragraph(
-                    $"Every codebase measured against the Codebase Assurance Index, read together on "
+                    $"Every codebase measured against the Code Assurance Index, read together on "
                     + $"{PageProse.Day(reading.TakenAt)}. Each figure below carries the population it "
                     + "was taken over, because the populations are not the same."))),
             Masthead(reading),
@@ -661,6 +661,6 @@ public static class CorpusSheetBuilder
         count <= 0 ? null : Figure.Count(count, basis, takenAt);
 
     private static string MetaDescription(CorpusReading reading) =>
-        $"{PageProse.Count(reading.Codebases)} codebases measured against the Codebase Assurance Index, read "
+        $"{PageProse.Count(reading.Codebases)} codebases measured against the Code Assurance Index, read "
         + $"together on {PageProse.Day(reading.TakenAt)} — what was measured, and what was found in it.";
 }

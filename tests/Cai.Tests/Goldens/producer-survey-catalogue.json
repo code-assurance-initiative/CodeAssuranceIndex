@@ -2,7 +2,7 @@
   "index": {
     "Path": "surveys",
     "Title": "Measured codebases",
-    "MetaDescription": "10 codebases measured against the Codebase Assurance Index, with their surveys published.",
+    "MetaDescription": "10 codebases measured against the Code Assurance Index, with their surveys published.",
     "Node": {
       "type": "section",
       "children": [
@@ -16,7 +16,7 @@
             },
             {
               "type": "richtext",
-              "html": "\u003Cp\u003E\u003Cstrong\u003E10 published measured codebases.\u003C/strong\u003E Every one was assessed against the \u003Ca href=\u0022https://codeassuranceindex.info/spec/\u0022\u003ECodebase Assurance Index\u003C/a\u003E at a pinned commit, under the same rubric and applied the same way, whether or not its source is public. The index is an open standard, so any of these numbers can be re-derived from its \u003Ca href=\u0022https://codeassuranceindex.info/verify/\u0022\u003Esurvey\u003C/a\u003E\u0027s evidence. Each language below shows the spread of its codebases\u0027 scores rather than one number, next to how much of each codebase the survey actually reached. A score means one thing when the survey resolved a dozen dimensions and another when it resolved two dozen.\u003C/p\u003E"
+              "html": "\u003Cp\u003E\u003Cstrong\u003E10 published measured codebases.\u003C/strong\u003E Every one was assessed against the \u003Ca href=\u0022https://codeassuranceindex.info/spec/\u0022\u003ECode Assurance Index\u003C/a\u003E at a pinned commit, under the same rubric and applied the same way, whether or not its source is public. The index is an open standard, so any of these numbers can be re-derived from its \u003Ca href=\u0022https://codeassuranceindex.info/verify/\u0022\u003Esurvey\u003C/a\u003E\u0027s evidence. Each language below shows the spread of its codebases\u0027 scores rather than one number, next to how much of each codebase the survey actually reached. A score means one thing when the survey resolved a dozen dimensions and another when it resolved two dozen.\u003C/p\u003E"
             }
           ]
         },
@@ -148,7 +148,7 @@
   "guide-csharp": {
     "Path": "surveys/lang/csharp",
     "Title": "C# projects, measured",
-    "MetaDescription": "6 C# projects measured against the Codebase Assurance Index, median score 62.5.",
+    "MetaDescription": "6 C# projects measured against the Code Assurance Index, median score 62.5.",
     "Node": {
       "type": "section",
       "children": [

@@ -10,6 +10,12 @@ move a score for unchanged evidence mints a new rubric version (see
 
 ## [Unreleased]
 
+### Fixed
+- **The standard's name was misspelled on the published corpus pages.** Five page builders
+  (`SurveyIndexBuilder`, `FieldGuideBuilder`, `CorpusGroupPages`, `CorpusSheetBuilder` ×2) wrote
+  "Codebase Assurance Index"; the standard is the **Code Assurance Index**. Prose only — no score,
+  rubric or evidence changes.
+
 ### Security
 - **A traversing rubric version could serve a catalog from outside the archive.** `rubricVersion` reaches
   `Path.Combine` from three anonymous sources — the `/api/rubrics/{version}` routes and the `rubricVersion` inside

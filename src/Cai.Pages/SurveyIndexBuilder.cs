@@ -96,7 +96,7 @@ public static class SurveyIndexBuilder
                 PageNodes.RichText(
                     $"<p><strong>{PageProse.Escape($"{codebases.Headline()}.")}</strong> "
                     + PageProse.Escape(
-                        "Every one was assessed against the Codebase Assurance Index at a pinned commit, "
+                        "Every one was assessed against the Code Assurance Index at a pinned commit, "
                         + "under the same rubric and applied the same way, whether or not its source is "
                         + "public. The index is an open standard, so any of these numbers can be re-derived "
                         + "from its survey's evidence. Each language below shows the spread of its "
@@ -154,7 +154,7 @@ public static class SurveyIndexBuilder
         return new SurveyPage(
             SurveyPageBuilder.Root,
             "Measured codebases",
-            $"{PageProse.Count(codebases.Population)} codebases measured against the Codebase Assurance "
+            $"{PageProse.Count(codebases.Population)} codebases measured against the Code Assurance "
             + "Index, with their surveys published.",
             PageNodes.Section([.. children]));
     }
