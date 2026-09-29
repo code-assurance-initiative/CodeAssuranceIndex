@@ -10,12 +10,6 @@ move a score for unchanged evidence mints a new rubric version (see
 
 ## [Unreleased]
 
-### Fixed
-- **The standard's name was misspelled on the published corpus pages.** Five page builders
-  (`SurveyIndexBuilder`, `FieldGuideBuilder`, `CorpusGroupPages`, `CorpusSheetBuilder` ×2) wrote
-  "Codebase Assurance Index"; the standard is the **Code Assurance Index**. Prose only — no score,
-  rubric or evidence changes.
-
 ### Security
 - **A traversing rubric version could serve a catalog from outside the archive.** `rubricVersion` reaches
   `Path.Combine` from three anonymous sources — the `/api/rubrics/{version}` routes and the `rubricVersion` inside
@@ -113,6 +107,10 @@ move a score for unchanged evidence mints a new rubric version (see
   reproduces, and REFUSES a rubric whose version or digest is not the one the package witnesses).
 
 ### Fixed
+- **The standard's name was misspelled on the published corpus pages.** Five page builders
+  (`SurveyIndexBuilder`, `FieldGuideBuilder`, `CorpusGroupPages`, `CorpusSheetBuilder` ×2) wrote
+  "Codebase Assurance Index"; the standard is the **Code Assurance Index**. Prose only — no score,
+  rubric or evidence changes.
 - **`tools/resign-sample` wrote a sample the registry would reject.** It serialized the package with its own
   `WriteIndented` options instead of the library's `ToJson()`, so null-valued properties survived — and
   `"surveyFit": null` fails the versioned package schema, which types that field as an object and reads ABSENT as
