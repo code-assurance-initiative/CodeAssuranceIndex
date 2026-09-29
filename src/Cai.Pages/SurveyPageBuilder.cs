@@ -378,7 +378,7 @@ public static class SurveyPageBuilder
             : producer.Name;
 
     private static string MetaDescription(SurveyRecord record) =>
-        $"{record.Latest.Subject.Repository} scored {Number(record.Latest.Verdict.Cai)} on the Codebase "
+        $"{record.Latest.Subject.Repository} scored {Number(record.Latest.Verdict.Cai)} on the Code "
         + $"Assurance Index — {record.Latest.Verdict.Band}, measured at a pinned commit under "
         + $"{record.Latest.RubricVersion}, with the survey published in full.";
 
