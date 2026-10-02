@@ -172,7 +172,41 @@ public static class CaiScorer
         var categories = new List<CategoryResult>();
         var categoryScoresByLens = new Dictionary<string, List<double>>(StringComparer.Ordinal);
         var gatedByLens = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        RollUpCategories(bundle, frozen, p, categories, categoryScoresByLens, gatedByLens);
 
+        // Meta-dimensions feed their lens directly at score×10 (measured, non-advisory only).
+        var metaScoresByLens = RollUpMetaDimensions(bundle, p, gatedByLens);
+
+        // ── Stage 2: fold each lens (worst-first OWA q=0.75 over its categories + meta), then floor Architecture.
+        var folded = FoldLenses(bundle, p, categoryScoresByLens, metaScoresByLens, gatedByLens);
+
+        // ── Stage 3: headline = across-lens worst-first OWA (q=0.55) over the measured lenses.
+        var lensResults = WeighLenses(bundle, p, folded);
+
+        var headline = lensResults.Sum(r => r.Contribution);
+
+        // Bands + transparency from the measured category scores (the coherence gate's reference set).
+        var measuredCategoryScores = categories.Where(c => c.Score is not null).Select(c => c.Score!.Value).ToList();
+        var (headlineBand, coherenceNote) = BandCoherence.Cap(p.Bands.For(headline), measuredCategoryScores, p);
+        var aggregate = measuredCategoryScores.Count > 0 ? measuredCategoryScores.Average() : 0.0;
+
+        return new CaiScore(
+            headline, headlineBand, bundle.RubricVersion,
+            lensResults.OrderBy(r => LensCatalog.Order(r.Lens)).ToList(),
+            categories.OrderBy(c => c.Category, StringComparer.Ordinal).ToList(),
+            aggregate, BandCoherence.CategoryMean(measuredCategoryScores), coherenceNote);
+    }
+
+    /// <summary>Stage 1 of <see cref="ScoreFromEvidence"/>: each category's confidence-weighted roll-up, its score
+    /// bucketed under its lens, and its critical contributors recorded against that lens.</summary>
+    private static void RollUpCategories(
+        EvidenceBundle bundle,
+        IReadOnlyDictionary<string, DimensionCategory> frozen,
+        ScoringParameters p,
+        List<CategoryResult> categories,
+        Dictionary<string, List<double>> categoryScoresByLens,
+        Dictionary<string, List<string>> gatedByLens)
+    {
         foreach (var group in bundle.Dimensions.GroupBy(d => CategoryOf(d, frozen, bundle.RubricVersion)))
         {
             var lens = Categories.LensOf(group.Key);
@@ -194,8 +228,13 @@ public static class CaiScorer
                 Bucket(gatedByLens, lens).Add(d.Id);
             }
         }
+    }
 
-        // Meta-dimensions feed their lens directly at score×10 (measured, non-advisory only).
+    /// <summary>The meta-dimension half of Stage 1: each measured, non-advisory meta-dimension at score×10 under its
+    /// lens, with the critical ones recorded in <paramref name="gatedByLens"/>.</summary>
+    private static Dictionary<string, List<double>> RollUpMetaDimensions(
+        EvidenceBundle bundle, ScoringParameters p, Dictionary<string, List<string>> gatedByLens)
+    {
         var metaScoresByLens = new Dictionary<string, List<double>>(StringComparer.Ordinal);
         foreach (var meta in bundle.MetaDimensions.Where(m => m is { Advisory: false, ScoreZeroToTen: not null }))
         {
@@ -206,7 +245,18 @@ public static class CaiScorer
             }
         }
 
-        // ── Stage 2: fold each lens (worst-first OWA q=0.75 over its categories + meta), then floor Architecture.
+        return metaScoresByLens;
+    }
+
+    /// <summary>Stage 2 of <see cref="ScoreFromEvidence"/>: every lens in catalog order, folded over its category
+    /// scores then its meta-dimension scores, with the architecture surface floor applied.</summary>
+    private static List<(string Lens, double? Score, int Items, IReadOnlyList<string> Gated)> FoldLenses(
+        EvidenceBundle bundle,
+        ScoringParameters p,
+        Dictionary<string, List<double>> categoryScoresByLens,
+        Dictionary<string, List<double>> metaScoresByLens,
+        Dictionary<string, List<string>> gatedByLens)
+    {
         var folded = new List<(string Lens, double? Score, int Items, IReadOnlyList<string> Gated)>();
         foreach (var lens in LensCatalog.All.Select(l => l.Key))
         {
@@ -233,7 +283,16 @@ public static class CaiScorer
             folded.Add((lens, lensScore, items.Count, gated));
         }
 
-        // ── Stage 3: headline = across-lens worst-first OWA (q=0.55) over the measured lenses.
+        return folded;
+    }
+
+    /// <summary>Stage 3 of <see cref="ScoreFromEvidence"/>: the across-lens weights over the measured lenses, each
+    /// lens's band capped by its gate. The headline is the sum of the contributions returned.</summary>
+    private static List<LensResult> WeighLenses(
+        EvidenceBundle bundle,
+        ScoringParameters p,
+        List<(string Lens, double? Score, int Items, IReadOnlyList<string> Gated)> folded)
+    {
         var measuredLenses = folded.Where(f => f.Score is not null)
             .Select(f => (f.Lens, Score: f.Score!.Value, f.Items, f.Gated)).ToList();
         if (measuredLenses.Count == 0)
@@ -242,7 +301,7 @@ public static class CaiScorer
         }
 
         var weights = OwaWeights(measuredLenses.Select(l => l.Score).ToList(), p.AcrossLensQ);
-        var lensResults = measuredLenses.Zip(weights, (l, w) =>
+        return measuredLenses.Zip(weights, (l, w) =>
         {
             var band = QualityBarBands.ForLens(l.Score, bundle.QualityBar, l.Lens, p);
             var gated = l.Gated.Count > 0;
@@ -251,19 +310,6 @@ public static class CaiScorer
                 CriticalContributors = l.Gated,
             };
         }).ToList();
-
-        var headline = lensResults.Sum(r => r.Contribution);
-
-        // Bands + transparency from the measured category scores (the coherence gate's reference set).
-        var measuredCategoryScores = categories.Where(c => c.Score is not null).Select(c => c.Score!.Value).ToList();
-        var (headlineBand, coherenceNote) = BandCoherence.Cap(p.Bands.For(headline), measuredCategoryScores, p);
-        var aggregate = measuredCategoryScores.Count > 0 ? measuredCategoryScores.Average() : 0.0;
-
-        return new CaiScore(
-            headline, headlineBand, bundle.RubricVersion,
-            lensResults.OrderBy(r => LensCatalog.Order(r.Lens)).ToList(),
-            categories.OrderBy(c => c.Category, StringComparer.Ordinal).ToList(),
-            aggregate, BandCoherence.CategoryMean(measuredCategoryScores), coherenceNote);
     }
 
     /// <summary>Fallback: a bundle that carries pre-computed lens scores but no dimension evidence (a thin sidecar).

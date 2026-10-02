@@ -105,12 +105,120 @@ internal static partial class ProseFromMarkdown
     private static IEnumerable<Block> Blocks(string markdown)
     {
         var lines = markdown.Split('\n');
-        var paragraph = new List<string>();
-        var items = new List<string>();
-        var ordered = false;
-        var fenced = false;
+        var walk = new BlockWalk();
 
-        Block? DrainParagraph()
+        foreach (var raw in lines)
+        {
+            foreach (var block in walk.Line(raw.TrimEnd()))
+            {
+                yield return block;
+            }
+        }
+
+        foreach (var block in walk.Drain())
+        {
+            yield return block;
+        }
+    }
+
+    /// <summary>
+    /// The state <see cref="Blocks"/> carries from one line to the next: the paragraph and list being
+    /// gathered, which kind of list it is, and whether the walk is inside a fence.
+    /// </summary>
+    /// <remarks>
+    /// Every method that returns blocks is meant to be enumerated before the next line is handed in — the
+    /// blocks it yields are drained from the state that line found.
+    /// </remarks>
+    private sealed class BlockWalk
+    {
+        private readonly List<string> paragraph = [];
+        private readonly List<string> items = [];
+        private bool ordered;
+        private bool fenced;
+
+        /// <summary>One line, already trimmed at its end: the blocks it closes, if any.</summary>
+        public IEnumerable<Block> Line(string line)
+        {
+            if (FenceLine().IsMatch(line.TrimStart()))
+            {
+                // ★ The fence markers go and the code stays. A survey's prose quotes a signature or a
+                //   command now and then, and dropping the block would lose the point of the paragraph
+                //   above it; there is no `code` in the grammar, so it reads as text.
+                fenced = !fenced;
+                return [];
+            }
+
+            if (fenced)
+            {
+                paragraph.Add(line);
+                return [];
+            }
+
+            if (line.Trim().Length == 0 || ThematicBreak().IsMatch(line.Trim()))
+            {
+                return Drain();
+            }
+
+            if (HeadingLine().Match(line.TrimStart()) is { Success: true } heading)
+            {
+                return Heading(heading);
+            }
+
+            if (BulletLine().Match(line) is { Success: true } bullet)
+            {
+                return Item(bullet.Groups["text"].Value, ordered: false);
+            }
+
+            if (NumberedLine().Match(line) is { Success: true } numbered)
+            {
+                return Item(numbered.Groups["text"].Value, ordered: true);
+            }
+
+            if (items.Count > 0)
+            {
+                // A continuation line under a list item belongs to that item, not to a new paragraph.
+                items[^1] = $"{items[^1]} {line.Trim()}";
+                return [];
+            }
+
+            // ★ A blockquote keeps its words. The redactor's publication notice IS a blockquote, and it
+            //   exists to be read: a reader who cannot tell a redacted changelog from a thin one concludes
+            //   the analysis is thin.
+            paragraph.Add(QuoteLine().Replace(line.TrimStart(), string.Empty).Trim());
+            return [];
+        }
+
+        /// <summary>Whatever paragraph and list are open, closed in that order.</summary>
+        public IEnumerable<Block> Drain()
+        {
+            if (DrainParagraph() is { } p) { yield return p; }
+            if (DrainList() is { } l) { yield return l; }
+        }
+
+        private IEnumerable<Block> Heading(Match heading)
+        {
+            foreach (var block in Drain())
+            {
+                yield return block;
+            }
+
+            // ★ LEVEL 3, WHATEVER THE DOCUMENT SAYS. The section this lands in already carries the
+            //   page's own h2; a prose heading that outranks it reads as a new top-level section to
+            //   anyone walking the outline, and the outline is how a screen reader navigates.
+            var hashes = heading.Groups["hashes"].Value.Length;
+            yield return new Block((hashes <= 2 ? 3 : 4, heading.Groups["text"].Value.Trim()), null);
+        }
+
+        /// <summary>A bullet or numbered item. A switch between the two closes the list that was open.</summary>
+        private IEnumerable<Block> Item(string text, bool ordered)
+        {
+            if (DrainParagraph() is { } p) { yield return p; }
+            if (this.ordered != ordered && items.Count > 0 && DrainList() is { } switched) { yield return switched; }
+            this.ordered = ordered;
+            items.Add(text);
+        }
+
+        private Block? DrainParagraph()
         {
             if (paragraph.Count == 0)
             {
@@ -122,7 +230,7 @@ internal static partial class ProseFromMarkdown
             return new Block(null, $"<p>{Inline(text)}</p>");
         }
 
-        Block? DrainList()
+        private Block? DrainList()
         {
             if (items.Count == 0)
             {
@@ -134,86 +242,6 @@ internal static partial class ProseFromMarkdown
             items.Clear();
             return new Block(null, $"<{tag}>{body}</{tag}>");
         }
-
-        foreach (var raw in lines)
-        {
-            var line = raw.TrimEnd();
-
-            if (FenceLine().IsMatch(line.TrimStart()))
-            {
-                // ★ The fence markers go and the code stays. A survey's prose quotes a signature or a
-                //   command now and then, and dropping the block would lose the point of the paragraph
-                //   above it; there is no `code` in the grammar, so it reads as text.
-                fenced = !fenced;
-                continue;
-            }
-
-            if (fenced)
-            {
-                paragraph.Add(line);
-                continue;
-            }
-
-            if (line.Trim().Length == 0)
-            {
-                if (DrainParagraph() is { } p) { yield return p; }
-                if (DrainList() is { } l) { yield return l; }
-                continue;
-            }
-
-            if (ThematicBreak().IsMatch(line.Trim()))
-            {
-                if (DrainParagraph() is { } p) { yield return p; }
-                if (DrainList() is { } l) { yield return l; }
-                continue;
-            }
-
-            if (HeadingLine().Match(line.TrimStart()) is { Success: true } heading)
-            {
-                if (DrainParagraph() is { } p) { yield return p; }
-                if (DrainList() is { } l) { yield return l; }
-
-                // ★ LEVEL 3, WHATEVER THE DOCUMENT SAYS. The section this lands in already carries the
-                //   page's own h2; a prose heading that outranks it reads as a new top-level section to
-                //   anyone walking the outline, and the outline is how a screen reader navigates.
-                var hashes = heading.Groups["hashes"].Value.Length;
-                yield return new Block((hashes <= 2 ? 3 : 4, heading.Groups["text"].Value.Trim()), null);
-                continue;
-            }
-
-            if (BulletLine().Match(line) is { Success: true } bullet)
-            {
-                if (DrainParagraph() is { } p) { yield return p; }
-                if (ordered && items.Count > 0 && DrainList() is { } switched) { yield return switched; }
-                ordered = false;
-                items.Add(bullet.Groups["text"].Value);
-                continue;
-            }
-
-            if (NumberedLine().Match(line) is { Success: true } numbered)
-            {
-                if (DrainParagraph() is { } p) { yield return p; }
-                if (!ordered && items.Count > 0 && DrainList() is { } switched) { yield return switched; }
-                ordered = true;
-                items.Add(numbered.Groups["text"].Value);
-                continue;
-            }
-
-            if (items.Count > 0)
-            {
-                // A continuation line under a list item belongs to that item, not to a new paragraph.
-                items[^1] = $"{items[^1]} {line.Trim()}";
-                continue;
-            }
-
-            // ★ A blockquote keeps its words. The redactor's publication notice IS a blockquote, and it
-            //   exists to be read: a reader who cannot tell a redacted changelog from a thin one concludes
-            //   the analysis is thin.
-            paragraph.Add(QuoteLine().Replace(line.TrimStart(), string.Empty).Trim());
-        }
-
-        if (DrainParagraph() is { } lastParagraph) { yield return lastParagraph; }
-        if (DrainList() is { } lastList) { yield return lastList; }
     }
 
     /// <summary>

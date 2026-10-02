@@ -331,60 +331,10 @@ public sealed record AdvisoryCut
 
         foreach (var survey in read)
         {
-            var complete = survey.AdvisoryListComplete;
-
             // ★ GROUPED PER SURVEY BEFORE ANYTHING IS INCREMENTED. The unit of every count below is a
             //   CODEBASE, so one advisory seen against three versions inside one repository is one.
-            foreach (var group in survey.Advisories.GroupBy(a => a.AdvisoryId, StringComparer.OrdinalIgnoreCase))
-            {
-                if (!byAdvisory.TryGetValue(group.Key, out var advisory))
-                {
-                    // ★ The FIRST spelling seen is the one published. Ids are collapsed case-insensitively
-                    //   where they are counted and never rewritten: a GHSA id is canonically lower case and a
-                    //   CVE id upper, and a reader pastes what the page shows into the advisory database.
-                    byAdvisory[group.Key] = advisory = new Accumulator(group.First().AdvisoryId);
-                }
-
-                advisory.Surveys++;
-                if (complete)
-                {
-                    advisory.SurveysAmongComplete++;
-                }
-
-                if (group.All(a => a.Inherited))
-                {
-                    advisory.SurveysInherited++;
-                }
-
-                foreach (var seen in group)
-                {
-                    advisory.Packages[seen.Package] = advisory.Packages.GetValueOrDefault(seen.Package) + 1;
-                }
-            }
-
-            foreach (var group in survey.Advisories.GroupBy(a => a.Package, StringComparer.Ordinal))
-            {
-                if (!byPackage.TryGetValue(group.Key, out var package))
-                {
-                    byPackage[group.Key] = package = new PackageAccumulator();
-                }
-
-                package.Surveys++;
-                if (complete)
-                {
-                    package.SurveysAmongComplete++;
-                }
-
-                if (group.All(a => a.Inherited))
-                {
-                    package.SurveysInherited++;
-                }
-
-                foreach (var seen in group)
-                {
-                    package.Advisories.Add(seen.AdvisoryId);
-                }
-            }
+            CountAdvisories(survey, byAdvisory);
+            CountPackages(survey, byPackage);
         }
 
         return new AdvisoryCut(
@@ -409,6 +359,67 @@ public sealed record AdvisoryCut
                     kv.Value.SurveysInherited,
                     kv.Value.SurveysAmongComplete),
                 StringComparer.Ordinal));
+    }
+
+    /// <summary>One survey's advisories, one increment per advisory id however many versions carried it.</summary>
+    private static void CountAdvisories(SecurityReading survey, Dictionary<string, Accumulator> byAdvisory)
+    {
+        var complete = survey.AdvisoryListComplete;
+        foreach (var group in survey.Advisories.GroupBy(a => a.AdvisoryId, StringComparer.OrdinalIgnoreCase))
+        {
+            if (!byAdvisory.TryGetValue(group.Key, out var advisory))
+            {
+                // ★ The FIRST spelling seen is the one published. Ids are collapsed case-insensitively
+                //   where they are counted and never rewritten: a GHSA id is canonically lower case and a
+                //   CVE id upper, and a reader pastes what the page shows into the advisory database.
+                byAdvisory[group.Key] = advisory = new Accumulator(group.First().AdvisoryId);
+            }
+
+            advisory.Surveys++;
+            if (complete)
+            {
+                advisory.SurveysAmongComplete++;
+            }
+
+            if (group.All(a => a.Inherited))
+            {
+                advisory.SurveysInherited++;
+            }
+
+            foreach (var seen in group)
+            {
+                advisory.Packages[seen.Package] = advisory.Packages.GetValueOrDefault(seen.Package) + 1;
+            }
+        }
+    }
+
+    /// <summary>One survey's advisories, one increment per package however many advisories it carried.</summary>
+    private static void CountPackages(SecurityReading survey, Dictionary<string, PackageAccumulator> byPackage)
+    {
+        var complete = survey.AdvisoryListComplete;
+        foreach (var group in survey.Advisories.GroupBy(a => a.Package, StringComparer.Ordinal))
+        {
+            if (!byPackage.TryGetValue(group.Key, out var package))
+            {
+                byPackage[group.Key] = package = new PackageAccumulator();
+            }
+
+            package.Surveys++;
+            if (complete)
+            {
+                package.SurveysAmongComplete++;
+            }
+
+            if (group.All(a => a.Inherited))
+            {
+                package.SurveysInherited++;
+            }
+
+            foreach (var seen in group)
+            {
+                package.Advisories.Add(seen.AdvisoryId);
+            }
+        }
     }
 
     private sealed class Accumulator(string id)
