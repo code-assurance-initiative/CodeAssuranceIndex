@@ -34,6 +34,9 @@ internal sealed class SqliteNoiseStore : INoiseStore
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
     private readonly string _connectionString;
+    private readonly SqliteNoiseDisputeStore _disputes;
+    private readonly SqliteNoiseFindingStore _findings;
+    private readonly SqliteNoiseCostStore _costs;
 
     public SqliteNoiseStore(
         IOptions<RegistryOptions> options, IHostEnvironment env, ILogger<SqliteNoiseStore> logger)
@@ -48,6 +51,10 @@ internal sealed class SqliteNoiseStore : INoiseStore
         {
             NoiseSchema.Create(conn);
         }
+
+        _disputes = new SqliteNoiseDisputeStore(Open);
+        _findings = new SqliteNoiseFindingStore(Open);
+        _costs = new SqliteNoiseCostStore(Open);
 
         logger.LogInformation("Noise store (SQLite) at {Path}", resolved);
     }
@@ -335,83 +342,21 @@ internal sealed class SqliteNoiseStore : INoiseStore
         return value is null or DBNull ? null : (string)value;
     }
 
-    /// <inheritdoc />
-    public void RaiseDispute(DisputeRecord dispute)
-    {
-        ArgumentNullException.ThrowIfNull(dispute);
-
-        using var conn = Open();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText =
-            """
-            INSERT INTO noise_disputes
-                (dispute_id, period, finding_id, raised_by, reason, raised_at)
-            VALUES ($id, $period, $finding, $by, $reason, $at)
-            """;
-        cmd.Parameters.AddWithValue("$id", dispute.DisputeId);
-        cmd.Parameters.AddWithValue("$period", dispute.Period);
-        cmd.Parameters.AddWithValue("$finding", dispute.FindingId);
-        cmd.Parameters.AddWithValue("$by", dispute.RaisedBy);
-        cmd.Parameters.AddWithValue("$reason", dispute.Reason);
-        cmd.Parameters.AddWithValue("$at", dispute.RaisedAt.ToString("O"));
-        cmd.ExecuteNonQuery();
-    }
+    // ── The dispute register, the findings and the cost ledger keep their own SQL in their own types; the
+    //    store answers for them under every role it fills.
 
     /// <inheritdoc />
-    public DisputeRecord? FindDispute(string disputeId)
-    {
-        using var conn = Open();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = DisputeSelect + " WHERE dispute_id = $id";
-        cmd.Parameters.AddWithValue("$id", disputeId ?? "");
-        using var reader = cmd.ExecuteReader();
-
-        return reader.Read() ? NoiseRows.Dispute(reader) : null;
-    }
+    public void RaiseDispute(DisputeRecord dispute) => _disputes.RaiseDispute(dispute);
 
     /// <inheritdoc />
-    public bool ResolveDispute(string disputeId, string outcome, string reasoning, DateTimeOffset resolvedAt)
-    {
-        using var conn = Open();
-        using var cmd = conn.CreateCommand();
-
-        // ★★ `outcome IS NULL` is the lock. A read-then-write above this could resolve the same dispute twice
-        // from two requests, and the second answer would silently replace the first.
-        cmd.CommandText =
-            """
-            UPDATE noise_disputes
-               SET outcome = $outcome, resolution_reasoning = $reasoning, resolved_at = $at
-             WHERE dispute_id = $id AND outcome IS NULL
-            """;
-        cmd.Parameters.AddWithValue("$outcome", outcome);
-        cmd.Parameters.AddWithValue("$reasoning", reasoning);
-        cmd.Parameters.AddWithValue("$at", resolvedAt.ToString("O"));
-        cmd.Parameters.AddWithValue("$id", disputeId ?? "");
-
-        return cmd.ExecuteNonQuery() == 1;
-    }
+    public DisputeRecord? FindDispute(string disputeId) => _disputes.FindDispute(disputeId);
 
     /// <inheritdoc />
-    public IReadOnlyList<DisputeRecord> ListDisputes(string period)
-    {
-        using var conn = Open();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = DisputeSelect + " WHERE period = $period ORDER BY raised_at, dispute_id";
-        cmd.Parameters.AddWithValue("$period", period ?? "");
-        using var reader = cmd.ExecuteReader();
+    public bool ResolveDispute(string disputeId, string outcome, string reasoning, DateTimeOffset resolvedAt) =>
+        _disputes.ResolveDispute(disputeId, outcome, reasoning, resolvedAt);
 
-        var list = new List<DisputeRecord>();
-        while (reader.Read())
-        {
-            list.Add(NoiseRows.Dispute(reader));
-        }
-
-        return list;
-    }
-
-    private const string DisputeSelect =
-        "SELECT dispute_id, period, finding_id, raised_by, reason, raised_at, outcome, resolution_reasoning, "
-      + "resolved_at FROM noise_disputes";
+    /// <inheritdoc />
+    public IReadOnlyList<DisputeRecord> ListDisputes(string period) => _disputes.ListDisputes(period);
 
     /// <inheritdoc />
     public IntentRecord RegisterIntent(string period, string tool, DateTimeOffset now)
@@ -470,159 +415,16 @@ internal sealed class SqliteNoiseStore : INoiseStore
     }
 
     /// <inheritdoc />
-    public void RecordFindings(IReadOnlyList<FindingRecord> findings)
-    {
-        ArgumentNullException.ThrowIfNull(findings);
-        if (findings.Count == 0)
-        {
-            return;
-        }
-
-        using var conn = Open();
-        using var tx = conn.BeginTransaction();
-
-        foreach (var f in findings)
-        {
-            using var cmd = conn.CreateCommand();
-            cmd.Transaction = tx;
-
-            // ★ DO NOTHING on conflict: the same defect reported by a second tool is the SAME finding, and the
-            // first row already describes it. Overwriting would churn the row for no gain and lose nothing either.
-            cmd.CommandText =
-                """
-                INSERT INTO noise_findings
-                    (finding_id, period, tool, repo_id, pinned_sha, file_path, line, rule_id, title, claim_class)
-                VALUES ($id, $period, $tool, $repo, $sha, $file, $line, $rule, $title, $class)
-                ON CONFLICT (finding_id) DO NOTHING
-                """;
-            cmd.Parameters.AddWithValue("$id", f.FindingId);
-            cmd.Parameters.AddWithValue("$period", f.Period);
-            cmd.Parameters.AddWithValue("$tool", f.Tool);
-            cmd.Parameters.AddWithValue("$repo", f.RepoId);
-            cmd.Parameters.AddWithValue("$sha", f.PinnedSha);
-            cmd.Parameters.AddWithValue("$file", (object?)f.FilePath ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$line", (object?)f.Line ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$rule", f.RuleId);
-            cmd.Parameters.AddWithValue("$title", (object?)f.Title ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("$class", f.ClaimClass);
-            cmd.ExecuteNonQuery();
-
-            // ★★ AND WHO REPORTED IT, which the finding row cannot say twice. Two tools reporting one defect
-            // produce one finding and two rows here — the difference between "this cost was spent on you" and
-            // "this cost was spent on a finding you also reported".
-            using var who = conn.CreateCommand();
-            who.Transaction = tx;
-            who.CommandText =
-                """
-                INSERT INTO noise_finding_tools (finding_id, tool) VALUES ($id, $tool)
-                ON CONFLICT (finding_id, tool) DO NOTHING
-                """;
-            who.Parameters.AddWithValue("$id", f.FindingId);
-            who.Parameters.AddWithValue("$tool", f.Tool);
-            who.ExecuteNonQuery();
-        }
-
-        tx.Commit();
-    }
+    public void RecordFindings(IReadOnlyList<FindingRecord> findings) => _findings.RecordFindings(findings);
 
     /// <inheritdoc />
-    public FindingRecord? FindFinding(string findingId)
-    {
-        using var conn = Open();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText =
-            """
-            SELECT finding_id, period, tool, repo_id, pinned_sha, file_path, line, rule_id, title, claim_class
-            FROM noise_findings WHERE finding_id = $id
-            """;
-        cmd.Parameters.AddWithValue("$id", findingId ?? "");
-        using var reader = cmd.ExecuteReader();
-
-        return reader.Read()
-            ? new FindingRecord(
-                reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3),
-                reader.GetString(4),
-                reader.IsDBNull(5) ? null : reader.GetString(5),
-                reader.IsDBNull(6) ? null : reader.GetInt32(6),
-                reader.GetString(7),
-                reader.IsDBNull(8) ? null : reader.GetString(8),
-                reader.GetString(9))
-            : null;
-    }
+    public FindingRecord? FindFinding(string findingId) => _findings.FindFinding(findingId);
 
     /// <inheritdoc />
-    public void RecordCost(CostEntry entry)
-    {
-        ArgumentNullException.ThrowIfNull(entry);
-
-        using var conn = Open();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText =
-            """
-            INSERT INTO noise_cost
-                (cost_id, period, tool, kind, finding_id, model_seconds, input_tokens, output_tokens, at)
-            VALUES ($id, $period, $tool, $kind, $finding, $seconds, $in, $out, $at)
-            """;
-        cmd.Parameters.AddWithValue("$id", Guid.CreateVersion7().ToString("n"));
-        cmd.Parameters.AddWithValue("$period", entry.Period);
-        cmd.Parameters.AddWithValue("$tool", (object?)entry.Tool ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("$kind", entry.Kind);
-        cmd.Parameters.AddWithValue("$finding", entry.FindingId);
-        cmd.Parameters.AddWithValue("$seconds", (object?)entry.ModelSeconds ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("$in", (object?)entry.InputTokens ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("$out", (object?)entry.OutputTokens ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("$at", entry.At.ToString("O"));
-        cmd.ExecuteNonQuery();
-    }
+    public void RecordCost(CostEntry entry) => _costs.RecordCost(entry);
 
     /// <inheritdoc />
-    public IReadOnlyList<CostTally> CostFor(string period)
-    {
-        using var conn = Open();
-        using var cmd = conn.CreateCommand();
-
-        // ★ Summed in SQL, grouped on the tool with NULL as its own group — the unattributed row. COUNT over a
-        // nullable column counts non-nulls, which is exactly what "judgements that reported a time" means.
-        // ★★ ATTRIBUTED BY JOIN, not by the column. A finding two tools reported produces two rows here — the
-        // judgement was spent on both — so `reporters = 1` is what separates the marginal cost from the cost
-        // that would have been paid anyway. The LEFT JOIN keeps a cost whose finding nothing recorded: it is real
-        // spend attributable to nobody, and dropping it would make the total smaller than what was spent.
-        cmd.CommandText =
-            """
-            WITH reporters AS (
-                SELECT finding_id, COUNT(*) AS n FROM noise_finding_tools GROUP BY finding_id
-            )
-            SELECT ft.tool,
-                   SUM(CASE WHEN c.kind = 'judging' THEN 1 ELSE 0 END)                            AS judgements,
-                   SUM(CASE WHEN c.kind = 'judging' AND c.model_seconds IS NULL THEN 1 ELSE 0 END) AS untimed,
-                   COALESCE(SUM(c.model_seconds), 0)                                              AS seconds,
-                   COALESCE(SUM(c.input_tokens), 0)                                               AS in_tok,
-                   COALESCE(SUM(c.output_tokens), 0)                                              AS out_tok,
-                   SUM(CASE WHEN c.kind = 'crowd' THEN 1 ELSE 0 END)                              AS crowd,
-                   SUM(CASE WHEN c.kind = 'judging' AND COALESCE(r.n, 0) = 1 THEN 1 ELSE 0 END)    AS solely,
-                   COALESCE(SUM(CASE WHEN COALESCE(r.n, 0) = 1 THEN c.model_seconds END), 0)       AS solely_seconds
-            FROM noise_cost c
-            LEFT JOIN noise_finding_tools ft ON ft.finding_id = c.finding_id
-            LEFT JOIN reporters r            ON r.finding_id  = c.finding_id
-            WHERE c.period = $period
-            GROUP BY ft.tool
-            ORDER BY ft.tool IS NULL, ft.tool
-            """;
-        cmd.Parameters.AddWithValue("$period", period ?? "");
-
-        List<CostTally> tallies = [];
-        using var reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            tallies.Add(new CostTally(
-                reader.IsDBNull(0) ? null : reader.GetString(0),
-                reader.GetInt32(1), reader.GetInt32(2),
-                reader.GetDouble(3), reader.GetInt32(4), reader.GetInt32(5), reader.GetInt32(6),
-                reader.GetInt32(7), reader.GetDouble(8)));
-        }
-
-        return tallies;
-    }
+    public IReadOnlyList<CostTally> CostFor(string period) => _costs.CostFor(period);
 
     /// <inheritdoc />
     public IReadOnlyList<string> JudgedPeriods()
