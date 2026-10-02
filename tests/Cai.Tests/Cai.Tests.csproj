@@ -10,6 +10,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <!-- The data collector behind the XPlat Code Coverage collect flag of dotnet test; without it the flag produces nothing. -->
+    <PackageReference Include="coverlet.collector" Version="10.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Cai.Scoring\Cai.Scoring.csproj" />

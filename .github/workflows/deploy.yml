@@ -155,11 +155,13 @@ jobs:
           done
           if [ -n "$token" ]; then
             umask 077
-            jq -n --arg token "$token" '{
+            # The token travels in the ENVIRONMENT, not as an argument: argv is readable by every process
+            # on the runner through the process table, and by anything that logs a command line.
+            TOKEN="$token" jq -n '{
               Syndication: {
                 SiteBaseUrl: "https://app.imprint.canine.dev",
                 SiteId: "c3236bdf87db403ebc06379649f7a2d8",
-                Token: $token,
+                Token: env.TOKEN,
                 TickMinutes: 60
               }
             }' > /home/jimmy/apps/cai-web/app.next/appsettings.Production.json

@@ -1,0 +1,33 @@
+name: CI
+
+# The test gate BEFORE the merge. deploy.yml and publish-packages.yml both run the suite, but only on code that is
+# already on main (or tagged), where a red run blocks nothing and the only remedy is a revert. This runs the same
+# suite on every pull request so the gate applies while the change can still be turned away. GitHub-hosted runner,
+# never the self-hosted deploy box: a pull request's code must not execute where production's secrets live.
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68  # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build Cai.slnx -c Release
+
+      - name: Test
+        run: dotnet test tests/Cai.Tests -c Release --no-build
