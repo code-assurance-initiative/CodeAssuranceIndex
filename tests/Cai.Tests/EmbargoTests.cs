@@ -96,6 +96,22 @@ public sealed class EmbargoTests
         Assert.False(Embargo.MayRead("", "watchdog", Publishes, before));
     }
 
+    /// <summary>
+    /// ★ THE NOTE SAYS WHICH KIND OF WITHHOLDING THIS IS. A dated embargo names its lift instant; an undated one
+    /// says why no date means closed, so a reader is never left to guess whether the record is empty or held.
+    /// </summary>
+    [Fact]
+    public void The_Note_Names_The_Lift_Date_Or_Says_Why_There_Is_None()
+    {
+        var dated = Embargo.Note(Publishes);
+        Assert.Contains(Publishes.ToString("O"), dated, StringComparison.Ordinal);
+        Assert.Contains("only its own", dated, StringComparison.Ordinal);
+
+        var undated = Embargo.Note(null);
+        Assert.Contains("no publication date", undated, StringComparison.Ordinal);
+        Assert.DoesNotContain("until", undated, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void The_Caller_Match_Is_Case_Insensitive_But_Not_Fuzzy()
     {

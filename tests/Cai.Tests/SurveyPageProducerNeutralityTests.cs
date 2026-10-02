@@ -42,6 +42,26 @@ public sealed class SurveyPageProducerNeutralityTests
         Assert.Equal(Anonymised(a, first), Anonymised(b, second));
     }
 
+    /// <summary>
+    /// ★★ THE STANDARD IS THE CODE ASSURANCE INDEX, on every surface a reader or a search engine meets. The
+    /// meta description once split the name across two interpolated strings ("…on the Codebase " +
+    /// "Assurance Index…"), so a rename that searched for the whole phrase walked straight past it — on the
+    /// description of every published survey page. Asserted over the rendered page, not the source, because
+    /// the source is exactly where a split string hides.
+    /// </summary>
+    [Fact]
+    public void The_page_names_the_Code_Assurance_Index_and_never_the_Codebase_one()
+    {
+        var page = SurveyPageBuilder.Build(Record("watchdog.canine.dev", "watchdog-surveyor", "3.1.0"));
+
+        Assert.NotNull(page);
+        Assert.Contains("Code Assurance Index", page.MetaDescription, StringComparison.Ordinal);
+        foreach (var surface in new[] { page.Title, page.MetaDescription, JsonSerializer.Serialize(page.Node) })
+        {
+            Assert.DoesNotContain("Codebase Assurance", surface, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     [Fact]
     public void The_address_is_the_standards_own_and_names_the_subject_not_the_producer()
     {
