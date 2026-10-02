@@ -109,12 +109,28 @@ internal static class PublicationContract
         ArgumentNullException.ThrowIfNull(claims);
         var breaches = new List<ContractBreach>();
 
-        // ── The period ────────────────────────────────────────────────────────────────────────────
-        //
-        // ★★ A RATE WITHOUT ITS PERIOD CANNOT BE CHECKED against the method that governed it, and #23-4 is
-        // explicit that the number never appears without its interval and its period. The endpoint accepted
-        // one with neither, so a published figure could not be tied to the version it was judged under —
-        // which is the whole point of the change-control rule.
+        CheckPeriod(period, breaches);
+        CheckAbsolutes(loc, breaches);
+        CheckRecall(recallEstimate, recallMethod, recallNote, breaches);
+        CheckComparability(claims, breaches);
+        CheckGitMining(gitMiningVerified, breaches);
+        CheckProvenance(toolVersion, holdoutSeed, modelSet, breaches);
+        CheckFixRateAnchor(hasFixRateObservations, fixRateUnavailable, fixRateWindowDays, breaches);
+        CheckRejudge(rejudge, rejudgeUnavailable, breaches);
+        CheckConfiguration(configuration, breaches);
+        CheckExclusionCeiling(adjudicated, excluded, breaches);
+
+        return breaches;
+    }
+
+    // ── The period ────────────────────────────────────────────────────────────────────────────
+    //
+    // ★★ A RATE WITHOUT ITS PERIOD CANNOT BE CHECKED against the method that governed it, and #23-4 is
+    // explicit that the number never appears without its interval and its period. The endpoint accepted
+    // one with neither, so a published figure could not be tied to the version it was judged under —
+    // which is the whole point of the change-control rule.
+    private static void CheckPeriod(string? period, List<ContractBreach> breaches)
+    {
         if (string.IsNullOrWhiteSpace(period))
         {
             breaches.Add(new ContractBreach("period",
@@ -129,8 +145,11 @@ internal static class PublicationContract
               + $"{MethodVersions.History[0].EffectiveFromPeriod}; a period before that was not measured "
               + "under this method and cannot publish as though it were."));
         }
+    }
 
-        // ── The absolutes ────────────────────────────────────────────────────────────────────────
+    // ── The absolutes ────────────────────────────────────────────────────────────────────────
+    private static void CheckAbsolutes(long? loc, List<ContractBreach> breaches)
+    {
         if (loc is not > 0)
         {
             breaches.Add(new ContractBreach("locCovered",
@@ -139,8 +158,12 @@ internal static class PublicationContract
               + "100k has a worse ratio than 12 valid / 2 noise and is plainly the better instrument. A "
               + "ratio whose denominator the measured party controls is not a headline."));
         }
+    }
 
-        // ── The recall counterpart ───────────────────────────────────────────────────────────────
+    // ── The recall counterpart ───────────────────────────────────────────────────────────────
+    private static void CheckRecall(
+        double? recallEstimate, string? recallMethod, string? recallNote, List<ContractBreach> breaches)
+    {
         if (!IsKnownRecallMethod(recallMethod))
         {
             breaches.Add(new ContractBreach("recallMethod",
@@ -167,8 +190,12 @@ internal static class PublicationContract
                 "a recall estimate is a share between 0 and 1. Name the method 'none' with a reason if you "
               + "cannot produce one."));
         }
+    }
 
-        // ── Comparability ───────────────────────────────────────────────────────────────────────
+    // ── Comparability ───────────────────────────────────────────────────────────────────────
+    private static void CheckComparability(
+        IReadOnlyCollection<ClaimClassTally> claims, List<ContractBreach> breaches)
+    {
         if (claims.Count == 0)
         {
             breaches.Add(new ContractBreach("claimClasses",
@@ -182,8 +209,11 @@ internal static class PublicationContract
             breaches.Add(new ContractBreach("claimClasses",
                 "the claim-class breakdown accounts for no findings at all."));
         }
+    }
 
-        // ── The 05 pre-publication gate ─────────────────────────────────────────────────────────
+    // ── The 05 pre-publication gate ─────────────────────────────────────────────────────────
+    private static void CheckGitMining(bool? gitMiningVerified, List<ContractBreach> breaches)
+    {
         if (gitMiningVerified is not true)
         {
             breaches.Add(new ContractBreach("gitMiningVerified",
@@ -196,8 +226,12 @@ internal static class PublicationContract
                     + "publishing it would report a harness bug as a product weakness. Re-run with history "
                     + "available, or publish with those dimensions withdrawn."));
         }
+    }
 
-        // ── Provenance ──────────────────────────────────────────────────────────────────────────
+    // ── Provenance ──────────────────────────────────────────────────────────────────────────
+    private static void CheckProvenance(
+        string? toolVersion, string? holdoutSeed, string? modelSet, List<ContractBreach> breaches)
+    {
         foreach (var (field, value, why) in new[]
                  {
                      ("toolVersion", toolVersion, "which build produced these findings"),
@@ -212,14 +246,19 @@ internal static class PublicationContract
                   + "under this method — it is an assertion with a number in it."));
             }
         }
+    }
 
-        // ── The anchor ──────────────────────────────────────────────────────────────────────────
-        //
-        // ★★ Checked HERE rather than separately, so a submitter missing the anchor AND the provenance AND
-        // the claim classes is told all three at once. It was computable at /api/noise/fixrate from the
-        // start, and that was the problem: a number nobody is obliged to fetch does not get fetched. The
-        // noise rate has an audience and a marketing use; the fix rate has neither, so left optional the
-        // published claim stays "our tool is quiet" rather than "our tool is acted upon".
+    // ── The anchor ──────────────────────────────────────────────────────────────────────────
+    //
+    // ★★ Checked HERE rather than separately, so a submitter missing the anchor AND the provenance AND
+    // the claim classes is told all three at once. It was computable at /api/noise/fixrate from the
+    // start, and that was the problem: a number nobody is obliged to fetch does not get fetched. The
+    // noise rate has an audience and a marketing use; the fix rate has neither, so left optional the
+    // published claim stays "our tool is quiet" rather than "our tool is acted upon".
+    private static void CheckFixRateAnchor(
+        bool hasFixRateObservations, string? fixRateUnavailable, int? fixRateWindowDays,
+        List<ContractBreach> breaches)
+    {
         if (!hasFixRateObservations && string.IsNullOrWhiteSpace(fixRateUnavailable))
         {
             breaches.Add(new ContractBreach("fixRateObservations",
@@ -235,56 +274,70 @@ internal static class PublicationContract
                 "fixRateObservations need a fixRateWindowDays — a fix rate without a period is "
               + "unfalsifiable, because over a long enough window nearly all code changes."));
         }
+    }
 
-        // ── Does the judging reproduce? ──────────────────────────────────────────────────────────
-        //
-        // ★★ THE ONLY CHECK HERE THAT POINTS AT THE STANDARD RATHER THAN AT THE MEASURED PARTY, and the reason
-        // it belongs on the publication and not only on an endpoint: a re-judge nobody has to run is a gate
-        // that fires and tells nobody — the failure this codebase already documents about the rubric publish
-        // gate, which checks presence and not contents.
-        //
-        // ★★ THE OUTCOME IS PASSED IN FROM THE STORE, never taken from the request. A body that could declare
-        // its own reproducibility would be publishing the self-measured number the standard exists to replace.
-        if (rejudge is { } outcome)
+    // ── Does the judging reproduce? ──────────────────────────────────────────────────────────
+    //
+    // ★★ THE ONLY CHECK HERE THAT POINTS AT THE STANDARD RATHER THAN AT THE MEASURED PARTY, and the reason
+    // it belongs on the publication and not only on an endpoint: a re-judge nobody has to run is a gate
+    // that fires and tells nobody — the failure this codebase already documents about the rubric publish
+    // gate, which checks presence and not contents.
+    //
+    // ★★ THE OUTCOME IS PASSED IN FROM THE STORE, never taken from the request. A body that could declare
+    // its own reproducibility would be publishing the self-measured number the standard exists to replace.
+    private static void CheckRejudge(
+        RejudgeOutcome? rejudge, string? rejudgeUnavailable, List<ContractBreach> breaches)
+    {
+        if (rejudge is not { } outcome)
         {
-            if (!outcome.WithinTolerance)
+            if (string.IsNullOrWhiteSpace(rejudgeUnavailable))
             {
-                // ★★ AND A DECLARED REASON DOES NOT RESCUE IT. `rejudgeUnavailable` covers "we did not run
-                // one"; it must not cover "we ran one and it failed", or the honest path becomes the
-                // expensive one.
-                var detail = outcome.Compared == 0
-                    ? "nothing in the sample could be compared"
-                    : outcome.Unjudged.Count > 0
-                        ? $"{outcome.Unjudged.Count} of {outcome.SampleSize} sampled findings were never "
-                        + "answered by the second pass"
-                        : string.Create(
-                            System.Globalization.CultureInfo.InvariantCulture,
-                            $"the two passes disagreed on {outcome.DisagreementRate:P1} of what they compared");
-
                 breaches.Add(new ContractBreach("rejudge",
-                    $"the re-judge for this period is outside the published tolerance of "
-                  + string.Create(
-                        System.Globalization.CultureInfo.InvariantCulture, $"{Rejudge.Tolerance:P0}") + ": "
-                  + detail + ". A rate read off a process that disagrees with itself by more than the moves "
-                  + "the rate is used to argue about is not a measurement. Fix the judging and re-run it — a "
-                  + "stated reason covers the absence of a second pass, not a failed one."));
+                    "a publication rests on judging that has been shown to reproduce, or says why it has not "
+                  + "been. Re-judge this period's seed-drawn sample at /api/noise/rejudge/{period}, or send "
+                  + "rejudgeUnavailable with a reason — the reason publishes, so the absence is one a reader can "
+                  + "weigh rather than one they cannot see."));
             }
-        }
-        else if (string.IsNullOrWhiteSpace(rejudgeUnavailable))
-        {
-            breaches.Add(new ContractBreach("rejudge",
-                "a publication rests on judging that has been shown to reproduce, or says why it has not "
-              + "been. Re-judge this period's seed-drawn sample at /api/noise/rejudge/{period}, or send "
-              + "rejudgeUnavailable with a reason — the reason publishes, so the absence is one a reader can "
-              + "weigh rather than one they cannot see."));
+
+            return;
         }
 
-        // ── How the tool was configured ──────────────────────────────────────────────────────────
-        //
-        // ★★ REQUIRED ON THE PUBLICATION TOO, not only on the submission. #23-1 says deviations publish
-        // "alongside the number", and the publication IS the number — a declaration that reaches only the
-        // register leaves the figure a reader quotes with nothing attached to it. Found by submitting from
-        // Watchdog and seeing the declaration derived, sent, and silently ignored.
+        if (outcome.WithinTolerance)
+        {
+            return;
+        }
+
+        // ★★ AND A DECLARED REASON DOES NOT RESCUE IT. `rejudgeUnavailable` covers "we did not run
+        // one"; it must not cover "we ran one and it failed", or the honest path becomes the
+        // expensive one.
+        breaches.Add(new ContractBreach("rejudge",
+            $"the re-judge for this period is outside the published tolerance of "
+          + string.Create(
+                System.Globalization.CultureInfo.InvariantCulture, $"{Rejudge.Tolerance:P0}") + ": "
+          + RejudgeFailureDetail(outcome)
+          + ". A rate read off a process that disagrees with itself by more than the moves "
+          + "the rate is used to argue about is not a measurement. Fix the judging and re-run it — a "
+          + "stated reason covers the absence of a second pass, not a failed one."));
+    }
+
+    private static string RejudgeFailureDetail(RejudgeOutcome outcome) =>
+        outcome.Compared == 0
+            ? "nothing in the sample could be compared"
+            : outcome.Unjudged.Count > 0
+                ? $"{outcome.Unjudged.Count} of {outcome.SampleSize} sampled findings were never "
+                + "answered by the second pass"
+                : string.Create(
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    $"the two passes disagreed on {outcome.DisagreementRate:P1} of what they compared");
+
+    // ── How the tool was configured ──────────────────────────────────────────────────────────
+    //
+    // ★★ REQUIRED ON THE PUBLICATION TOO, not only on the submission. #23-1 says deviations publish
+    // "alongside the number", and the publication IS the number — a declaration that reaches only the
+    // register leaves the figure a reader quotes with nothing attached to it. Found by submitting from
+    // Watchdog and seeing the declaration derived, sent, and silently ignored.
+    private static void CheckConfiguration(RunConfiguration? configuration, List<ContractBreach> breaches)
+    {
         if (configuration is null)
         {
             breaches.Add(new ContractBreach("configuration",
@@ -292,35 +345,38 @@ internal static class PublicationContract
               + "anything disabled or altered from the shipping default, and whether that configuration is "
               + "what customers get. Every other requirement here constrains the run; this one constrains "
               + "the tool, and without it the rate describes a setup nobody can identify."));
+
+            return;
         }
-        else
+
+        if (string.IsNullOrWhiteSpace(configuration.RulesetId))
         {
-            if (string.IsNullOrWhiteSpace(configuration.RulesetId))
-            {
-                breaches.Add(new ContractBreach("configuration.rulesetId",
-                    "the configuration must name its ruleset or profile."));
-            }
-
-            var disabled = configuration.RulesDisabled ?? [];
-            var altered = configuration.ThresholdsAltered ?? [];
-
-            if (configuration.IsProductDefault && (disabled.Count > 0 || altered.Count > 0))
-            {
-                breaches.Add(new ContractBreach("configuration.isProductDefault",
-                    "this cannot be the product default while also listing changes to it. Either it is what "
-                  + "customers get, or it diverges and says how."));
-            }
-
-            if (!configuration.IsProductDefault
-                && string.IsNullOrWhiteSpace(configuration.DivergenceExplanation))
-            {
-                breaches.Add(new ContractBreach("configuration.divergenceExplanation",
-                    "a configuration declared as NOT the product default must say how it differs. The "
-                  + "explanation publishes with the number."));
-            }
+            breaches.Add(new ContractBreach("configuration.rulesetId",
+                "the configuration must name its ruleset or profile."));
         }
 
-        // ── The ceiling that voids the run ──────────────────────────────────────────────────────
+        var disabled = configuration.RulesDisabled ?? [];
+        var altered = configuration.ThresholdsAltered ?? [];
+
+        if (configuration.IsProductDefault && (disabled.Count > 0 || altered.Count > 0))
+        {
+            breaches.Add(new ContractBreach("configuration.isProductDefault",
+                "this cannot be the product default while also listing changes to it. Either it is what "
+              + "customers get, or it diverges and says how."));
+        }
+
+        if (!configuration.IsProductDefault
+            && string.IsNullOrWhiteSpace(configuration.DivergenceExplanation))
+        {
+            breaches.Add(new ContractBreach("configuration.divergenceExplanation",
+                "a configuration declared as NOT the product default must say how it differs. The "
+              + "explanation publishes with the number."));
+        }
+    }
+
+    // ── The ceiling that voids the run ──────────────────────────────────────────────────────
+    private static void CheckExclusionCeiling(int adjudicated, int excluded, List<ContractBreach> breaches)
+    {
         if (VoidOnExclusions(adjudicated, excluded))
         {
             var rate = ExclusionRate(adjudicated, excluded)!.Value;
@@ -337,7 +393,5 @@ internal static class PublicationContract
               + "evidence is thin, which is where judging is worst, so the run is flattered by exactly the "
               + "findings it dropped. Fix the evidence the raters were shown and re-judge."));
         }
-
-        return breaches;
     }
 }

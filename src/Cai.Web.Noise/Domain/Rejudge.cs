@@ -148,40 +148,24 @@ internal static class Rejudge
 
         foreach (var id in sample)
         {
-            if (!second.TryGetValue(id, out var secondVerdict) || string.IsNullOrWhiteSpace(secondVerdict))
+            switch (Classify(id, original, second))
             {
-                unjudged.Add(id);
-                continue;
-            }
-
-            if (!original.TryGetValue(id, out var firstVerdict) || string.IsNullOrWhiteSpace(firstVerdict))
-            {
-                // ★ The FIRST pass is missing, which is a defect in the record rather than in the re-judge —
-                // but it is still a sampled finding nobody can compare, so it is named the same way.
-                unjudged.Add(id);
-                continue;
-            }
-
-            if (NoiseVerdicts.ParseOrNull(firstVerdict) is not { } a
-                || NoiseVerdicts.ParseOrNull(secondVerdict) is not { } b)
-            {
-                unusable.Add(id);
-                continue;
-            }
-
-            // ★★ A process defect on either side leaves the comparison. Those items already leave the rate:
-            // counting one as agreement would let a pass that gave up on half the sample read as stable, and
-            // counting it as disagreement would report our own thin evidence as an unstable instrument.
-            if (a.IsProcessDefect() || b.IsProcessDefect())
-            {
-                excluded.Add(id);
-                continue;
-            }
-
-            compared++;
-            if (a.IsNoise() != b.IsNoise())
-            {
-                disagreements++;
+                case Comparison.Unjudged:
+                    unjudged.Add(id);
+                    break;
+                case Comparison.Unusable:
+                    unusable.Add(id);
+                    break;
+                case Comparison.Excluded:
+                    excluded.Add(id);
+                    break;
+                case Comparison.Disagreed:
+                    compared++;
+                    disagreements++;
+                    break;
+                default:
+                    compared++;
+                    break;
             }
         }
 
@@ -193,6 +177,40 @@ internal static class Rejudge
             Unjudged: unjudged,
             Excluded: excluded,
             Unusable: unusable);
+    }
+
+    private enum Comparison { Unjudged, Unusable, Excluded, Agreed, Disagreed }
+
+    private static Comparison Classify(
+        string id, IReadOnlyDictionary<string, string> original, IReadOnlyDictionary<string, string> second)
+    {
+        if (!second.TryGetValue(id, out var secondVerdict) || string.IsNullOrWhiteSpace(secondVerdict))
+        {
+            return Comparison.Unjudged;
+        }
+
+        if (!original.TryGetValue(id, out var firstVerdict) || string.IsNullOrWhiteSpace(firstVerdict))
+        {
+            // ★ The FIRST pass is missing, which is a defect in the record rather than in the re-judge —
+            // but it is still a sampled finding nobody can compare, so it is named the same way.
+            return Comparison.Unjudged;
+        }
+
+        if (NoiseVerdicts.ParseOrNull(firstVerdict) is not { } a
+            || NoiseVerdicts.ParseOrNull(secondVerdict) is not { } b)
+        {
+            return Comparison.Unusable;
+        }
+
+        // ★★ A process defect on either side leaves the comparison. Those items already leave the rate:
+        // counting one as agreement would let a pass that gave up on half the sample read as stable, and
+        // counting it as disagreement would report our own thin evidence as an unstable instrument.
+        if (a.IsProcessDefect() || b.IsProcessDefect())
+        {
+            return Comparison.Excluded;
+        }
+
+        return a.IsNoise() != b.IsNoise() ? Comparison.Disagreed : Comparison.Agreed;
     }
 
     private static string Key(string seed, string period, string findingId)

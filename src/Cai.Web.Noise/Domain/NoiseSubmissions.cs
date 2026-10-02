@@ -155,203 +155,17 @@ internal static class NoiseSubmissions
 
         var problems = new List<string>();
 
-        // ── The ordering that makes the draw mean anything ────────────────────────────────────────
-        //
-        // ★★ THE DRAW MUST PRECEDE THE RUN. This is the neutrality property everything else rests on: a
-        // holdout published after the results exist is worthless however carefully it was made. It was
-        // asserted in prose — "the draw is published, timestamped, BEFORE any scanner runs" — and checked
-        // nowhere, so a submission could carry findings produced before the holdout it claims to answer and
-        // nothing would notice.
-        if (drawPublishedAt is { } drawnAt)
-        {
-            if (submission.RunStartedAt is not { } startedAt)
-            {
-                problems.Add(
-                    "the submission does not say when the run started, so the standard cannot check that it "
-                    + "began after the holdout was published — the ordering the whole draw rests on. Send "
-                    + "runStartedAt.");
-            }
-            else if (startedAt < drawnAt)
-            {
-                problems.Add(
-                    $"the run started at {startedAt:O}, BEFORE this period's holdout was published at "
-                    + $"{drawnAt:O}. A result produced before its own draw was either run against something "
-                    + "else or run against a draw seen early; either way it cannot answer this holdout.");
-            }
-        }
-        // ── What the run produced, against what arrived ────────────────────────────────────────────
-        //
-        // ★★ THE CHECK NOTHING ELSE MAKES. See NoiseSubmission.ReportedFindingCount: dropping findings between
-        // the run and the submission is the simplest route to a flattering rate, it leaves coverage looking
-        // complete, and from outside the vendor it is invisible.
+        CheckRunOrdering(submission, drawPublishedAt, problems);
+
         var submittedCount = submission.Findings?.Count ?? 0;
-        if (submission.ReportedFindingCount is not { } reportedCount)
-        {
-            problems.Add(
-                "the submission does not say how many findings the run produced, so the standard cannot check "
-                + "that they were all sent — which leaves the simplest route to a flattering rate open, and "
-                + "leaves coverage reading complete while it is not. Send reportedFindingCount.");
-        }
-        else if (reportedCount < 0)
-        {
-            problems.Add(
-                $"the declared finding count is {reportedCount}. A run cannot produce a negative number of "
-                + "findings, so this declaration says nothing the check can use.");
-        }
-        else if (reportedCount != submittedCount)
-        {
-            // ★★ BOTH DIRECTIONS. Fewer submitted than produced is the flattering-rate manoeuvre; more
-            // submitted than produced means the payload was assembled somewhere other than the run, and a
-            // rate over an assembled set measures the assembler.
-            problems.Add(
-                $"the run reports a finding count of {reportedCount} but {submittedCount} findings were "
-                + "submitted. A rate is taken over what the run produced, not over a subset of it — and "
-                + "coverage cannot show the difference, because a repository with one surviving finding is "
-                + "covered.");
-        }
+        CheckReportedFindingCount(submission, submittedCount, problems);
 
         var byRepo = holdout.ToDictionary(h => h.RepoId, StringComparer.OrdinalIgnoreCase);
 
-        // ★ The recency declaration is required — see RecencyDeclaration.
-        if (submission.Recency is null or { Count: 0 })
-        {
-            problems.Add(
-                "a recency declaration is required: for each holdout repository, say whether the tool "
-                + "has been developed against it. The pristine-vs-recent gap is the overfitting number.");
-        }
-
-        // ★★ And the STRATUM VALUES are checked, not merely their presence. Unvalidated, a vendor could
-        // declare "quite-fresh" here, be accepted, and then find the publication endpoint refusing a
-        // vocabulary the submission endpoint had waved through — the standard disagreeing with itself
-        // across two of its own doors. Same vocabulary on both sides, from RecencyStrata.
-        foreach (var declaration in submission.Recency ?? [])
-        {
-            if (RecencyStrata.ParseOrNull(declaration.Stratum) is null)
-            {
-                problems.Add(
-                    $"'{declaration.Stratum}' is not a recency stratum. One of: "
-                    + string.Join(", ", Enum.GetValues<RecencyStratum>().Select(RecencyStrata.Wire)) + ".");
-            }
-        }
-
-        // ── The permanently pristine slice ────────────────────────────────────────────────────────
-        //
-        // ★★ THE ONE MOMENT THE RESERVATION CAN BE SEEN TO BREAK. Nothing here stops a vendor developing against a
-        // repository — but the recency declaration is where they have to say so, and refusing it makes breaking
-        // the reservation an ACT rather than an omission. Accepted quietly, the never-trained bucket fills with
-        // repositories that are no longer never-trained, and the overfitting gap reads as zero for the best
-        // possible reason and the worst possible cause.
-        var reserved = holdout
-            .Where(h => h.Reserved)
-            .Select(h => h.RepoId)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var declaration in submission.Recency ?? [])
-        {
-            if (!reserved.Contains(declaration.RepoId))
-            {
-                continue;
-            }
-
-            if (RecencyStrata.ParseOrNull(declaration.Stratum) is { } stratum
-                && stratum != RecencyStratum.NeverTrained)
-            {
-                problems.Add(
-                    $"'{declaration.RepoId}' is a RESERVED repository — permanently pristine, in every draw — and "
-                    + $"this submission declares it as '{declaration.Stratum}'. That declaration is the "
-                    + "reservation being broken: without a never-trained endpoint the decay curve measures "
-                    + "nothing, and 'one cycle of cooling off is enough' stays an assertion. If the tool has been "
-                    + "developed against it, say so to the standard rather than in a submission — the repository "
-                    + "has to leave the reserved slice, and that is a change to the signed corpus.");
-            }
-        }
-
-        // ── How the tool was configured ───────────────────────────────────────────────────────────
-        //
-        // ★★ THE ONE THING NO OTHER CHECK CONSTRAINS. See RunConfiguration: the right version against the
-        // right shas with the noisiest rules off passes everything else in the method.
-        if (submission.Configuration is not { } config)
-        {
-            problems.Add(
-                "a configuration declaration is required: the ruleset or profile used, any rules disabled or "
-                + "thresholds altered from the shipping default, and whether that configuration IS the "
-                + "product default. Every other check constrains the RUN; none of them constrains how the "
-                + "tool was set up.");
-        }
-        else
-        {
-            if (string.IsNullOrWhiteSpace(config.RulesetId))
-            {
-                problems.Add(
-                    "the configuration declaration needs a rulesetId — a declaration that names nothing is "
-                    + "not something a third party could ask to see.");
-            }
-
-            var disabled = config.RulesDisabled ?? [];
-            var altered = config.ThresholdsAltered ?? [];
-
-            // ★★ The likeliest dishonest filling-in is not a lie but a CONTRADICTION: tick "this is what
-            // customers get" and list what you turned off. Refusing it costs an honest vendor one sentence
-            // and costs a dishonest one the whole manoeuvre.
-            if (config.IsProductDefault && (disabled.Count > 0 || altered.Count > 0))
-            {
-                var changed = disabled.Concat(altered.Select(a => a.RuleId ?? "an unnamed rule"));
-                problems.Add(
-                    "this cannot be the product default: the declaration also lists changes to it — "
-                    + string.Join(", ", changed)
-                    + ". Either it is what customers get, or it diverges and says how.");
-            }
-
-            // ★ A divergence is allowed; a silent one is not. "Not the default" plus silence tells a reader
-            // nothing while looking like a disclosure.
-            if (!config.IsProductDefault && string.IsNullOrWhiteSpace(config.DivergenceExplanation))
-            {
-                problems.Add(
-                    "this configuration is declared as NOT the product default, so it must say how it "
-                    + "differs. The explanation publishes with the number.");
-            }
-
-            foreach (var change in altered)
-            {
-                if (string.IsNullOrWhiteSpace(change.RuleId)
-                    || string.IsNullOrWhiteSpace(change.Shipped)
-                    || string.IsNullOrWhiteSpace(change.Used))
-                {
-                    problems.Add(
-                        $"the altered threshold on '{change.RuleId ?? "an unnamed rule"}' must state what was "
-                        + "shipped and what was used. \"We changed a threshold\" is not a checkable claim.");
-                }
-            }
-        }
-
-        foreach (var f in submission.Findings ?? [])
-        {
-            // ★ Outside the holdout: otherwise a vendor reports over code of their own choosing.
-            if (!byRepo.TryGetValue(f.RepoId, out var candidate))
-            {
-                problems.Add(
-                    $"finding on '{f.RepoId}', which is not in the published holdout for "
-                    + $"{submission.Period}. A run is measured over the drawn repositories and no others.");
-                continue;
-            }
-
-            // ★ Wrong sha: "the same code" means nothing across two runs unless the revision matches.
-            if (!string.Equals(f.PinnedSha, candidate.PinnedSha, StringComparison.OrdinalIgnoreCase))
-            {
-                problems.Add(
-                    $"finding on '{f.RepoId}' cites sha '{Short(f.PinnedSha)}' where the holdout pins "
-                    + $"'{Short(candidate.PinnedSha)}' — a different revision is different code.");
-            }
-
-            if (string.IsNullOrWhiteSpace(f.ClaimClass))
-            {
-                problems.Add($"finding on '{f.RepoId}' declares no claim class ({Classes()}).");
-            }
-            else if (!ClaimClasses.Contains(f.ClaimClass))
-            {
-                problems.Add($"finding on '{f.RepoId}' declares claim class '{f.ClaimClass}', which is not one of {Classes()}.");
-            }
-        }
+        CheckRecency(submission, problems);
+        CheckReservedSlice(submission, holdout, problems);
+        CheckConfiguration(submission, problems);
+        CheckFindings(submission, byRepo, problems);
 
         // ★ Coverage is REPORTED whether or not it is complete. Scanning three of twelve and reporting a
         // rate over them is the most obvious route to a flattering number, and it is invisible unless
@@ -388,6 +202,231 @@ internal static class NoiseSubmissions
         // ★ Persistence is the CALLER's, via INoiseStore. This method decides only whether the run
         // answers the holdout it names; storing it is where the no-withdrawal claim is enforced.
         return receipt;
+    }
+
+    // ── The ordering that makes the draw mean anything ────────────────────────────────────────
+    //
+    // ★★ THE DRAW MUST PRECEDE THE RUN. This is the neutrality property everything else rests on: a
+    // holdout published after the results exist is worthless however carefully it was made. It was
+    // asserted in prose — "the draw is published, timestamped, BEFORE any scanner runs" — and checked
+    // nowhere, so a submission could carry findings produced before the holdout it claims to answer and
+    // nothing would notice.
+    private static void CheckRunOrdering(
+        NoiseSubmission submission, DateTimeOffset? drawPublishedAt, List<string> problems)
+    {
+        if (drawPublishedAt is not { } drawnAt)
+        {
+            return;
+        }
+
+        if (submission.RunStartedAt is not { } startedAt)
+        {
+            problems.Add(
+                "the submission does not say when the run started, so the standard cannot check that it "
+                + "began after the holdout was published — the ordering the whole draw rests on. Send "
+                + "runStartedAt.");
+        }
+        else if (startedAt < drawnAt)
+        {
+            problems.Add(
+                $"the run started at {startedAt:O}, BEFORE this period's holdout was published at "
+                + $"{drawnAt:O}. A result produced before its own draw was either run against something "
+                + "else or run against a draw seen early; either way it cannot answer this holdout.");
+        }
+    }
+
+    // ── What the run produced, against what arrived ────────────────────────────────────────────
+    //
+    // ★★ THE CHECK NOTHING ELSE MAKES. See NoiseSubmission.ReportedFindingCount: dropping findings between
+    // the run and the submission is the simplest route to a flattering rate, it leaves coverage looking
+    // complete, and from outside the vendor it is invisible.
+    private static void CheckReportedFindingCount(
+        NoiseSubmission submission, int submittedCount, List<string> problems)
+    {
+        if (submission.ReportedFindingCount is not { } reportedCount)
+        {
+            problems.Add(
+                "the submission does not say how many findings the run produced, so the standard cannot check "
+                + "that they were all sent — which leaves the simplest route to a flattering rate open, and "
+                + "leaves coverage reading complete while it is not. Send reportedFindingCount.");
+        }
+        else if (reportedCount < 0)
+        {
+            problems.Add(
+                $"the declared finding count is {reportedCount}. A run cannot produce a negative number of "
+                + "findings, so this declaration says nothing the check can use.");
+        }
+        else if (reportedCount != submittedCount)
+        {
+            // ★★ BOTH DIRECTIONS. Fewer submitted than produced is the flattering-rate manoeuvre; more
+            // submitted than produced means the payload was assembled somewhere other than the run, and a
+            // rate over an assembled set measures the assembler.
+            problems.Add(
+                $"the run reports a finding count of {reportedCount} but {submittedCount} findings were "
+                + "submitted. A rate is taken over what the run produced, not over a subset of it — and "
+                + "coverage cannot show the difference, because a repository with one surviving finding is "
+                + "covered.");
+        }
+    }
+
+    private static void CheckRecency(NoiseSubmission submission, List<string> problems)
+    {
+        // ★ The recency declaration is required — see RecencyDeclaration.
+        if (submission.Recency is null or { Count: 0 })
+        {
+            problems.Add(
+                "a recency declaration is required: for each holdout repository, say whether the tool "
+                + "has been developed against it. The pristine-vs-recent gap is the overfitting number.");
+        }
+
+        // ★★ And the STRATUM VALUES are checked, not merely their presence. Unvalidated, a vendor could
+        // declare "quite-fresh" here, be accepted, and then find the publication endpoint refusing a
+        // vocabulary the submission endpoint had waved through — the standard disagreeing with itself
+        // across two of its own doors. Same vocabulary on both sides, from RecencyStrata.
+        foreach (var declaration in submission.Recency ?? [])
+        {
+            if (RecencyStrata.ParseOrNull(declaration.Stratum) is null)
+            {
+                problems.Add(
+                    $"'{declaration.Stratum}' is not a recency stratum. One of: "
+                    + string.Join(", ", Enum.GetValues<RecencyStratum>().Select(RecencyStrata.Wire)) + ".");
+            }
+        }
+    }
+
+    // ── The permanently pristine slice ────────────────────────────────────────────────────────
+    //
+    // ★★ THE ONE MOMENT THE RESERVATION CAN BE SEEN TO BREAK. Nothing here stops a vendor developing against a
+    // repository — but the recency declaration is where they have to say so, and refusing it makes breaking
+    // the reservation an ACT rather than an omission. Accepted quietly, the never-trained bucket fills with
+    // repositories that are no longer never-trained, and the overfitting gap reads as zero for the best
+    // possible reason and the worst possible cause.
+    private static void CheckReservedSlice(
+        NoiseSubmission submission, IReadOnlyList<HoldoutCandidate> holdout, List<string> problems)
+    {
+        var reserved = holdout
+            .Where(h => h.Reserved)
+            .Select(h => h.RepoId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var declaration in submission.Recency ?? [])
+        {
+            if (!reserved.Contains(declaration.RepoId))
+            {
+                continue;
+            }
+
+            if (RecencyStrata.ParseOrNull(declaration.Stratum) is { } stratum
+                && stratum != RecencyStratum.NeverTrained)
+            {
+                problems.Add(
+                    $"'{declaration.RepoId}' is a RESERVED repository — permanently pristine, in every draw — and "
+                    + $"this submission declares it as '{declaration.Stratum}'. That declaration is the "
+                    + "reservation being broken: without a never-trained endpoint the decay curve measures "
+                    + "nothing, and 'one cycle of cooling off is enough' stays an assertion. If the tool has been "
+                    + "developed against it, say so to the standard rather than in a submission — the repository "
+                    + "has to leave the reserved slice, and that is a change to the signed corpus.");
+            }
+        }
+    }
+
+    // ── How the tool was configured ───────────────────────────────────────────────────────────
+    //
+    // ★★ THE ONE THING NO OTHER CHECK CONSTRAINS. See RunConfiguration: the right version against the
+    // right shas with the noisiest rules off passes everything else in the method.
+    private static void CheckConfiguration(NoiseSubmission submission, List<string> problems)
+    {
+        if (submission.Configuration is not { } config)
+        {
+            problems.Add(
+                "a configuration declaration is required: the ruleset or profile used, any rules disabled or "
+                + "thresholds altered from the shipping default, and whether that configuration IS the "
+                + "product default. Every other check constrains the RUN; none of them constrains how the "
+                + "tool was set up.");
+
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(config.RulesetId))
+        {
+            problems.Add(
+                "the configuration declaration needs a rulesetId — a declaration that names nothing is "
+                + "not something a third party could ask to see.");
+        }
+
+        var disabled = config.RulesDisabled ?? [];
+        var altered = config.ThresholdsAltered ?? [];
+
+        // ★★ The likeliest dishonest filling-in is not a lie but a CONTRADICTION: tick "this is what
+        // customers get" and list what you turned off. Refusing it costs an honest vendor one sentence
+        // and costs a dishonest one the whole manoeuvre.
+        if (config.IsProductDefault && (disabled.Count > 0 || altered.Count > 0))
+        {
+            var changed = disabled.Concat(altered.Select(a => a.RuleId ?? "an unnamed rule"));
+            problems.Add(
+                "this cannot be the product default: the declaration also lists changes to it — "
+                + string.Join(", ", changed)
+                + ". Either it is what customers get, or it diverges and says how.");
+        }
+
+        // ★ A divergence is allowed; a silent one is not. "Not the default" plus silence tells a reader
+        // nothing while looking like a disclosure.
+        if (!config.IsProductDefault && string.IsNullOrWhiteSpace(config.DivergenceExplanation))
+        {
+            problems.Add(
+                "this configuration is declared as NOT the product default, so it must say how it "
+                + "differs. The explanation publishes with the number.");
+        }
+
+        CheckAlteredThresholds(altered, problems);
+    }
+
+    private static void CheckAlteredThresholds(IReadOnlyList<ThresholdChange> altered, List<string> problems)
+    {
+        foreach (var change in altered)
+        {
+            if (string.IsNullOrWhiteSpace(change.RuleId)
+                || string.IsNullOrWhiteSpace(change.Shipped)
+                || string.IsNullOrWhiteSpace(change.Used))
+            {
+                problems.Add(
+                    $"the altered threshold on '{change.RuleId ?? "an unnamed rule"}' must state what was "
+                    + "shipped and what was used. \"We changed a threshold\" is not a checkable claim.");
+            }
+        }
+    }
+
+    private static void CheckFindings(
+        NoiseSubmission submission, Dictionary<string, HoldoutCandidate> byRepo, List<string> problems)
+    {
+        foreach (var f in submission.Findings ?? [])
+        {
+            // ★ Outside the holdout: otherwise a vendor reports over code of their own choosing.
+            if (!byRepo.TryGetValue(f.RepoId, out var candidate))
+            {
+                problems.Add(
+                    $"finding on '{f.RepoId}', which is not in the published holdout for "
+                    + $"{submission.Period}. A run is measured over the drawn repositories and no others.");
+                continue;
+            }
+
+            // ★ Wrong sha: "the same code" means nothing across two runs unless the revision matches.
+            if (!string.Equals(f.PinnedSha, candidate.PinnedSha, StringComparison.OrdinalIgnoreCase))
+            {
+                problems.Add(
+                    $"finding on '{f.RepoId}' cites sha '{Short(f.PinnedSha)}' where the holdout pins "
+                    + $"'{Short(candidate.PinnedSha)}' — a different revision is different code.");
+            }
+
+            if (string.IsNullOrWhiteSpace(f.ClaimClass))
+            {
+                problems.Add($"finding on '{f.RepoId}' declares no claim class ({Classes()}).");
+            }
+            else if (!ClaimClasses.Contains(f.ClaimClass))
+            {
+                problems.Add($"finding on '{f.RepoId}' declares claim class '{f.ClaimClass}', which is not one of {Classes()}.");
+            }
+        }
     }
 
     private static string Key(string tool, string period) =>

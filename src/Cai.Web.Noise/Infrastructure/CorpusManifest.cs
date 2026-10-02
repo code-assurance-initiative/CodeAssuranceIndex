@@ -178,11 +178,11 @@ internal static class CorpusManifest
         var rules = root.GetProperty("rules");
         var candidates = root.GetProperty("candidates").EnumerateArray()
             .Select(c => new HoldoutCandidate(
-                RepoId: c.GetProperty("repoId").GetString()!,
-                Language: c.GetProperty("language").GetString()!,
+                RepoId: RequiredString(c, "repoId"),
+                Language: RequiredString(c, "language"),
                 ProductionLoc: c.GetProperty("productionLoc").GetInt32(),
-                Licence: c.GetProperty("licence").GetString()!,
-                PinnedSha: c.GetProperty("pinnedSha").GetString()!,
+                Licence: RequiredString(c, "licence"),
+                PinnedSha: RequiredString(c, "pinnedSha"),
 
                 // ★★ Part of what the SIGNATURE covers. A reservation recorded only in code could be quietly
                 // un-reserved in the commit that needed it un-reserved.
@@ -191,9 +191,9 @@ internal static class CorpusManifest
 
         var draws = root.GetProperty("draws").EnumerateArray()
             .ToDictionary(
-                d => d.GetProperty("period").GetString()!,
+                d => RequiredString(d, "period"),
                 d => new NoiseCorpus.PublishedDraw(
-                    d.GetProperty("seed").GetString()!,
+                    RequiredString(d, "seed"),
                     d.GetProperty("drawnAt").GetDateTimeOffset(),
                     d.TryGetProperty("publishesAt", out var publishes)
                         ? publishes.GetDateTimeOffset()
@@ -204,9 +204,9 @@ internal static class CorpusManifest
                 StringComparer.OrdinalIgnoreCase);
 
         return new CorpusManifestDocument(
-            Version: root.GetProperty("manifestVersion").GetString()!,
-            SamplerVersion: root.GetProperty("samplerVersion").GetString()!,
-            KeyId: root.GetProperty("keyId").GetString()!,
+            Version: RequiredString(root, "manifestVersion"),
+            SamplerVersion: RequiredString(root, "samplerVersion"),
+            KeyId: RequiredString(root, "keyId"),
             KeyCustody: root.TryGetProperty("keyCustody", out var custody)
                 ? custody.GetString() ?? ""
                 : "",
@@ -223,6 +223,12 @@ internal static class CorpusManifest
             Draws: draws,
             Candidates: candidates);
     }
+
+    /// <summary>A string field the manifest format requires — a JSON null is a malformed manifest, said so by name,
+    /// rather than a null carried silently into a draw.</summary>
+    private static string RequiredString(JsonElement element, string name) =>
+        element.GetProperty(name).GetString()
+        ?? throw new InvalidDataException($"the corpus manifest's '{name}' is null; it must be a string");
 
     private static byte[] ReadResource(string fileName)
     {
