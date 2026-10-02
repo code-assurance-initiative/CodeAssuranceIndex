@@ -18,6 +18,8 @@
     <ProjectReference Include="..\..\src\Cai.Delivery\Cai.Delivery.csproj" />
     <ProjectReference Include="..\..\src\Cai.Pages\Cai.Pages.csproj" />
     <ProjectReference Include="..\..\src\Cai.Web\Cai.Web.csproj" />
+    <!-- The reference CLI, so its entry point runs in-process under the suite (and under coverage). -->
+    <ProjectReference Include="..\..\src\Cai.Cli\Cai.Cli.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Goldens\**" CopyToOutputDirectory="PreserveNewest" />

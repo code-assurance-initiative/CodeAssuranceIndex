@@ -23,9 +23,12 @@ Bands: **Exemplary** 90–100 · **Strong** 70–89 · **Adequate** 50–69 · *
 ## Repository layout
 
 ```
-src/          production code  — Cai.Web (the site + JSON API host), Cai.Web.Registry (the delivery registry),
-              Cai.Web.Noise (the Noise Standard), Cai.Scoring (the library), Cai.Cli (the `cai` tool)
-tests/        Cai.Tests        — xUnit suite over the scorer (determinism, banding, the fold, verify)
+src/          production code  — Cai.Scoring (the scorer library), Cai.Delivery (the signed delivery package),
+              Cai.Pages (the survey and corpus pages the standard composes), Cai.Web (the site + JSON API
+              host), Cai.Web.Registry (the delivery registry), Cai.Web.Noise (the Noise Standard),
+              Cai.Cli (the `cai` tool) — one project per standard under a thin host (ADR-0011)
+tests/        Cai.Tests        — xUnit suite: the scorer, the delivery format, the pages, the registry and the
+              Noise Standard over HTTP, and the CLI end to end
 benchmarks/   Cai.Benchmarks   — BenchmarkDotNet micro-benchmarks for the scoring hot paths
 rubrics/      frozen, versioned rubric catalogs (owned and served by Cai.Web)
 examples/     a sample evidence bundle for the CLI and calculator
@@ -43,14 +46,15 @@ scores (`Σ lensScore × owaWeight`), banded. Because the weights are published 
 falsify a published number with no access to the engine.
 
 ```
-dotnet test Cai.slnx                                                          # the scorer's own tests
-dotnet run --project src/Cai.Cli -- score  examples/evidence.sample.json
-dotnet run --project src/Cai.Cli -- verify examples/evidence.sample.json             # ✓ reproduced
-dotnet run --project src/Cai.Cli -- verify examples/evidence.sample.json --expect 90 # ✗ mismatch (exit 1)
+dotnet test Cai.slnx                                                                          # the suite
+dotnet run --project src/Cai.Cli -- score  examples/evidence.sample.json --rubrics rubrics
+dotnet run --project src/Cai.Cli -- verify examples/evidence.sample.json --rubrics rubrics             # ✓ reproduced
+dotnet run --project src/Cai.Cli -- verify examples/evidence.sample.json --rubrics rubrics --expect 90 # ✗ mismatch (exit 1)
 ```
 
-`Cai.Scoring` is the library (bands, lenses, evidence bundle, the fold); `Cai.Cli` is the `cai` tool; `Cai.Tests`
-covers determinism, banding, the fold, and verify. The evidence-bundle format + the algorithm are documented at
+`Cai.Scoring` is the library (bands, lenses, evidence bundle, the fold); `Cai.Cli` is the `cai` tool. `--rubrics` is
+required: a CAI number is only meaningful under the rubric it was folded with, so the CLI folds under the catalog the
+evidence names, read from the published archive. `Cai.Tests` covers determinism, banding, the fold and verify. The evidence-bundle format + the algorithm are documented at
 [codeassuranceindex.info/spec](https://codeassuranceindex.info/spec.html#evidence).
 
 ## The app (`/src/Cai.Web`)

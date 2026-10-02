@@ -9,6 +9,13 @@ using Microsoft.Extensions.Logging;
 //               package (Ed25519). `verify-delivery` is the buyer-side offline trust check.
 // Exit codes: 0 ok, 1 verify/verify-delivery mismatch, 2 usage/IO error.
 
+// ★★ ONE NUMBER, ONE SPELLING, ON EVERY MACHINE. A score printed under the host's culture read "CAI 70,3" and
+//    "Δ0,01" on a Danish box — the same defect the site had ("69,6" beside /api/score's 69.64) — and stdout is the
+//    machine-readable result a CI step parses. Fixed here once rather than at each format string, because the
+//    next one written would not remember.
+CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
+
 // Structured, diagnosable logging — all to stderr (so stdout stays the clean, machine-readable result), quiet by
 // default and lifted to Information when CAI_LOG is set. Lets a CI step trace what the scorer did without parsing stdout.
 using var loggerFactory = LoggerFactory.Create(builder => builder
