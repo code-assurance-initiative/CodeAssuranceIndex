@@ -11,14 +11,10 @@
 // ★ Playwright is resolved from the MAIN kennel checkout by absolute path — node_modules does not
 //   exist inside a git worktree, and a relative import silently picks up a different browser build.
 import { chromium } from '/home/jimmy/RiderProjects/kennel.canine.dev/tools/localdev/ui/node_modules/playwright/index.mjs';
+import { args, base } from './cli.mjs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const args = Object.fromEntries(
-  process.argv.slice(2).reduce((pairs, arg, i, all) =>
-    arg.startsWith('--') ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs, []));
-
-const base = (args.base ?? 'http://127.0.0.1:5098').replace(/\/$/, '');
 const out = args.out ?? './shots';
 
 // ★★ A SECOND READING IS A DIFFERENT READING. Every defect this harness has caught so far was found
@@ -139,7 +135,13 @@ try {
     //    So this asks the RENDER, not the stylesheet: for every drawn <text>, the resolved fill
     //    against the first painted background above it. 3:1 is the large-text floor and these are
     //    all chart labels; anything under it is reported with both colours so the fix is obvious.
-    const faint = await page.evaluate(() => {
+    //
+    // ★★ AND HOW BIG IT ACTUALLY CAME OUT. An SVG scales its whole coordinate system to the container,
+    //    so a label set in "12px" inside a 720-unit viewBox is 12px on a desktop and 6.5px on a phone —
+    //    the same markup, the same stylesheet, and a number a reader cannot see. Nothing in the DOM
+    //    changes, so this is only ever visible in a render at that width. Measured through the element's
+    //    own screen matrix rather than assumed from the CSS.
+    const { faint, tiny } = await page.evaluate(() => {
       const luminance = ([r, g, b]) => {
         const channel = (v) => (v / 255 <= 0.03928 ? v / 255 / 12.92 : (((v / 255) + 0.055) / 1.055) ** 2.4);
         return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
@@ -162,74 +164,76 @@ try {
         return [255, 255, 255];
       };
 
-      const texts = [];
-      const walk = (root) => {
-        for (const el of root.querySelectorAll('*')) {
-          if (el.shadowRoot) { walk(el.shadowRoot); }
-          if (el.tagName.toLowerCase() !== 'text') { continue; }
-          if ((el.textContent ?? '').trim() === '') { continue; }
-          const fill = parse(getComputedStyle(el).fill);
-          if (!fill || fill.alpha === 0) { continue; }
-          // ★★ THE THRESHOLD IS THE ONE AA ACTUALLY SETS, AND IT DEPENDS ON THE DRAWN SIZE — 3:1 only
-          //    for large text (24px, or 18.66px bold), 4.5:1 for everything else. An SVG scales its
-          //    own coordinate system, so "large" has to be measured after that scaling, not read off
-          //    the stylesheet: a 16px bar label inside a 720-unit viewBox is 8px on a phone and needs
-          //    4.5:1 there. axe cannot make this call at all — it does not check SVG text.
-          const style = getComputedStyle(el);
-          const matrix = el.getScreenCTM?.();
-          const zoom = matrix ? Math.sqrt(Math.abs((matrix.a * matrix.d) - (matrix.b * matrix.c))) : 1;
-          const size = parseFloat(style.fontSize) * zoom;
-          const bold = (parseInt(style.fontWeight, 10) || 400) >= 700;
-          const large = size >= 24 || (size >= 18.66 && bold);
-          const floor = large ? 3 : 4.5;
-          const contrast = ratio(fill.rgb, backdrop(el));
-          if (contrast < floor) {
-            texts.push({
-              text: el.textContent.trim().slice(0, 24),
-              owner: el.closest('svg')?.getAttribute('class') ?? el.getAttribute('class') ?? 'svg',
-              fill: `rgb(${fill.rgb.join(',')})`,
-              behind: `rgb(${backdrop(el).join(',')})`,
-              contrast: Math.round(contrast * 100) / 100,
-              needs: floor,
-              size: Math.round(size * 10) / 10,
-            });
-          }
-        }
-      };
-      walk(document);
-      return texts;
-    });
+      const isLabel = (el) => el.tagName.toLowerCase() === 'text' && (el.textContent ?? '').trim() !== '';
 
-    // ★★ AND HOW BIG IT ACTUALLY CAME OUT. An SVG scales its whole coordinate system to the container,
-    //    so a label set in "12px" inside a 720-unit viewBox is 12px on a desktop and 6.5px on a phone —
-    //    the same markup, the same stylesheet, and a number a reader cannot see. Nothing in the DOM
-    //    changes, so this is only ever visible in a render at that width. Measured through the element's
-    //    own screen matrix rather than assumed from the CSS.
-    const tiny = await page.evaluate(() => {
-      const found = [];
+      // A label's fill, when it actually draws something — null when it is fully transparent.
+      const drawnFill = (el) => {
+        const fill = parse(getComputedStyle(el).fill);
+        return fill && fill.alpha > 0 ? fill : null;
+      };
+
+      // ★★ THE THRESHOLD IS THE ONE AA ACTUALLY SETS, AND IT DEPENDS ON THE DRAWN SIZE — 3:1 only
+      //    for large text (24px, or 18.66px bold), 4.5:1 for everything else. An SVG scales its
+      //    own coordinate system, so "large" has to be measured after that scaling, not read off
+      //    the stylesheet: a 16px bar label inside a 720-unit viewBox is 8px on a phone and needs
+      //    4.5:1 there. axe cannot make this call at all — it does not check SVG text.
+      const aaFloor = (el) => {
+        const style = getComputedStyle(el);
+        const matrix = el.getScreenCTM?.();
+        const zoom = matrix ? Math.sqrt(Math.abs((matrix.a * matrix.d) - (matrix.b * matrix.c))) : 1;
+        const size = parseFloat(style.fontSize) * zoom;
+        const bold = (parseInt(style.fontWeight, 10) || 400) >= 700;
+        const large = size >= 24 || (size >= 18.66 && bold);
+        return { size, floor: large ? 3 : 4.5 };
+      };
+
+      const failing = (el, fill) => {
+        const { size, floor } = aaFloor(el);
+        const behind = backdrop(el);
+        const contrast = ratio(fill.rgb, behind);
+        if (contrast >= floor) { return null; }
+        return {
+          text: el.textContent.trim().slice(0, 24),
+          owner: el.closest('svg')?.getAttribute('class') ?? el.getAttribute('class') ?? 'svg',
+          fill: `rgb(${fill.rgb.join(',')})`,
+          behind: `rgb(${behind.join(',')})`,
+          contrast: Math.round(contrast * 100) / 100,
+          needs: floor,
+          size: Math.round(size * 10) / 10,
+        };
+      };
+
+      // 9px is where a chart label stops being readable on a phone at arm's length. No standard
+      // fixes it, so the number is reported rather than merely judged.
+      const undersized = (el) => {
+        const matrix = el.getScreenCTM?.();
+        if (!matrix) { return null; }
+        const scale = Math.sqrt(Math.abs((matrix.a * matrix.d) - (matrix.b * matrix.c)));
+        const declared = parseFloat(getComputedStyle(el).fontSize);
+        const rendered = declared * scale;
+        if (rendered >= 9) { return null; }
+        return {
+          text: el.textContent.trim().slice(0, 24),
+          declared: Math.round(declared * 10) / 10,
+          rendered: Math.round(rendered * 10) / 10,
+        };
+      };
+
+      const texts = [];
+      const small = [];
       const walk = (root) => {
         for (const el of root.querySelectorAll('*')) {
           if (el.shadowRoot) { walk(el.shadowRoot); }
-          if (el.tagName.toLowerCase() !== 'text') { continue; }
-          if ((el.textContent ?? '').trim() === '') { continue; }
-          const matrix = el.getScreenCTM?.();
-          if (!matrix) { continue; }
-          const scale = Math.sqrt(Math.abs((matrix.a * matrix.d) - (matrix.b * matrix.c)));
-          const declared = parseFloat(getComputedStyle(el).fontSize);
-          const rendered = declared * scale;
-          // 9px is where a chart label stops being readable on a phone at arm's length. No standard
-          // fixes it, so the number is reported rather than merely judged.
-          if (rendered < 9) {
-            found.push({
-              text: el.textContent.trim().slice(0, 24),
-              declared: Math.round(declared * 10) / 10,
-              rendered: Math.round(rendered * 10) / 10,
-            });
-          }
+          if (!isLabel(el)) { continue; }
+          const fill = drawnFill(el);
+          const fault = fill && failing(el, fill);
+          if (fault) { texts.push(fault); }
+          const tooSmall = undersized(el);
+          if (tooSmall) { small.push(tooSmall); }
         }
       };
       walk(document);
-      return found;
+      return { faint: texts, tiny: small };
     });
 
     // ★★ AND WHAT AXE MAKES OF IT, IN BOTH THEMES — nothing had ever run it over these pages. The

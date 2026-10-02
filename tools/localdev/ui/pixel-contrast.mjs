@@ -22,13 +22,9 @@
 // ★ Playwright resolves from the MAIN kennel checkout by absolute path — node_modules does not
 //   exist inside a git worktree (CLAUDE.md).
 import { chromium } from '/home/jimmy/RiderProjects/kennel.canine.dev/tools/localdev/ui/node_modules/playwright/index.mjs';
+import { args, base } from './cli.mjs';
 import { mkdir } from 'node:fs/promises';
 
-const args = Object.fromEntries(
-  process.argv.slice(2).reduce((pairs, arg, i, all) =>
-    arg.startsWith('--') ? [...pairs, [arg.slice(2), all[i + 1]]] : pairs, []));
-
-const base = (args.base ?? 'http://127.0.0.1:5098').replace(/\/$/, '');
 const where = args.path ?? '/state-of-the-corpus/';
 const out = args.out ?? './chrome-pixels';
 

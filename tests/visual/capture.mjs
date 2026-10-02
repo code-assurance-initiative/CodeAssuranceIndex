@@ -35,19 +35,23 @@ function rng(seed) {
   return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
 }
 
-/** Which shape a path belongs to — the taxonomy the sitemap actually has, not the one we assumed. */
+/** Which shape a path belongs to — the taxonomy the sitemap actually has, not the one we assumed.
+ *  ORDER MATTERS: the first pattern that matches wins, so the narrower shapes sit above the catch-alls. */
+const SHAPES = [
+  [/^\/surveys\/$/, 'survey-index'],
+  [/^\/state-of-the-corpus\/$/, 'corpus-index'],
+  [/^\/surveys\/lang\/[^/]+\/$/, 'survey-language'],
+  [/^\/surveys\/[^/]+\/[^/]+\/[^/]+\/$/, 'survey-portrait'],
+  [/^\/surveys\/[^/]+\/.+\/$/, 'survey-portrait-deep'],
+  [/^\/state-of-the-corpus\/language\/[^/]+\/$/, 'corpus-language'],
+  [/^\/state-of-the-corpus\/advisory\/[^/]+\/$/, 'corpus-advisory'],
+  [/^\/state-of-the-corpus\/package\/[^/]+\/$/, 'corpus-package'],
+  [/^\/state-of-the-corpus\/country\/[^/]+\/$/, 'corpus-country'],
+  [/^\/state-of-the-corpus\/[^/]+\/$/, 'corpus-listing'],
+];
+
 function shapeOf(p) {
-  if (p === '/surveys/') return 'survey-index';
-  if (p === '/state-of-the-corpus/') return 'corpus-index';
-  if (/^\/surveys\/lang\/[^/]+\/$/.test(p)) return 'survey-language';
-  if (/^\/surveys\/[^/]+\/[^/]+\/[^/]+\/$/.test(p)) return 'survey-portrait';
-  if (/^\/surveys\/[^/]+\/.+\/$/.test(p)) return 'survey-portrait-deep';
-  if (/^\/state-of-the-corpus\/language\/[^/]+\/$/.test(p)) return 'corpus-language';
-  if (/^\/state-of-the-corpus\/advisory\/[^/]+\/$/.test(p)) return 'corpus-advisory';
-  if (/^\/state-of-the-corpus\/package\/[^/]+\/$/.test(p)) return 'corpus-package';
-  if (/^\/state-of-the-corpus\/country\/[^/]+\/$/.test(p)) return 'corpus-country';
-  if (/^\/state-of-the-corpus\/[^/]+\/$/.test(p)) return 'corpus-listing';
-  return null;
+  return SHAPES.find(([pattern]) => pattern.test(p))?.[1] ?? null;
 }
 
 /**

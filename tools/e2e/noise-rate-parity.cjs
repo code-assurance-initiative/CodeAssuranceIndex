@@ -10,6 +10,7 @@
 //    scheme is driven through the browser CONTEXT — setting an attribute here would have "passed" both runs
 //    against the light palette and told us nothing about the dark one, which is the majority of readers.
 const { chromium } = require('playwright');
+const { diffProbes } = require('./probe-diff.cjs');
 const MOCK = process.env.MOCK || 'file:///tmp/mock-noise-rate.html';
 const IMPL = process.env.IMPL || 'http://localhost:8199/noise/rate/2026-09?raterId=flueknepper';
 
@@ -143,19 +144,7 @@ const PROBE = `(() => {
   let total = 0;
   for (const scheme of ['dark', 'light']) {
     const mock = await grab(MOCK, scheme, 'mock'), impl = await grab(IMPL, scheme, 'impl');
-    const diffs = [], absent = [];
-    const walk = (a, bb, path = '') => {
-      for (const k of new Set([...Object.keys(a || {}), ...Object.keys(bb || {})])) {
-        const pa = path ? `${path}.${k}` : k, va = a?.[k], vb = bb?.[k];
-        if (k === 'lowContrast') continue;
-        if (va?.missing || vb?.missing) { absent.push(pa); continue; }
-        if (typeof va === 'object' && va !== null && !Array.isArray(va)) { walk(va, vb, pa); continue; }
-        if (JSON.stringify(va) !== JSON.stringify(vb)) {
-          diffs.push({ prop: pa, mock: JSON.stringify(va), impl: JSON.stringify(vb) });
-        }
-      }
-    };
-    walk(mock, impl);
+    const { diffs, absent } = diffProbes(mock, impl);
 
     console.log(`\n── ${scheme.toUpperCase()} ──`);
     for (const d of diffs) console.log(`  ${d.prop}\n      mock: ${d.mock}\n      impl: ${d.impl}`);

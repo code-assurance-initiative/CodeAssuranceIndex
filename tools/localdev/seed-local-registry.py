@@ -95,40 +95,40 @@ def thin_payload(subject, cai, band, scanned, ordinal, at):
     }
 
 
-def payload(ordinal, at, rng):
-    language, secondary = LANGUAGES[ordinal % len(LANGUAGES)]
-    country = COUNTRIES[ordinal % len(COUNTRIES)]
-    # ★★ THE FIRST TWO SUBJECTS ARE NAMED, BECAUSE THEY ARE THE STATES NOTHING RENDERED. Every
-    #    seeded subject used to get the same three deliveries, so the harness only ever drew a
-    #    three-point trend — while the most common portrait in production is a repository measured
-    #    ONCE (its first survey) and the next most common is one measured twice. The one-reading
-    #    page is where "1 measurements over time" was published for months. Named owners so the
-    #    screenshot runner can ask for them by path rather than guess which ordinal is which.
-    thin = ordinal == 2
-    owner = (ONCE_OWNER if ordinal == 0 else TWICE_OWNER if ordinal == 1
-             else THIN_OWNER if thin else f"acme-{ordinal % 9}")
-    repository = f"{owner}/service-{ordinal}"
-    cai = round(35 + rng.random() * 55, 1)
-    band = "Exemplary" if cai >= 90 else "Strong" if cai >= 70 else "Adequate" if cai >= 50 else "Weak"
-    # ★ CORPUS_E2E_CLEAN renders the corpus nobody has drawn: one where NOTHING is affected, so every
-    #   share in §2 is a true zero. A zero share is the most valuable thing the sheet can say, and it is
-    #   also the easiest to drop by accident — CorpusReading refuses a share only when its DENOMINATOR is
-    #   empty, and this is what proves that in a render rather than in a unit test.
-    affected = ordinal % 3 == 0 and os.environ.get("CORPUS_E2E_CLEAN") != "1"
-    scanned = at.isoformat().replace("+00:00", "Z")
+def owner_of(ordinal):
+    """The named owners the screenshot runner asks for by path — see `payload` for why they exist."""
+    named = {0: ONCE_OWNER, 1: TWICE_OWNER, 2: THIN_OWNER}
+    return named.get(ordinal, f"acme-{ordinal % 9}")
 
-    subject = {"repository": repository, "commit": "3f9a1c2", "host": "github.com"}
-    if thin:
-        # A 1.0 subject states where the code is and nothing about what it is.
-        return thin_payload(subject, cai, band, scanned, ordinal, at)
 
-    subject["languages"] = {"primary": language, "secondary": secondary}
-    if country is not None:
-        subject["origin"] = {"country": country, "declared": True, "resolvedBy": "countryName"}
-    else:
-        subject["origin"] = {"declared": False, "unresolvedReason": "blank"}
+def band_of(cai):
+    for floor, band in ((90, "Exemplary"), (70, "Strong"), (50, "Adequate")):
+        if cai >= floor:
+            return band
+    return "Weak"
 
-    reading = {
+
+def origin_of(country):
+    if country is None:
+        return {"declared": False, "unresolvedReason": "blank"}
+    return {"country": country, "declared": True, "resolvedBy": "countryName"}
+
+
+def advisories_of(ordinal):
+    # ★★ INDEXED BY ordinal // 3, NOT ordinal. `affected` is `ordinal % 3 == 0`, so indexing the
+    #    catalogue by `ordinal % 3` handed every affected subject entry [0] and the other two
+    #    advisories — and the other two packages — could never appear. The index published one row
+    #    and looked right. Two moduli that are the same modulus is a fixture that tests one case
+    #    while appearing to test three.
+    rare = ordinal == RARE_ORDINAL
+    return [{"advisoryId": RARE_ADVISORY if rare else ADVISORIES[(ordinal // 3) % len(ADVISORIES)],
+             "package": RARE_PACKAGE if rare else PACKAGES[(ordinal // 3) % len(PACKAGES)],
+             "packageVersion": "1.3.0",
+             "inherited": ordinal % 2 == 0}]
+
+
+def security_reading(ordinal, affected):
+    return {
         "vulnMeasurable": ordinal % 7 != 0,
         "vulnScanFailed": ordinal % 11 == 0,
         "vulnAffected": affected,
@@ -154,19 +154,11 @@ def payload(ordinal, at, rng):
         "pinnedActions": ordinal % 3 == 0,
         "advisoriesRead": True,
         "advisoryListComplete": ordinal % 13 != 0,
-        # ★★ INDEXED BY ordinal // 3, NOT ordinal. `affected` is `ordinal % 3 == 0`, so indexing the
-        #    catalogue by `ordinal % 3` handed every affected subject entry [0] and the other two
-        #    advisories — and the other two packages — could never appear. The index published one row
-        #    and looked right. Two moduli that are the same modulus is a fixture that tests one case
-        #    while appearing to test three.
-        "advisories": ([{"advisoryId": (RARE_ADVISORY if ordinal == RARE_ORDINAL
-                                        else ADVISORIES[(ordinal // 3) % len(ADVISORIES)]),
-                         "package": (RARE_PACKAGE if ordinal == RARE_ORDINAL
-                                     else PACKAGES[(ordinal // 3) % len(PACKAGES)]),
-                         "packageVersion": "1.3.0",
-                         "inherited": ordinal % 2 == 0}] if affected else []),
+        "advisories": advisories_of(ordinal) if affected else [],
     }
 
+
+def narration_of(ordinal, repository, language):
     # ★★ NARRATION ON EVERY SHAPE BUT ONE, AND THE ONE IS DELIBERATE. `acme-twice` (ordinal 1) is left
     #    UNNARRATED so the render shows both states side by side: about half of any real corpus is
     #    scanned with no model route, and "absent renders nothing" is a claim only a screenshot can
@@ -175,7 +167,7 @@ def payload(ordinal, at, rng):
     # ★ The markdown exercises the converter rather than reading prettily: a heading, wrapped prose, a
     #   bulleted list, an inline link, emphasis, and the REDACTOR'S OWN blockquote notice, which is the
     #   one line the published changelog adds and the one a reader most needs to reach them.
-    narration = None if ordinal == 1 else {
+    return None if ordinal == 1 else {
         "systemOverview": (
             f"## What {repository.split('/')[1]} is\n\n"
             f"A {language} service that takes payment intents off a queue, holds them against a\n"
@@ -195,6 +187,37 @@ def payload(ordinal, at, rng):
             "- Duplication fell in the cart (src/Cart.cs)\n"
             "- Test coverage rose to *71%*\n"),
     }
+
+
+def payload(ordinal, at, rng):
+    language, secondary = LANGUAGES[ordinal % len(LANGUAGES)]
+    country = COUNTRIES[ordinal % len(COUNTRIES)]
+    # ★★ THE FIRST TWO SUBJECTS ARE NAMED, BECAUSE THEY ARE THE STATES NOTHING RENDERED. Every
+    #    seeded subject used to get the same three deliveries, so the harness only ever drew a
+    #    three-point trend — while the most common portrait in production is a repository measured
+    #    ONCE (its first survey) and the next most common is one measured twice. The one-reading
+    #    page is where "1 measurements over time" was published for months. Named owners so the
+    #    screenshot runner can ask for them by path rather than guess which ordinal is which.
+    thin = ordinal == 2
+    repository = f"{owner_of(ordinal)}/service-{ordinal}"
+    cai = round(35 + rng.random() * 55, 1)
+    band = band_of(cai)
+    # ★ CORPUS_E2E_CLEAN renders the corpus nobody has drawn: one where NOTHING is affected, so every
+    #   share in §2 is a true zero. A zero share is the most valuable thing the sheet can say, and it is
+    #   also the easiest to drop by accident — CorpusReading refuses a share only when its DENOMINATOR is
+    #   empty, and this is what proves that in a render rather than in a unit test.
+    affected = ordinal % 3 == 0 and os.environ.get("CORPUS_E2E_CLEAN") != "1"
+    scanned = at.isoformat().replace("+00:00", "Z")
+
+    subject = {"repository": repository, "commit": "3f9a1c2", "host": "github.com"}
+    if thin:
+        # A 1.0 subject states where the code is and nothing about what it is.
+        return thin_payload(subject, cai, band, scanned, ordinal, at)
+
+    subject["languages"] = {"primary": language, "secondary": secondary}
+    subject["origin"] = origin_of(country)
+    reading = security_reading(ordinal, affected)
+    narration = narration_of(ordinal, repository, language)
 
     # ★ OMITTED, NOT NULL, when there is none: the payload schema declares `narration` as an object and
     #   refuses additional properties, so a null would be a delivery the registry's own gate rejects —

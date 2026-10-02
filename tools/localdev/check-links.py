@@ -40,6 +40,31 @@ def published_paths(root: Path) -> set[str]:
     return served
 
 
+def is_published(target: str, served: set[str]) -> bool:
+    # A directory address is served by its index.html; both spellings count as published.
+    return target in served or f"{target}/" in served or f"{target}index.html" in served
+
+
+def find_dangling(root: Path, pages: list[Path], served: set[str]) -> tuple[dict[str, set[str]], int]:
+    """Every internal link no published address answers, with the pages that carry it — and the link count."""
+    dangling: dict[str, set[str]] = {}
+    links = 0
+    for page in pages:
+        where = "/" + page.relative_to(root).as_posix()
+        for target in HREF.findall(page.read_text(encoding="utf-8", errors="replace")):
+            links += 1
+            if not is_published(target, served):
+                dangling.setdefault(target, set()).add(where)
+    return dangling, links
+
+
+def report_broken(broken: dict[str, set[str]]) -> None:
+    for target, wheres in sorted(broken.items()):
+        first = sorted(wheres)[0]
+        more = f" (+{len(wheres) - 1} more pages)" if len(wheres) > 1 else ""
+        print(f"★ DANGLING {target} — linked from {first}{more}")
+
+
 def main() -> int:
     root = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
     if not root.is_dir():
@@ -48,17 +73,7 @@ def main() -> int:
 
     served = published_paths(root)
     pages = sorted(root.rglob("*.html"))
-    dangling: dict[str, set[str]] = {}
-    links = 0
-
-    for page in pages:
-        where = "/" + page.relative_to(root).as_posix()
-        for target in HREF.findall(page.read_text(encoding="utf-8", errors="replace")):
-            links += 1
-            # A directory address is served by its index.html; both spellings count as published.
-            if target in served or f"{target}/" in served or f"{target}index.html" in served:
-                continue
-            dangling.setdefault(target, set()).add(where)
+    dangling, links = find_dangling(root, pages, served)
 
     authored = {t: w for t, w in dangling.items() if t in AUTHORED or f"{t}/" in AUTHORED}
     broken = {t: w for t, w in dangling.items() if t not in authored}
@@ -72,10 +87,7 @@ def main() -> int:
         print("no dangling links")
         return 0
 
-    for target, wheres in sorted(broken.items()):
-        first = sorted(wheres)[0]
-        more = f" (+{len(wheres) - 1} more pages)" if len(wheres) > 1 else ""
-        print(f"★ DANGLING {target} — linked from {first}{more}")
+    report_broken(broken)
     return 1
 
 
