@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Http.Json;
@@ -55,11 +56,14 @@ public sealed class NoiseStoreDurabilityTests : IDisposable
     /// <summary>A fresh application over the SAME database file — a restart, in every way that matters.</summary>
     private WebApplicationFactory<Program> Restart() =>
         new WebApplicationFactory<Program>().WithWebHostBuilder(b =>
+        {
             b.ConfigureAppConfiguration((_, cfg) => cfg.AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["Registry:DbPath"] = _dbPath,
                 ["RateLimit:PartnerKey"] = RegistryUnconfiguredFixture.PartnerKey,
-            })));
+            }));
+            b.ConfigureTestServices(services => services.AddSingleton(SuiteClock.Frozen));
+        });
 
     private static HttpClient Client(WebApplicationFactory<Program> app)
     {

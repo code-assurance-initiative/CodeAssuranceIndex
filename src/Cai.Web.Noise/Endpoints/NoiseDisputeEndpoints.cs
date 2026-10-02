@@ -23,7 +23,7 @@ internal static class NoiseDisputeEndpoints
         .WithName("NoiseDisputeResolve");
     }
 
-    private static IResult RaiseDispute(string findingId, DisputeRequest request, INoiseStore store)
+    private static IResult RaiseDispute(string findingId, DisputeRequest request, INoiseStore store, TimeProvider clock)
     {
         if (string.IsNullOrWhiteSpace(request?.Period))
         {
@@ -63,7 +63,7 @@ internal static class NoiseDisputeEndpoints
             FindingId: findingId,
             RaisedBy: request.RaisedBy ?? "unnamed",
             Reason: request.Reason,
-            RaisedAt: DateTimeOffset.UtcNow,
+            RaisedAt: clock.GetUtcNow(),
             Outcome: null,
             ResolutionReasoning: null,
             ResolvedAt: null);
@@ -73,7 +73,7 @@ internal static class NoiseDisputeEndpoints
         return Results.Ok(NoiseStandardShared.RenderDispute(dispute));
     }
 
-    private static IResult ResolveDispute(string disputeId, DisputeResolutionRequest request, INoiseDisputeStore store)
+    private static IResult ResolveDispute(string disputeId, DisputeResolutionRequest request, INoiseDisputeStore store, TimeProvider clock)
     {
         var outcome = NoiseStandardShared.ParseDisputeOutcome(request?.Outcome);
         if (outcome is null)
@@ -102,7 +102,7 @@ internal static class NoiseDisputeEndpoints
             return Results.NotFound(new { disputeId, error = "no such dispute" });
         }
 
-        if (!store.ResolveDispute(disputeId, outcome, request.Reasoning, DateTimeOffset.UtcNow))
+        if (!store.ResolveDispute(disputeId, outcome, request.Reasoning, clock.GetUtcNow()))
         {
             // ★ Already answered. Otherwise the outcome is whatever was written last, and "publishes either
             // way" becomes "publishes whichever way we ended up preferring".

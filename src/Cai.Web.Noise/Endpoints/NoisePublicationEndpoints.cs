@@ -38,7 +38,7 @@ internal static class NoisePublicationEndpoints
         // become "the current number".
         ServePublished(store, store.PublishedPeriods().FirstOrDefault());
 
-    private static IResult Publish(PublicationRequest request, INoiseStore store)
+    private static IResult Publish(PublicationRequest request, INoiseStore store, TimeProvider clock)
     {
         if (request is null)
         {
@@ -109,7 +109,7 @@ internal static class NoisePublicationEndpoints
         // ★ APPEND-ONLY, and only on the accepted path — a refused result must not be fetchable as
         // though it had passed the contract.
         store.RecordPublication(
-            request.Period!, JsonSerializer.Serialize(payload), DateTimeOffset.UtcNow);
+            request.Period!, JsonSerializer.Serialize(payload), clock.GetUtcNow());
 
         return Results.Ok(payload);
     }

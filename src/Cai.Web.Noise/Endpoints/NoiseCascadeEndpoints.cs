@@ -21,7 +21,7 @@ internal static class NoiseCascadeEndpoints
         .WithName("NoiseCascadeResolve");
     }
 
-    private static IResult Resolve(CascadeRequest request, INoiseStore store)
+    private static IResult Resolve(CascadeRequest request, INoiseStore store, TimeProvider clock)
     {
         if (request?.Round1 is null || request.Round1.Count != 2)
         {
@@ -46,7 +46,8 @@ internal static class NoiseCascadeEndpoints
 
         var outcome = JudgingCascade.Resolve([.. round1!], [.. round2!]);
 
-        RecordCost(request, store);
+        var now = clock.GetUtcNow();
+        RecordCost(request, store, now);
 
         // ── The verdict record ────────────────────────────────────────────────────────────────
         //
@@ -63,7 +64,7 @@ internal static class NoiseCascadeEndpoints
         List<string> unrecordable = [];
         if (request.Period is { Length: > 0 } period && request.FindingId is { Length: > 0 } findingId)
         {
-            recorded = TryRecord(request, period, findingId, outcome, store, unrecordable);
+            recorded = TryRecord(request, period, findingId, outcome, store, unrecordable, now);
         }
 
         return Results.Ok(new
@@ -93,7 +94,7 @@ internal static class NoiseCascadeEndpoints
             ? new JudgeVote(v.Judge ?? "unnamed", parsed)
             : null;
 
-    private static void RecordCost(CascadeRequest request, INoiseStore store)
+    private static void RecordCost(CascadeRequest request, INoiseStore store, DateTimeOffset now)
     {
         // ★★ THE COST LEDGER (#25). Attributed from the STORED FINDING — the cascade judges one tool's
         // findings, so the tool is looked up rather than taken from the caller: a cost the caller attributes
@@ -104,7 +105,7 @@ internal static class NoiseCascadeEndpoints
         {
             // ★ NO TOOL ON THE ROW. Attribution is a JOIN at read time, because a finding two tools
             // reported cost the standard once and was spent on both — see CostTally.JudgementsSolelyYours.
-            var costAt = DateTimeOffset.UtcNow;
+            var costAt = now;
 
             foreach (var vote in request.Round1!.Concat(request.Round2 ?? []))
             {
@@ -117,9 +118,8 @@ internal static class NoiseCascadeEndpoints
 
     private static bool TryRecord(
         CascadeRequest request, string period, string findingId, CascadeOutcome outcome,
-        INoiseStore store, List<string> unrecordable)
+        INoiseStore store, List<string> unrecordable, DateTimeOffset now)
     {
-        var now = DateTimeOffset.UtcNow;
         var all = request.Round1!.Select(v => (Round: 1, Vote: v))
             .Concat((request.Round2 ?? []).Select(v => (Round: 2, Vote: v)))
             .ToList();

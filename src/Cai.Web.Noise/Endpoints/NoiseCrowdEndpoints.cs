@@ -136,7 +136,7 @@ internal static class NoiseCrowdEndpoints
         });
     }
 
-    private static IResult Next(string period, string raterId, INoiseFindingStore store)
+    private static IResult Next(string period, string raterId, INoiseFindingStore store, TimeProvider clock)
     {
         if (CrowdQueues.Find(period) is not { } round)
         {
@@ -145,7 +145,7 @@ internal static class NoiseCrowdEndpoints
 
         // ★★ THE ONE PATH (see CrowdOffering). The dosing, the load-aware choice, the estate exclusion and
         // the hand-out lease only work together, and the public page hands out items through this same call.
-        if (CrowdOffering.Next(round, raterId, store, DateTimeOffset.UtcNow) is not { } offer)
+        if (CrowdOffering.Next(round, raterId, store, clock.GetUtcNow()) is not { } offer)
         {
             return Results.NoContent();
         }
@@ -189,7 +189,7 @@ internal static class NoiseCrowdEndpoints
         });
     }
 
-    private static IResult Answer(CrowdAnswerRequest request, INoiseCostStore store)
+    private static IResult Answer(CrowdAnswerRequest request, INoiseCostStore store, TimeProvider clock)
     {
         if (string.IsNullOrWhiteSpace(request?.Period) || CrowdQueues.Find(request.Period) is not { } round)
         {
@@ -220,7 +220,7 @@ internal static class NoiseCrowdEndpoints
         // of the crowd.
         store.RecordCost(new CostEntry(
             request.Period!, null, "crowd",
-            request.FindingId ?? "", null, null, null, DateTimeOffset.UtcNow));
+            request.FindingId ?? "", null, null, null, clock.GetUtcNow()));
 
         return Results.Ok(new { recorded = true, findingId = request.FindingId });
     }

@@ -26,7 +26,7 @@ internal static class NoiseSubmissionEndpoints
         .WithName("NoiseSubmission");
     }
 
-    private static IResult Submit(NoiseSubmission submission, INoiseStore store)
+    private static IResult Submit(NoiseSubmission submission, INoiseStore store, TimeProvider clock)
     {
         if (submission is null || string.IsNullOrWhiteSpace(submission.Period))
         {
@@ -54,7 +54,7 @@ internal static class NoiseSubmissionEndpoints
         // ★ The draw's own publication timestamp goes in, so the ordering check has something to compare
         // against rather than trusting the submitter's word about which came first.
         var receipt = NoiseSubmissions.Accept(
-            submission, holdout, DateTimeOffset.UtcNow, draw.DrawnAt);
+            submission, holdout, clock.GetUtcNow(), draw.DrawnAt);
 
         // ★★ THE REGISTER IS THE DATABASE. A rejected run is stored too — it is evidence, and a run a
         // vendor would like to forget is exactly the kind the no-withdrawal rule exists to keep. Only an

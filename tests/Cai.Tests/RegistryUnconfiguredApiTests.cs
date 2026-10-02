@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -36,6 +38,7 @@ public sealed class RegistryUnconfiguredFixture : IDisposable
                 // anonymous test requests ride the partner-key exemption. Registry-unrelated configuration.
                 ["RateLimit:PartnerKey"] = PartnerKey,
             }));
+            b.ConfigureTestServices(services => services.AddSingleton(SuiteClock.Frozen));
         });
     }
 

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace Cai.Web.Noise;
 
 /// <summary>Registers the Noise Standard's own services: its store, the roles that store fills, and its health.</summary>
@@ -25,6 +27,10 @@ public static class NoiseStandardRegistration
     {
         ArgumentNullException.ThrowIfNull(services);
 
+        // ★ THE STANDARD'S CLOCK IS A SERVICE, because the embargo and the submission window are decided by
+        //   it against dates in the signed manifest. Read straight off the wall, those decisions change on the
+        //   day a period publishes — and so did every test that asserted one, the day 2026-09 lifted.
+        services.TryAddSingleton(TimeProvider.System);
         services.AddSingleton<INoiseStore, SqliteNoiseStore>();
         services.AddSingleton<INoiseSubmissionStore>(sp => sp.GetRequiredService<INoiseStore>());
         services.AddSingleton<INoiseJudgingStore>(sp => sp.GetRequiredService<INoiseStore>());

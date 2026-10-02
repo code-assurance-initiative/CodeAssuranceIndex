@@ -84,7 +84,7 @@ internal static class NoiseRejudgeEndpoints
                 : null,
         });
 
-    private static IResult RecordRejudge(string period, RejudgeRequest request, INoiseJudgingStore store)
+    private static IResult RecordRejudge(string period, RejudgeRequest request, INoiseJudgingStore store, TimeProvider clock)
     {
         if (request?.Verdicts is not { Count: > 0 })
         {
@@ -115,7 +115,7 @@ internal static class NoiseRejudgeEndpoints
             return Results.BadRequest(new { period, unrecordable });
         }
 
-        var now = DateTimeOffset.UtcNow;
+        var now = clock.GetUtcNow();
         foreach (var v in request.Verdicts.Where(v => !string.IsNullOrWhiteSpace(v.Prompt)))
         {
             store.RegisterPrompt(v.PromptId!, v.Prompt!, now);

@@ -61,7 +61,7 @@ internal static class NoiseRegisterEndpoints
         });
     }
 
-    private static IResult RegisterIntent(NoiseStandardEndpoints.IntentRequest request, INoiseSubmissionStore store)
+    private static IResult RegisterIntent(NoiseStandardEndpoints.IntentRequest request, INoiseSubmissionStore store, TimeProvider clock)
     {
         if (string.IsNullOrWhiteSpace(request?.Period) || string.IsNullOrWhiteSpace(request.Tool))
         {
@@ -88,7 +88,7 @@ internal static class NoiseRegisterEndpoints
             });
         }
 
-        var record = store.RegisterIntent(request.Period, request.Tool, DateTimeOffset.UtcNow);
+        var record = store.RegisterIntent(request.Period, request.Tool, clock.GetUtcNow());
 
         return Results.Ok(new
         {

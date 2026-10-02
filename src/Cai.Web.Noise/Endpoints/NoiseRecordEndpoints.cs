@@ -25,7 +25,7 @@ internal static class NoiseRecordEndpoints
         .WithName("NoiseRecord");
     }
 
-    private static IResult GetRecord(string period, INoiseStore store, HttpContext http)
+    private static IResult GetRecord(string period, INoiseStore store, HttpContext http, TimeProvider clock)
     {
         // ★★ THE EMBARGO (#15). 03 commits to it as one of the four things that make the standard's conflict
         // of interest survivable, and this endpoint served everything to everyone immediately — early sight of
@@ -39,8 +39,9 @@ internal static class NoiseRecordEndpoints
         var publishesAt = drawn ? periodDraw.PublishesAt : null;
         var caller = http.User.Identity?.IsAuthenticated == true ? http.User.Identity.Name : null;
 
-        var embargoed = drawn && Embargo.IsInForce(publishesAt, DateTimeOffset.UtcNow);
-        var view = new RegisterView(embargoed, caller, publishesAt);
+        var now = clock.GetUtcNow();
+        var embargoed = drawn && Embargo.IsInForce(publishesAt, now);
+        var view = new RegisterView(embargoed, caller, publishesAt, now);
 
         var verdicts = store.ListVerdicts(period);
         var resolutions = store.ListResolutions(period);
@@ -112,10 +113,10 @@ internal static class NoiseRecordEndpoints
     }
 
     /// <summary>Who is reading the register, and whether the embargo is in force for them.</summary>
-    private sealed record RegisterView(bool Embargoed, string? Caller, DateTimeOffset? PublishesAt)
+    private sealed record RegisterView(bool Embargoed, string? Caller, DateTimeOffset? PublishesAt, DateTimeOffset Now)
     {
         public bool MayRead(string tool) =>
-            !Embargoed || Embargo.MayRead(Caller, tool, PublishesAt, DateTimeOffset.UtcNow);
+            !Embargoed || Embargo.MayRead(Caller, tool, PublishesAt, Now);
     }
 
     private static object JudgingUnavailable(IReadOnlyList<SubmissionReceipt> submissions, RegisterView view) =>
