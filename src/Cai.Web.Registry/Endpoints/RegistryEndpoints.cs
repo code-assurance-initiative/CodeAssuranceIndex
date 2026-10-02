@@ -80,52 +80,79 @@ public static class RegistryEndpoints
         HttpContext http, IRegistryStore store, TrustedKeyProvider trusted, RubricCatalogStore rubrics,
         ILogger<RegistryEndpoints.Log> log, CancellationToken cancellationToken)
     {
-        string ownerOrgId;
-        string rawPackage;
+        var (request, rejected) = await ReadPublishRequestAsync(http, log, cancellationToken).ConfigureAwait(false);
+        if (request is null)
+        {
+            return rejected!;
+        }
+
+        var package = DeliveryPackage.Parse(request.RawPackage);
+        if (RefuseUntrusted(package, trusted, rubrics, log) is { } refused)
+        {
+            return refused;
+        }
+
+        return StoreDelivery(ToRecord(package, request), store, log);
+    }
+
+    /// <summary>The two values a publish carries, once the body has passed the shape and schema gates.</summary>
+    private sealed record PublishRequest(string OwnerOrgId, string RawPackage);
+
+    /// <summary>Parse the body and hold it to the wire contract — the request, or the 400 that refuses it.</summary>
+    private static async Task<(PublishRequest? Request, IResult? Rejected)> ReadPublishRequestAsync(
+        HttpContext http, ILogger log, CancellationToken cancellationToken)
+    {
         try
         {
             using var doc = await JsonDocument.ParseAsync(http.Request.Body, cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
-            if (doc.RootElement.ValueKind != JsonValueKind.Object)
-            {
-                return Results.BadRequest(new { error = "request body must be a JSON object: { ownerOrgId, package }" });
-            }
-
-            if (!doc.RootElement.TryGetProperty("ownerOrgId", out var ownerEl)
-                || ownerEl.ValueKind != JsonValueKind.String
-                || string.IsNullOrWhiteSpace(ownerEl.GetString()))
-            {
-                return Results.BadRequest(new { error = "ownerOrgId is required — the seller org this delivery belongs to" });
-            }
-
-            if (!doc.RootElement.TryGetProperty("package", out var packageEl) || packageEl.ValueKind != JsonValueKind.Object)
-            {
-                return Results.BadRequest(new { error = "package is required — the signed CAI-delivery package" });
-            }
-
-            // Schema gate: the VERSIONED wire contract, checked before any cryptography.
-            var violations = DeliveryPackageSchema.Validate(packageEl);
-            if (violations.Count > 0)
-            {
-                log.LogWarning("Registry publish rejected: schema-invalid ({Count} violation(s))", violations.Count);
-                return Results.BadRequest(new
-                {
-                    error = "package does not validate against the CAI-delivery schema",
-                    schema = DeliverySchema.SchemaId,
-                    details = violations,
-                });
-            }
-
-            ownerOrgId = ownerEl.GetString()!;
-            rawPackage = packageEl.GetRawText();
+            return ReadPublishRequest(doc.RootElement, log);
         }
         catch (JsonException e)
         {
-            return Results.BadRequest(new { error = $"malformed JSON: {e.Message}" });
+            return (null, Results.BadRequest(new { error = $"malformed JSON: {e.Message}" }));
+        }
+    }
+
+    private static (PublishRequest? Request, IResult? Rejected) ReadPublishRequest(JsonElement root, ILogger log)
+    {
+        if (root.ValueKind != JsonValueKind.Object)
+        {
+            return (null, Results.BadRequest(new { error = "request body must be a JSON object: { ownerOrgId, package }" }));
         }
 
-        var package = DeliveryPackage.Parse(rawPackage);
+        if (!root.TryGetProperty("ownerOrgId", out var ownerEl)
+            || ownerEl.ValueKind != JsonValueKind.String
+            || string.IsNullOrWhiteSpace(ownerEl.GetString()))
+        {
+            return (null, Results.BadRequest(new { error = "ownerOrgId is required — the seller org this delivery belongs to" }));
+        }
 
+        if (!root.TryGetProperty("package", out var packageEl) || packageEl.ValueKind != JsonValueKind.Object)
+        {
+            return (null, Results.BadRequest(new { error = "package is required — the signed CAI-delivery package" }));
+        }
+
+        // Schema gate: the VERSIONED wire contract, checked before any cryptography.
+        var violations = DeliveryPackageSchema.Validate(packageEl);
+        if (violations.Count > 0)
+        {
+            log.LogWarning("Registry publish rejected: schema-invalid ({Count} violation(s))", violations.Count);
+            return (null, Results.BadRequest(new
+            {
+                error = "package does not validate against the CAI-delivery schema",
+                schema = DeliverySchema.SchemaId,
+                details = violations,
+            }));
+        }
+
+        return (new PublishRequest(ownerEl.GetString()!, packageEl.GetRawText()), null);
+    }
+
+    /// <summary>The trust and verification gates — null when the package may be stored, else the 422 that refuses it.</summary>
+    private static IResult? RefuseUntrusted(
+        DeliveryPackage package, TrustedKeyProvider trusted, RubricCatalogStore rubrics, ILogger log)
+    {
         // Trust gate: the signing key must be one of the registry's TRUSTED keys and still ACTIVE — a retired key
         // keeps already-stored deliveries verifiable but cannot mint new ones.
         var key = trusted.Keys.Resolve(package.Signature.KeyId);
@@ -167,10 +194,15 @@ public static class RegistryEndpoints
             return UnprocessableEntity($"verdict does not reproduce from the embedded evidence: {verification.Reason}");
         }
 
+        return null;
+    }
+
+    private static DeliveryRecord ToRecord(DeliveryPackage package, PublishRequest request)
+    {
         var payload = package.Payload;
-        var record = new DeliveryRecord(
+        return new DeliveryRecord(
             DeliveryId: payload.DeliveryId,
-            OwnerOrgId: ownerOrgId,
+            OwnerOrgId: request.OwnerOrgId,
             Repository: payload.Subject.Repository,
             Commit: payload.Subject.Commit,
             Host: payload.Subject.Host,
@@ -182,11 +214,16 @@ public static class RegistryEndpoints
             KeyId: package.Signature.KeyId,
             CanonicalSha256: Convert.ToHexStringLower(SHA256.HashData(CanonicalJson.Canonicalize(payload))),
             SignatureValue: package.Signature.Value,
-            PackageJson: rawPackage,
+            PackageJson: request.RawPackage,
             PublishedAt: DateTimeOffset.UtcNow.ToString(TimestampFormat, CultureInfo.InvariantCulture),
             Scanner: payload.Producer.Scanner,
             ScannerVersion: payload.Producer.ScannerVersion);
 
+    }
+
+    /// <summary>Insert, and answer by what the store found: 201 fresh, 200 identical re-push, 409 a different artifact.</summary>
+    private static IResult StoreDelivery(DeliveryRecord record, IRegistryStore store, ILogger log)
+    {
         var location = $"/api/registry/deliveries/{Uri.EscapeDataString(record.DeliveryId)}";
         switch (store.InsertDelivery(record))
         {
@@ -380,7 +417,7 @@ public static class RegistryEndpoints
 
     // ════ GET /api/registry/grants?direction=outgoing|incoming ══════════════════════════════════════════════════
     // 200 { grants: [ … ] } — outgoing = grants your org issued; incoming = grants naming your org as grantee.
-    private static IResult ListGrants(HttpContext http, IRegistryStore store, [FromQuery] string? direction)
+    private static IResult ListGrants(HttpContext http, IGrantStore store, [FromQuery] string? direction)
     {
         var org = RegistryClaims.OrgOf(http.User);
         if (org is null)
@@ -399,7 +436,7 @@ public static class RegistryEndpoints
     // ════ DELETE /api/registry/grants/{grantId} ══════════════════════════════════════════════════════════════════
     // 204 revoked (idempotent) · 404 unknown or not yours. Revocation stops FUTURE registry reads; a copy the buyer
     // already fetched stays cryptographically valid by design (grants govern distribution, not authenticity — spec §5).
-    private static IResult RevokeGrant(string grantId, HttpContext http, IRegistryStore store)
+    private static IResult RevokeGrant(string grantId, HttpContext http, IGrantStore store)
     {
         var org = RegistryClaims.OrgOf(http.User);
         var grant = store.GetGrant(grantId);
@@ -436,7 +473,7 @@ public static class RegistryEndpoints
     /// endpoint and list items. Surfaces scanner provenance (name + version, from the signed payload) plus CAI's own
     /// quality score for that scanner build (looked up from the registry, null until the calc lands) — so "which
     /// scanner, what version, CAI's score for it" is visible without parsing the signed package.</summary>
-    private static object Metadata(DeliveryRecord d, IRegistryStore store)
+    private static object Metadata(DeliveryRecord d, IScannerQualityStore store)
     {
         double? scannerQuality = d.Scanner is { } scanner && d.ScannerVersion is { } version
             ? store.GetScannerQuality(scanner, version)?.QualityScore
@@ -584,7 +621,7 @@ public static class RegistryEndpoints
     }
 
     /// <summary>Every subject this org has granted publication for.</summary>
-    private static IResult ListPublications(HttpContext http, IRegistryStore store)
+    private static IResult ListPublications(HttpContext http, IPublicationStore store)
     {
         var org = RegistryClaims.OrgOf(http.User);
         if (org is null)

@@ -26,6 +26,8 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Cai.Tests" />
+    <!-- The noise standard shares the registry's database file and its additive-migration helper (SqliteSchema). -->
+    <InternalsVisibleTo Include="Cai.Web.Noise" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cai.Scoring\Cai.Scoring.csproj" />

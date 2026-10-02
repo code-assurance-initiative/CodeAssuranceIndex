@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 
@@ -113,13 +112,8 @@ public enum PublishOutcome
     Conflict,
 }
 
-/// <summary>
-/// The registry's persistence seam. Deliveries are write-once (immutability is enforced by the store's primary key,
-/// not by handler discipline); grants are append + revoke. The v1 implementation is SQLite (see
-/// <see cref="SqliteRegistryStore"/>); a Postgres implementation slots in behind this interface without touching the
-/// endpoints — this interface IS the Postgres seam.
-/// </summary>
-public interface IRegistryStore
+/// <summary>Deliveries: write-once, immutability enforced by the store's primary key, not by handler discipline.</summary>
+public interface IDeliveryStore
 {
     /// <summary>Insert a delivery, enforcing id immutability. Never overwrites.</summary>
     PublishOutcome InsertDelivery(DeliveryRecord record);
@@ -135,7 +129,11 @@ public interface IRegistryStore
 
     /// <summary>Deliveries owned by <paramref name="ownerOrgId"/> for any of <paramref name="repositories"/>.</summary>
     IReadOnlyList<DeliveryRecord> ListByOwnerAndRepositories(string ownerOrgId, IReadOnlyCollection<string> repositories);
+}
 
+/// <summary>Grants: append + revoke.</summary>
+public interface IGrantStore
+{
     /// <summary>Insert a grant.</summary>
     void InsertGrant(GrantRecord record);
 
@@ -150,13 +148,21 @@ public interface IRegistryStore
 
     /// <summary>Mark a grant revoked (idempotent — revoking a revoked grant is a no-op).</summary>
     void RevokeGrant(string grantId, string revokedAt);
+}
 
+/// <summary>CAI's own quality assessment of each scanner build.</summary>
+public interface IScannerQualityStore
+{
     /// <summary>CAI's quality assessment for a scanner build (scanner + version), or null when none is recorded.</summary>
     ScannerQualityRecord? GetScannerQuality(string scanner, string version);
 
     /// <summary>Insert or replace CAI's quality assessment for a scanner build, keyed (scanner, version).</summary>
     void UpsertScannerQuality(ScannerQualityRecord record);
+}
 
+/// <summary>Which subjects their owners have opened to publication, with the row as the state's history.</summary>
+public interface IPublicationStore
+{
     /// <summary>
     /// Grant publication for one subject, or renew a grant that was withdrawn.
     /// </summary>
@@ -177,7 +183,11 @@ public interface IRegistryStore
 
     /// <summary>Every subject whose publication currently stands.</summary>
     IReadOnlyList<PublicationRecord> ListPublishedSubjects();
+}
 
+/// <summary>The dated, append-only readings of the corpus.</summary>
+public interface ICorpusReadingStore
+{
     /// <summary>
     /// Record one dated reading of the corpus.
     /// </summary>
@@ -188,7 +198,16 @@ public interface IRegistryStore
 
     /// <summary>Every recorded reading, oldest first.</summary>
     IReadOnlyList<CorpusReadingRecord> ListCorpusReadings();
+}
 
+/// <summary>
+/// The registry's persistence seam — every role above, plus the health probe. The v1 implementation is SQLite (see
+/// <see cref="SqliteRegistryStore"/>); a Postgres implementation slots in behind this interface without touching the
+/// endpoints — this interface IS the Postgres seam, which is why it stays ONE type to implement while callers that
+/// need a single role depend on that role alone.
+/// </summary>
+public interface IRegistryStore : IDeliveryStore, IGrantStore, IScannerQualityStore, IPublicationStore, ICorpusReadingStore
+{
     /// <summary>True when the store is reachable (the /health probe).</summary>
     bool IsHealthy();
 }
@@ -207,9 +226,7 @@ public sealed class SqliteRegistryStore : IRegistryStore
     /// <summary>Open (and initialize) the store at <see cref="RegistryOptions.DbPath"/>.</summary>
     public SqliteRegistryStore(IOptions<RegistryOptions> options, IHostEnvironment env, ILogger<SqliteRegistryStore> logger)
     {
-        var path = options.Value.DbPath;
-        var resolved = Path.IsPathRooted(path) ? path : Path.GetFullPath(Path.Combine(env.ContentRootPath, path));
-        Directory.CreateDirectory(Path.GetDirectoryName(resolved)!);
+        var resolved = SqliteSchema.ResolveDbPath(options.Value, env);
         _connectionString = new SqliteConnectionStringBuilder { DataSource = resolved, ForeignKeys = true }.ToString();
         Initialize();
         logger.LogInformation("Registry store (SQLite) at {Path}", resolved);
@@ -297,60 +314,9 @@ public sealed class SqliteRegistryStore : IRegistryStore
         // guarded against the "duplicate column" error that a second startup would raise (SQLite has no ADD COLUMN IF
         // NOT EXISTS). Existing rows keep NULL scanner/version; that is honest — those deliveries were stored before
         // provenance was surfaced.
-        AddColumnIfMissing(conn, "deliveries", "scanner", "TEXT NULL");
-        AddColumnIfMissing(conn, "deliveries", "scanner_version", "TEXT NULL");
+        SqliteSchema.AddColumnIfMissing(conn, "deliveries", "scanner", "TEXT NULL");
+        SqliteSchema.AddColumnIfMissing(conn, "deliveries", "scanner_version", "TEXT NULL");
     }
-
-    /// <summary>Idempotent <c>ALTER TABLE … ADD COLUMN</c>: adds the column unless it already exists (checked via
-    /// <c>PRAGMA table_info</c>), so re-running <see cref="Initialize"/> on an already-migrated DB is a no-op.</summary>
-    // ★★ DDL TAKES NO PARAMETERS. Not the table name, not the column, not the definition — the statement has to
-    //    be planned before a bound value could be known, so the safety here cannot come from binding. It comes
-    //    from the inputs being ours: every caller above passes a literal. These guards make that a property of
-    //    the METHOD rather than a habit of its callers. Identifiers are quoted the way SQLite quotes them, with
-    //    any embedded delimiter doubled; the column definition is syntax rather than a value, so it cannot be
-    //    quoted at all and is instead held to the narrow shape this file actually emits.
-    private static void AddColumnIfMissing(SqliteConnection conn, string table, string column, string columnDef)
-    {
-        var quotedTable = QuoteIdentifier(table);
-        var quotedColumn = QuoteIdentifier(column);
-        if (!ColumnDefinition.IsMatch(columnDef))
-        {
-            throw new ArgumentException($"unsupported column definition: '{columnDef}'", nameof(columnDef));
-        }
-
-        using (var check = conn.CreateCommand())
-        {
-            check.CommandText = $"PRAGMA table_info({quotedTable})";
-            using var reader = check.ExecuteReader();
-            while (reader.Read())
-            {
-                if (string.Equals(reader.GetString(reader.GetOrdinal("name")), column, StringComparison.Ordinal))
-                {
-                    return; // already present
-                }
-            }
-        }
-
-        using var alter = conn.CreateCommand();
-        alter.CommandText = $"ALTER TABLE {quotedTable} ADD COLUMN {quotedColumn} {columnDef}";
-        alter.ExecuteNonQuery();
-    }
-
-    /// <summary>A plain identifier, quoted as SQLite quotes one — embedded delimiters doubled, so a name can
-    /// never close its own quoting and be read on as statement structure.</summary>
-    private static string QuoteIdentifier(string identifier)
-    {
-        if (identifier.Length == 0 || !identifier.All(c => char.IsAsciiLetterOrDigit(c) || c == '_'))
-        {
-            throw new ArgumentException($"not a plain SQL identifier: '{identifier}'", nameof(identifier));
-        }
-
-        return $"\"{identifier.Replace("\"", "\"\"", StringComparison.Ordinal)}\"";
-    }
-
-    /// <summary>The column definitions this store migrates with: a type, its nullability, and a literal default.</summary>
-    private static readonly Regex ColumnDefinition = new(
-        @"^(TEXT|INTEGER|REAL|BLOB)( NOT)? NULL( DEFAULT (-?\d+(\.\d+)?|''))?$", RegexOptions.CultureInvariant);
 
     /// <inheritdoc />
     public PublishOutcome InsertDelivery(DeliveryRecord r)

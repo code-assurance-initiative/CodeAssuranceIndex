@@ -117,6 +117,13 @@ builder.Services.AddCors(options => options.AddPolicy(CaiCors.PolicyName, policy
 // ── The registry (ADR-0010): store + trusted signing keys + health, all bound from the Registry config section. ──
 builder.Services.Configure<RegistryOptions>(builder.Configuration.GetSection(RegistryOptions.Section));
 builder.Services.AddSingleton<IRegistryStore, SqliteRegistryStore>();
+// ★ The role interfaces resolve to the SAME store instance — a handler asking for one role must not get a second
+//   SQLite connection-string owner behind its back.
+builder.Services.AddSingleton<IDeliveryStore>(sp => sp.GetRequiredService<IRegistryStore>());
+builder.Services.AddSingleton<IGrantStore>(sp => sp.GetRequiredService<IRegistryStore>());
+builder.Services.AddSingleton<IScannerQualityStore>(sp => sp.GetRequiredService<IRegistryStore>());
+builder.Services.AddSingleton<IPublicationStore>(sp => sp.GetRequiredService<IRegistryStore>());
+builder.Services.AddSingleton<ICorpusReadingStore>(sp => sp.GetRequiredService<IRegistryStore>());
 builder.Services.AddSingleton<TrustedKeyProvider>();
 builder.Services.AddHealthChecks().AddCheck<RegistryHealthCheck>("registry");
 
