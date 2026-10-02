@@ -77,7 +77,7 @@ public sealed class RubricCatalogStore
             }
         }
 
-        var path = Path.Combine(_root, version, CatalogFileName);
+        var path = CatalogPath(version);
         string? declared = null;
         if (File.Exists(path))
         {
@@ -112,6 +112,20 @@ public sealed class RubricCatalogStore
     //    anonymous endpoint. Callers see no change: an unknown version answered null before and answers null now.
     private static bool IsPublishableName(string? rubricVersion) => RubricVersionOrder.IsWellFormed(rubricVersion);
 
+    /// <summary>Where a version's catalog document sits: one directory level under the root, never further.</summary>
+    /// <remarks>Callers have already held the name to <see cref="IsPublishableName"/>; this refuses anything that is not a
+    /// bare directory name as well, so the path stays under <c>_root</c> even if that check is ever loosened.</remarks>
+    private string CatalogPath(string rubricVersion)
+    {
+        var name = Path.GetFileName(rubricVersion);
+        if (name != rubricVersion || name is "." or "..")
+        {
+            throw new ArgumentException($"not a rubric version directory name: '{rubricVersion}'", nameof(rubricVersion));
+        }
+
+        return Path.Combine(_root, name, CatalogFileName);
+    }
+
     /// <summary>The catalog for a version, or null when that version isn't published or cannot be attested (the
     /// document declares a different version than the one requested — see the type remarks). Cached.</summary>
     public RubricCatalog? Get(string rubricVersion)
@@ -129,7 +143,7 @@ public sealed class RubricCatalogStore
             }
         }
 
-        var path = Path.Combine(_root, rubricVersion, CatalogFileName);
+        var path = CatalogPath(rubricVersion);
         if (!File.Exists(path) || !IsAttested(rubricVersion))
         {
             return null;
@@ -160,7 +174,7 @@ public sealed class RubricCatalogStore
             return null;
         }
 
-        var path = Path.Combine(_root, rubricVersion, CatalogFileName);
+        var path = CatalogPath(rubricVersion);
         return File.Exists(path) && IsAttested(rubricVersion) ? File.ReadAllText(path) : null;
     }
 }
