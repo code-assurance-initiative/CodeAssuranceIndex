@@ -182,7 +182,7 @@ To regenerate the sample (writes a fresh key pair to a scratch path; commit only
 
 ```
 cai keygen cai-ed25519-2026-07 --out /tmp/signing-key.json > examples/cai-delivery.keys.json
-cai sign examples/evidence.sample.json --key /tmp/signing-key.json \
+cai sign examples/evidence.sample.json --key /tmp/signing-key.json --rubrics rubrics \
     --repo acme/checkout-api --commit 3f9a1c2 --host github.com \
     --producer watchdog.canine.dev --scanner watchdog-surveyor --scanner-version 4.2.0 \
     --id cd_acme_checkout-api_3f9a1c2 --issued-at 2026-07-01T10:32:04Z \

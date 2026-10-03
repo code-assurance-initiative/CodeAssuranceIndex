@@ -25,7 +25,7 @@ states its **rubric version** and links its **evidence bundle** (the measured di
 weights). Fold that evidence through the open scorer and you get either the same number or proof of a discrepancy:
 
 ```
-cai verify survey-evidence.json --expect 72.2      # exit 0 = reproduced, exit 1 = mismatch
+cai verify survey-evidence.json --rubrics rubrics --expect 72.2   # exit 0 = reproduced, exit 1 = mismatch
 ```
 
 or paste the bundle into the [calculator / verifier](https://codeassuranceindex.info/calculator) — when the bundle carries a

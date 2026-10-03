@@ -25,7 +25,7 @@ public sealed class ApiAccessTests
     {
         var request = Request(requirePartnerKey: false, Remote, header: null);
 
-        ApiAccess.EnsureAllowed(request);
+        Assert.Null(Record.Exception(() => ApiAccess.EnsureAllowed(request)));
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public sealed class ApiAccessTests
     {
         var request = Request(requirePartnerKey: true, IPAddress.Loopback, header: null);
 
-        ApiAccess.EnsureAllowed(request);
+        Assert.Null(Record.Exception(() => ApiAccess.EnsureAllowed(request)));
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public sealed class ApiAccessTests
     {
         var request = Request(requirePartnerKey: true, Remote, header: PartnerKey);
 
-        ApiAccess.EnsureAllowed(request);
+        Assert.Null(Record.Exception(() => ApiAccess.EnsureAllowed(request)));
     }
 
     [Theory]

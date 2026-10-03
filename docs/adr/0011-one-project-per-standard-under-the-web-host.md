@@ -3,6 +3,10 @@
 - Status: Accepted
 - Date: 2026-09-19
 
+Each standard the site serves gets its own project: `Cai.Web.Registry` holds the signed-delivery registry (who
+may publish and read a delivery, and the trusted keys it is checked against), `Cai.Web.Noise` holds the Noise
+Standard (its signed corpus, submissions, judging and embargo), and `Cai.Web` is the thin host that maps both in.
+
 ## Context
 
 `Cai.Web` started as the site plus a small JSON API and ended up carrying three unrelated jobs: the

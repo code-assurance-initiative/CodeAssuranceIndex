@@ -33,7 +33,7 @@ if (args.Length < 1 || !commands.Contains(args[0]))
         cai — the Code Assurance Index reference tools
 
         Scoring (open, reproducible fold):
-          cai score  <evidence.json>                    compute the CAI from an evidence bundle
+          cai score  <evidence.json> --rubrics DIR      compute the CAI from an evidence bundle
           cai verify <evidence.json> --rubrics DIR [--expect N]       reproduce the published headline (exit 1 on mismatch)
 
         Delivery (signed, shareable evidence artifact — Ed25519):
