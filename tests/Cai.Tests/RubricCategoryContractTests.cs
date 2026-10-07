@@ -262,6 +262,10 @@ public sealed class RubricCategoryContractTests
         RubricVersion = catalog.RubricVersion,
         AnalyzableProjects = 5,
         ProductionLoc = 5000,
-        Dimensions = [.. Scored(catalog).Select((d, i) => new DimensionScore(d.Id, d.Category!, 3.0 + (i % 8), 1.0))],
+        // Flagged the way a conforming producer flags them: a contributor the catalog declares advisory is sent as
+        // advisory. Without it, the legacy fold below (no catalog) would count readings the published one leaves out,
+        // and this test would measure the advisory rule instead of the category map it is about.
+        Dimensions = [.. Scored(catalog).Select((d, i) =>
+            new DimensionScore(d.Id, d.Category!, 3.0 + (i % 8), 1.0) { Advisory = d.Advisory == true })],
     };
 }
