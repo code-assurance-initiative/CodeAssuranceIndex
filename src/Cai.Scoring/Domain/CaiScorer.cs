@@ -162,6 +162,8 @@ public static class CaiScorer
     {
         Validate(bundle);
         var frozen = catalog.CategoryMap();
+        var rules = new ContributorRules(catalog);
+        rules.RequireKnown(bundle);
 
         // The rubric's own score-moving constants when it publishes them; otherwise the values the scorer has always
         // used — so a catalog minted before the block existed folds exactly as it did (ADR-0004).
@@ -172,16 +174,16 @@ public static class CaiScorer
         var categories = new List<CategoryResult>();
         var categoryScoresByLens = new Dictionary<string, List<double>>(StringComparer.Ordinal);
         var gatedByLens = new Dictionary<string, List<string>>(StringComparer.Ordinal);
-        RollUpCategories(bundle, frozen, p, categories, categoryScoresByLens, gatedByLens);
+        RollUpCategories(bundle, frozen, rules, p, categories, categoryScoresByLens, gatedByLens);
 
         // Meta-dimensions feed their lens directly at score×10 (measured, non-advisory only).
-        var metaScoresByLens = RollUpMetaDimensions(bundle, p, gatedByLens);
+        var metaScoresByLens = RollUpMetaDimensions(bundle, rules, p, gatedByLens);
 
         // ── Stage 2: fold each lens (worst-first OWA q=0.75 over its categories + meta), then floor Architecture.
         var folded = FoldLenses(bundle, p, categoryScoresByLens, metaScoresByLens, gatedByLens);
 
         // ── Stage 3: headline = across-lens worst-first OWA (q=0.55) over the measured lenses.
-        var lensResults = WeighLenses(bundle, p, folded);
+        var lensResults = WeighLenses(bundle, rules, p, folded);
 
         var headline = lensResults.Sum(r => r.Contribution);
 
@@ -202,6 +204,7 @@ public static class CaiScorer
     private static void RollUpCategories(
         EvidenceBundle bundle,
         IReadOnlyDictionary<string, DimensionCategory> frozen,
+        ContributorRules rules,
         ScoringParameters p,
         List<CategoryResult> categories,
         Dictionary<string, List<double>> categoryScoresByLens,
@@ -210,7 +213,7 @@ public static class CaiScorer
         foreach (var group in bundle.Dimensions.GroupBy(d => CategoryOf(d, frozen, bundle.RubricVersion)))
         {
             var lens = Categories.LensOf(group.Key);
-            var measured = group.Where(d => !d.Advisory).ToList();
+            var measured = group.Where(d => !rules.IsAdvisory(d.Id, d.Advisory)).ToList();
             var confidenceSum = measured.Sum(d => d.Confidence);
             double? score = confidenceSum <= 0
                 ? null
@@ -233,10 +236,10 @@ public static class CaiScorer
     /// <summary>The meta-dimension half of Stage 1: each measured, non-advisory meta-dimension at score×10 under its
     /// lens, with the critical ones recorded in <paramref name="gatedByLens"/>.</summary>
     private static Dictionary<string, List<double>> RollUpMetaDimensions(
-        EvidenceBundle bundle, ScoringParameters p, Dictionary<string, List<string>> gatedByLens)
+        EvidenceBundle bundle, ContributorRules rules, ScoringParameters p, Dictionary<string, List<string>> gatedByLens)
     {
         var metaScoresByLens = new Dictionary<string, List<double>>(StringComparer.Ordinal);
-        foreach (var meta in bundle.MetaDimensions.Where(m => m is { Advisory: false, ScoreZeroToTen: not null }))
+        foreach (var meta in bundle.MetaDimensions.Where(m => m.ScoreZeroToTen is not null && !rules.IsAdvisory(m.Id, m.Advisory)))
         {
             Bucket(metaScoresByLens, meta.Lens).Add(meta.ScoreZeroToTen!.Value * 10.0);
             if (meta.ScoreZeroToTen.Value < p.CriticalGate)
@@ -290,6 +293,7 @@ public static class CaiScorer
     /// lens's band capped by its gate. The headline is the sum of the contributions returned.</summary>
     private static List<LensResult> WeighLenses(
         EvidenceBundle bundle,
+        ContributorRules rules,
         ScoringParameters p,
         List<(string Lens, double? Score, int Items, IReadOnlyList<string> Gated)> folded)
     {
@@ -303,7 +307,7 @@ public static class CaiScorer
         var weights = OwaWeights(measuredLenses.Select(l => l.Score).ToList(), p.AcrossLensQ);
         return measuredLenses.Zip(weights, (l, w) =>
         {
-            var band = QualityBarBands.ForLens(l.Score, bundle.QualityBar, l.Lens, p);
+            var band = QualityBarBands.For(l.Score, bundle.QualityBar, rules.GroupOf(l.Lens), p);
             var gated = l.Gated.Count > 0;
             return new LensResult(l.Lens, l.Score, CapBand(band, gated), gated, l.Items, w, l.Score * w)
             {
@@ -513,6 +517,105 @@ public static class CaiScorer
 
     private static List<string> Bucket(Dictionary<string, List<string>> map, string key) =>
         map.TryGetValue(key, out var list) ? list : map[key] = [];
+
+    /// <summary>
+    /// What the rubric catalog decides about the fold's contributors — whether each one counts, whether it may appear
+    /// at all, and which quality-bar group each lens follows. Every rule applies only where the catalog declares it, so
+    /// a catalog published before the declarations folds exactly as it was computed (ADR-0004).
+    /// </summary>
+    private sealed class ContributorRules
+    {
+        private readonly RubricCatalog _catalog;
+        private readonly Dictionary<string, CatalogDimension> _defined;
+        private readonly Dictionary<string, LensGroup> _groups;
+
+        public ContributorRules(RubricCatalog catalog)
+        {
+            _catalog = catalog;
+            _defined = new Dictionary<string, CatalogDimension>(StringComparer.Ordinal);
+            foreach (var d in catalog.Dimensions)
+            {
+                _defined.TryAdd(d.Id, d);
+            }
+
+            // Parsed up front so an unimplemented group fails the fold whether or not its lens was measured.
+            _groups = new Dictionary<string, LensGroup>(StringComparer.Ordinal);
+            foreach (var lens in catalog.Lenses.Where(l => l.Group is not null))
+            {
+                _groups[lens.Key] = LensGroups.Parse(lens.Key, lens.Group!, catalog.RubricVersion);
+            }
+        }
+
+        /// <summary>Whether a contributor is advisory. The catalog's declaration governs when it makes one; a bundle may
+        /// not call advisory a contributor the catalog scores, because that is a producer removing a measurement it did
+        /// not like. With no declaration the bundle's own flag stands, as it always did.</summary>
+        public bool IsAdvisory(string id, bool claimedAdvisory)
+        {
+            if (!_defined.TryGetValue(id, out var definition) || definition.Advisory is not { } declared)
+            {
+                return claimedAdvisory;
+            }
+
+            if (claimedAdvisory && !declared)
+            {
+                throw new ArgumentException(
+                    $"'{id}' is marked advisory in the evidence, but rubric '{_catalog.RubricVersion}' declares it " +
+                    "scored. Whether a measurement counts is the rubric's to say: an advisory flag on a scored " +
+                    "contributor would remove it from the number.",
+                    "bundle");
+            }
+
+            return declared;
+        }
+
+        /// <summary>The quality-bar group a lens follows: the catalog's when it declares one, else the scorer's own.</summary>
+        public LensGroup GroupOf(string lens) =>
+            _groups.TryGetValue(lens, out var declared) ? declared : LensCatalog.GroupOf(lens);
+
+        /// <summary>A closed catalog lists every contributor a bundle may carry; anything else is refused.</summary>
+        public void RequireKnown(EvidenceBundle bundle)
+        {
+            if (_catalog.RejectUnknownContributors != true)
+            {
+                return;
+            }
+
+            foreach (var d in bundle.Dimensions)
+            {
+                if (!_defined.TryGetValue(d.Id, out var definition))
+                {
+                    throw Unknown($"Dimension '{d.Id}' is not defined by rubric '{_catalog.RubricVersion}'.");
+                }
+
+                if (string.Equals(definition.Family, "meta", StringComparison.Ordinal))
+                {
+                    throw Unknown(
+                        $"'{d.Id}' is a meta-dimension in rubric '{_catalog.RubricVersion}' and was sent as a dimension. " +
+                        "A meta-dimension feeds its lens directly; folding it through a category changes the number.");
+                }
+            }
+
+            foreach (var m in bundle.MetaDimensions)
+            {
+                if (!_defined.TryGetValue(m.Id, out var definition)
+                    || !string.Equals(definition.Family, "meta", StringComparison.Ordinal))
+                {
+                    throw Unknown($"Meta-dimension '{m.Id}' is not defined by rubric '{_catalog.RubricVersion}'.");
+                }
+
+                if (!string.Equals(definition.Lens, m.Lens, StringComparison.Ordinal))
+                {
+                    throw Unknown(
+                        $"Meta-dimension '{m.Id}' is reported in lens '{m.Lens}', but rubric '{_catalog.RubricVersion}' " +
+                        $"defines it in '{definition.Lens}'.");
+                }
+            }
+        }
+
+        private static ArgumentException Unknown(string what) => new(
+            what + " This rubric version is closed: it lists every contributor a bundle may carry, so an unlisted one " +
+            "would be folded under rules nobody published.", "bundle");
+    }
 
     private static void Validate(EvidenceBundle bundle)
     {

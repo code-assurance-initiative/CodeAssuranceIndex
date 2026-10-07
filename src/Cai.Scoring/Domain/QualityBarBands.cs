@@ -39,7 +39,7 @@ internal static class QualityBarBands
             : Band.Critical;
     }
 
-    /// <summary>The band for a lens score through the bar, picking the lens's criticality group automatically.</summary>
+    /// <summary>The band for a lens score through the bar, under the group the scorer has always given that lens.</summary>
     public static Band ForLens(double scoreZeroToOneHundred, string? barTier, string lens, ScoringParameters p) =>
         For(scoreZeroToOneHundred, barTier, LensCatalog.GroupOf(lens), p);
 }

@@ -57,6 +57,38 @@ public static class LensCatalog
         "securityCompliance" => LensGroup.Safety,
         _ => LensGroup.Default,
     };
+
+    /// <summary>The wire name of the quality-bar group a lens follows when its rubric catalog declares none —
+    /// "foundational", "operational", "safety" or "default". A producer minting a catalog states these so the grouping
+    /// is published with the rubric instead of living only in this scorer.</summary>
+    public static string DefaultGroupName(string key) => LensGroups.WireName(GroupOf(key));
+}
+
+/// <summary>The wire names of <see cref="LensGroup"/>, as a rubric catalog and <see cref="QualityBarParameters"/> spell
+/// them.</summary>
+internal static class LensGroups
+{
+    /// <summary>The wire name of a group.</summary>
+    public static string WireName(LensGroup group) => group switch
+    {
+        LensGroup.Foundational => "foundational",
+        LensGroup.Operational => "operational",
+        LensGroup.Safety => "safety",
+        _ => "default",
+    };
+
+    /// <summary>The group a catalog names. A name this scorer does not implement fails closed: the rubric then describes
+    /// band lines this build cannot draw, and guessing would band a lens under rules nobody published.</summary>
+    public static LensGroup Parse(string lens, string name, string rubricVersion) => name switch
+    {
+        "foundational" => LensGroup.Foundational,
+        "operational" => LensGroup.Operational,
+        "safety" => LensGroup.Safety,
+        "default" => LensGroup.Default,
+        _ => throw new ArgumentException(
+            $"Rubric catalog '{rubricVersion}' puts lens '{lens}' in quality-bar group '{name}', which this scorer does " +
+            "not implement. Refusing to score: the published rubric describes band lines this build cannot draw."),
+    };
 }
 
 /// <summary>How strongly a lens's red/amber/green band thresholds follow the quality bar — the bar moves the band

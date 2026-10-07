@@ -49,12 +49,32 @@ public sealed record CatalogDimension
     /// "credit". Descriptive metadata the engine emits; modelled so serving a catalog round-trips it instead of
     /// silently dropping it.</summary>
     [JsonPropertyName("scoringPolarity")] public string? ScoringPolarity { get; init; }
+
+    /// <summary>
+    /// Whether this dimension is ADVISORY — shown, never folded into the number. Null when the catalog does not say.
+    /// <para>When a catalog declares it, the catalog is the authority: a dimension it declares advisory stays out of the
+    /// fold whatever the evidence bundle says, and a bundle that marks advisory a dimension the catalog scores is
+    /// refused. Otherwise the producer would choose its own number, by folding a language-model reading or by hiding a
+    /// deterministic one. A catalog that does not declare it (every catalog published before the field) leaves the
+    /// decision to the bundle's own flag, exactly as those versions were computed (ADR-0004).</para>
+    /// <para>Nullable for the reason <see cref="DeepScan"/> is: an absent declaration must read as absent, and must not
+    /// appear when a catalog that never carried it is re-serialized.</para>
+    /// </summary>
+    [JsonPropertyName("advisory")] public bool? Advisory { get; init; }
 }
 
 /// <summary>One lens in a rubric catalog.</summary>
 public sealed record CatalogLens(
     [property: JsonPropertyName("key")] string Key,
-    [property: JsonPropertyName("label")] string Label);
+    [property: JsonPropertyName("label")] string Label)
+{
+    /// <summary>
+    /// The quality-bar GROUP this lens follows — "foundational", "operational", "safety" or "default" — which decides how
+    /// far the quality bar moves the lens's band lines (<see cref="ScoringParameters.QualityBar"/>). Null when the
+    /// catalog does not say; the scorer then uses the groups it has always used, so earlier versions band as they did.
+    /// </summary>
+    [JsonPropertyName("group")] public string? Group { get; init; }
+}
 
 /// <summary>A whole rubric catalog at one version — every lens and dimension that version defines. This is the
 /// versioned, archived definition of the standard: what is measured, by what kind of evaluator, in which lens.</summary>
@@ -77,6 +97,14 @@ public sealed record RubricCatalog
     /// semantics without the scorer carrying a switch over every historical version.</para>
     /// </summary>
     [JsonPropertyName("scoring")] public ScoringParameters? Scoring { get; init; }
+
+    /// <summary>
+    /// True when this catalog is CLOSED: it lists every contributor a bundle may carry under it. The scorer then refuses
+    /// a dimension id the catalog does not define, a meta-dimension sent as a dimension, a meta-dimension id the catalog
+    /// does not define, and a meta-dimension reported in another lens than the catalog gives it. Null or false for every
+    /// catalog published before the field, which keeps folding unknown ids as it did.
+    /// </summary>
+    [JsonPropertyName("rejectUnknownContributors")] public bool? RejectUnknownContributors { get; init; }
 
     private static readonly JsonSerializerOptions Options = new()
     {
