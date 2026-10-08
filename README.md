@@ -9,7 +9,8 @@ The model is **method open, judgment separate**: the *standard* (how a codebase 
 independent, signed *survey* (the deductions and what to do) is the work of whoever issues it. Engines that produce CAI
 evidence qualify against the standard ([docs/ENGINE-QUALIFICATION.md](docs/ENGINE-QUALIFICATION.md)); the standard owns
 none of them. How the standard is governed and licensed: [docs/GOVERNANCE.md](docs/GOVERNANCE.md),
-[docs/IPR.md](docs/IPR.md); the normative documents: [docs/spec/](docs/spec/).
+[docs/IPR.md](docs/IPR.md); the normative documents: [docs/spec/](docs/spec/); research and thesis topics:
+[docs/RESEARCH-TOPICS.md](docs/RESEARCH-TOPICS.md).
 
 ## The standard
 
