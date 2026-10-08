@@ -7,7 +7,8 @@ contributions differently — so the first question is which one you are changin
 
 **The reference scorer, the CLI, the registry, the site** — ordinary code. Open a PR.
 
-**The standard itself** — the rules that decide a number. Open an *issue* first, making the case.
+**The standard itself** — the rules that decide a number. Open an *issue* first, making the case; a change to the
+rules then becomes an [RFC](docs/rfcs/).
 A rule change is not a code change: it moves every score already published under the version it
 lands in, which is why score-moving changes mint a new rubric version
 ([ADR-0004](docs/adr/0004-versioned-frozen-rubrics.md)) and why the standard is currently **held
@@ -16,6 +17,12 @@ a rule without that conversation will be asked for the conversation, not merged.
 
 **A finding you think is wrong** — that is the implementation's problem, not the standard's.
 [CHALLENGE.md](docs/CHALLENGE.md) has the routes.
+
+## Sign your commits (DCO)
+
+Every commit carries a `Signed-off-by:` line — `git commit -s`. It certifies you may contribute the change under the
+repository's licences ([docs/IPR.md](docs/IPR.md)); there is no contributor licence agreement. A check on every pull
+request enforces it.
 
 ## Getting it running
 

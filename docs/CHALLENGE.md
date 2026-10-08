@@ -15,7 +15,7 @@ falsifiable claim is one you can win an argument against with proof rather than 
 |---|---|---|---|
 | "The number doesn't follow from the evidence." | the **arithmetic** of a published score | reproduce it yourself — [`/verify`](https://codeassuranceindex.info/verify) / `cai verify` | nobody — it's mechanical & falsifiable |
 | "The open scorer disagrees with the published spec." | a **reference-scorer bug** | an issue on [code-assurance-initiative/CodeAssuranceIndex](https://github.com/code-assurance-initiative/CodeAssuranceIndex/issues) | the standard's maintainers, in the open |
-| "This finding / deduction mis-measures my code." | a **measurement** in one signed survey | the **issuer** of that survey (e.g. [watchdog.canine.dev](https://watchdog.canine.dev)) | the named human who attested it |
+| "This finding / deduction mis-measures my code." | a **measurement** in one signed survey | the **issuer** of that survey | the named human who attested it |
 | "This dimension / weight / formula is unfair." | the **rubric or methodology** | an issue or PR on [code-assurance-initiative/CodeAssuranceIndex](https://github.com/code-assurance-initiative/CodeAssuranceIndex/issues) | the standard's maintainers → a *future* rubric version |
 
 ## 1. "The number doesn't follow from the evidence." — reproduce it
@@ -58,10 +58,9 @@ mechanical; the **measurement** — "was this dimension scored correctly for *th
 reachable?", "this is dead scaffolding, not a God-class" — is the surveyor's judgment call, attested by a **named
 human**. Disputing a measurement is therefore a conversation with **the issuer of that survey**, not with cai.
 
-- For surveys issued by **[watchdog.canine.dev](https://watchdog.canine.dev)**, dispute a scored finding through the
-  surveyor's own review path (its agent tooling exposes a `dispute_finding` action; a human adjudicates — a finding is
-  never made to disappear without a fix or a documented reason). Advisory, model-judged reads don't affect the number
-  and are flagged for model improvement rather than disputed.
+- Every issuer publishes its own route for disputing a scored finding. What the standard requires of that route: a
+  named human adjudicates, and a finding is never made to disappear without a fix or a documented reason. Advisory,
+  model-judged readings do not affect the number, so they are reported for improvement rather than disputed.
 - The **free/paid firewall** ([ADR-0003](adr/0003-free-paid-firewall.md)) is why this split exists: the deterministic
   number is open and independent; the survey — the deductions and what to do about them — is the surveyor's product, and
   the surveyor stands behind it. What you *cannot* do is make a scored, reproducible deduction vanish by objecting to it:

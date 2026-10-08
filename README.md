@@ -5,9 +5,11 @@
 This repository is the home of the CAI standard: the website (codeassuranceindex.info) and — over time — the reference
 implementation that lets anyone compute and verify the number.
 
-The model is **method open, judgment sold**: the *standard* (how a codebase is measured) is open and free; the
-independent, signed *survey* (the deductions and what to do) is a service from the surveyor,
-[watchdog.canine.dev](https://watchdog.canine.dev).
+The model is **method open, judgment separate**: the *standard* (how a codebase is measured) is open and free; an
+independent, signed *survey* (the deductions and what to do) is the work of whoever issues it. Engines that produce CAI
+evidence qualify against the standard ([docs/ENGINE-QUALIFICATION.md](docs/ENGINE-QUALIFICATION.md)); the standard owns
+none of them. How the standard is governed and licensed: [docs/GOVERNANCE.md](docs/GOVERNANCE.md),
+[docs/IPR.md](docs/IPR.md); the normative documents: [docs/spec/](docs/spec/).
 
 ## The standard
 
@@ -72,11 +74,11 @@ content over one origin:
 | `/verify` | The proof engine — reproduce a published number from its evidence. |
 | `/registry` | The public record of signed surveys. |
 | `/badge` | The badge + the honest mark-usage policy. |
-| `/api-reference` | The rubric + scoring API (what watchdog calls). |
+| `/api-reference` | The rubric + scoring API (what producers call). |
 | `/api/rubrics`, `/api/rubrics/{v}/catalog`, `/api/score`, `/api/verify` | The JSON API (rate-limited; loopback exempt). |
 
 Run locally: `cd src/Cai.Web && Rubrics__Root=$(pwd)/../../rubrics dotnet run` → http://localhost:5000. It's deployed
-as a systemd service on canine-wrx1 with nginx/SSL on canine-dgx1 — see [`deploy/DEPLOY.md`](deploy/DEPLOY.md).
+as a systemd service behind nginx — see [`deploy/DEPLOY.md`](deploy/DEPLOY.md).
 
 ## License
 
