@@ -13,6 +13,8 @@
 
 ## Problem
 
+Discussed in [issue #20](https://github.com/code-assurance-initiative/CodeAssuranceIndex/issues/20).
+
 [GOVERNANCE.md](../GOVERNANCE.md#the-bar-this-page-will-be-held-to) holds the Initiative to four bars before it may
 call itself independent. The fourth is that rubric versions are published by the Initiative, not by an
 implementation, and the page calls it the most important and the furthest away. This is what it looks like in the
