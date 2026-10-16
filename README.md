@@ -39,7 +39,9 @@ docs/         architecture overview + Architecture Decision Records (ADRs)
 deploy/       the verify-before-swap deploy notes
 ```
 
-Everything builds and tests from one solution file: `dotnet build Cai.slnx` · `dotnet test Cai.slnx`.
+Everything builds and tests from one solution file: `dotnet build Cai.slnx` · `dotnet test Cai.slnx`. From a fresh clone that
+takes about **40 seconds**: 26 s to build with an empty NuGet cache and 12 s for the 1029 tests (measured 2026-10-16 on
+a desktop Linux machine, .NET 10).
 
 ## The reference scorer (`/src/Cai.Scoring`)
 
