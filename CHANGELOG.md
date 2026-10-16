@@ -10,6 +10,13 @@ move a score for unchanged evidence mints a new rubric version (see
 
 ## [Unreleased]
 
+### Governance
+- **Rubric versions are published by the Initiative, not by an implementation** ([decision 0002](docs/decisions/0002-rubric-versions-are-published-by-the-initiative.md)).
+  `main` takes changes only through pull requests. The rubric gate (`.github/workflows/rubrics.yml`) refuses a change
+  to a published version, a mislabelled catalog, a version identical to its predecessor apart from its name, and a
+  score-relevant version without an accepted decision. `tools/rubric/classify-rubric-change.py` classifies a version
+  against its predecessor.
+
 ### Security
 - **A traversing rubric version could serve a catalog from outside the archive.** `rubricVersion` reaches
   `Path.Combine` from three anonymous sources — the `/api/rubrics/{version}` routes and the `rubricVersion` inside
