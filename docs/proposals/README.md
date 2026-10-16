@@ -84,4 +84,4 @@ Anything the proposer cannot settle alone. The decision answers each one.
 
 | Proposal | Title | Filed | Status |
 |---|---|---|---|
-| — | none yet | — | — |
+| [0001](0001-answer-key-dispute-path.md) | A dispute path for CAI answer keys | 2026-10-16 | Proposed |
