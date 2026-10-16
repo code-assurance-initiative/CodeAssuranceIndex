@@ -84,8 +84,12 @@ Until it is founded, the steering group is appointed by invitation and says so h
 The Initiative will not describe its governance as *independent* until all four are true:
 
 1. The steering group exists, its members are named here, and no single company controls it.
-2. How a change is proposed — and how one is refused — is published, with who decided and why. *(The process above
-   is published; it has not yet decided anything under a steering group.)*
+2. How a change is proposed — and how one is refused — is published, with who decided and why. *(Since 2026-10-16
+   the procedure exists and has been used: proposals in [`docs/proposals/`](proposals/README.md), decisions in
+   [`docs/decisions/`](decisions/README.md). [Decision 0001](decisions/0001-adopt-the-answer-key-dispute-path.md) is
+   the first. What is still missing is the steering group: every decision so far was taken by one person, who also
+   maintains an engine measured by the benchmark, and the first one skipped its comment period and says so. Until the
+   group exists, this bar is met on paper and not in substance. Nothing has been refused yet.)*
 3. More than one organisation scores codebases under the standard, so it is not being written around a single
    product.
 4. The rubric versions are published by the Initiative, not by an implementation.
@@ -101,5 +105,7 @@ Two different complaints, two routes — see [CHALLENGE.md](CHALLENGE.md).
 
 - **A finding is wrong.** That is the implementation's to answer.
 - **A rule is wrong.** That is the standard's. Open an issue, and if it needs a change to the rules, a proposal.
+- **A benchmark answer key is wrong.** That is the benchmark's dispute path, adopted by
+  [decision 0001](decisions/0001-adopt-the-answer-key-dispute-path.md).
 
 A standard is read most carefully by the people who did not write it, and that is the reading this one wants.

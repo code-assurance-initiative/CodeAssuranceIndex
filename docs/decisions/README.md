@@ -30,4 +30,4 @@ links to its successor.
 
 | Decision | Proposal | Outcome | Date | Decided by |
 |---|---|---|---|---|
-| — | none yet | — | — | — |
+| [0001](0001-adopt-the-answer-key-dispute-path.md) — Adopt the answer-key dispute path | [0001](../proposals/0001-answer-key-dispute-path.md) | Accepted, with the proposal's four questions answered | 2026-10-16 | Jimmy Borch, for the CAI team |

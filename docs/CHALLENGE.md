@@ -3,7 +3,8 @@
 CAI earns authority only if it can be argued with. A standard nobody can contest is a reputation, not a measurement.
 This document is the map: **what** you can dispute, **where** it goes, and **who** decides. It exists because the honest
 answer depends on *which* part of the number you think is wrong — the arithmetic, the reference scorer, the measurement,
-or the rubric itself — and those four have four different, deliberately separate review paths.
+or the rubric itself — and those four have four different, deliberately separate review paths. A fifth route covers the
+scanner benchmark that engines are measured on: an answer key that labels its code wrongly.
 
 The one invariant behind all of them: **same evidence + same rubric version ⇒ the same score** — deterministically,
 byte-for-byte ([ADR-0002](adr/0002-deterministic-reproducible-scoring.md)). That is what makes CAI *falsifiable*, and a
@@ -17,6 +18,7 @@ falsifiable claim is one you can win an argument against with proof rather than 
 | "The open scorer disagrees with the published spec." | a **reference-scorer bug** | an issue on [code-assurance-initiative/CodeAssuranceIndex](https://github.com/code-assurance-initiative/CodeAssuranceIndex/issues) | the standard's maintainers, in the open |
 | "This finding / deduction mis-measures my code." | a **measurement** in one signed survey | the **issuer** of that survey | the named human who attested it |
 | "This dimension / weight / formula is unfair." | the **rubric or methodology** | an issue or PR on [code-assurance-initiative/CodeAssuranceIndex](https://github.com/code-assurance-initiative/CodeAssuranceIndex/issues) | the standard's maintainers → a *future* rubric version |
+| "This benchmark answer key labels the code wrongly." | an **answer-key entry** of the scanner benchmark | a `dispute-key` issue on [code-assurance-initiative/scanner-benchmark](https://github.com/code-assurance-initiative/scanner-benchmark/blob/main/disputes/README.md) | an adjudicator who is neither the claimant, nor affiliated with the claimant's scanner, nor the entry's author → a *new* key version |
 
 ## 1. "The number doesn't follow from the evidence." — reproduce it
 
@@ -91,6 +93,30 @@ Two properties of the standard make this safe to do and safe to accept:
   for anything structural, an [ADR](adr/README.md). A report can cite "rubric-2026.08.15" and a reader can see exactly
   what that version does, and what changed since.
 
+## 5. "This benchmark answer key is wrong." — the dispute path
+
+Engines are measured against the scanner benchmark's answer keys, and a key can be wrong: a plant that is not a defect,
+a trap that is one, a defect at the wrong site. Disputing one has its own path, adopted by
+[decision 0001](decisions/0001-adopt-the-answer-key-dispute-path.md) and described in
+[scanner-benchmark's `disputes/README.md`](https://github.com/code-assurance-initiative/scanner-benchmark/blob/main/disputes/README.md).
+In short:
+
+- File a `dispute-key` issue on scanner-benchmark, about **one entry of one key version**, with the evidence written
+  out in the issue: the code at the frozen tag, the concept's definition applied to it, the history, the authoring
+  journal. Anyone may dispute a training-set entry at any time and a revealed holdout entry for 30 days after reveal;
+  a scanner's owner may also dispute within 30 days of its own verdict being published.
+- **A scanner's output is never evidence that a key is wrong.** "Our scanner disagrees" is why a dispute is filed, not
+  why it is upheld.
+- The adjudicator is named, and is neither the claimant, nor anyone affiliated with the claimant's scanner, nor the
+  entry's author. A decision is due within 14 days. Today that target will often be missed: the maintainer of the
+  benchmark also maintains an engine and authored the keys, so most disputes need a reviewer who does not yet exist.
+- A corrected entry becomes a new key version; the frozen one is never edited. Every scanner's recorded result is
+  re-scored and published **beside** the original. Every decision, whatever its outcome, is appended to a public ledger
+  that counts disputes per scanner.
+
+On the Index itself, a re-scored figure is to be published as an erratum that references the original publication.
+That record type is not built yet ([decision 0001](decisions/0001-adopt-the-answer-key-dispute-path.md#what-did-not-take-effect-yet)).
+
 ## Who decides, and how fast
 
 - **Reproduction (§1)** is decided by **nobody** — it's arithmetic. If it doesn't reproduce, you're right, and the proof
@@ -100,9 +126,12 @@ Two properties of the standard make this safe to do and safe to accept:
   There is no private channel and no appeal to authority: the argument is won in public with a reproduction case.
 - **Measurement disputes (§3)** are decided by the **issuer of the survey** — the named human who attested it — under
   that issuer's published review path.
+- **Answer-key disputes (§5)** are decided by a named adjudicator with no stake in the entry, within 14 days where one
+  is available, and recorded in the benchmark's dispute ledger.
 
-We don't promise a turnaround SLA on an open-source issue tracker, but every dispute above is designed so the *evidence*
-is self-contained: a reproduction bundle is complete without us, which is the whole point of a falsifiable standard.
+Apart from the answer-key path's 14-day target, we don't promise a turnaround SLA on an open-source issue tracker, but
+every dispute above is designed so the *evidence* is self-contained: a reproduction bundle is complete without us, which is the whole point of a
+falsifiable standard.
 
 ## Reporting a security issue
 

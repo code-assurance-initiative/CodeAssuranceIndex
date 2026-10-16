@@ -14,7 +14,7 @@
   answer keys this proposal is about. The proposal declares that conflict itself, in its opening lines.
 - **Moves scores:** no. It changes no key and no recorded result; it sets the procedure by which a key may later be
   corrected and results re-scored.
-- **Status:** Proposed
+- **Status:** Accepted by [decision 0001](../decisions/0001-adopt-the-answer-key-dispute-path.md), 2026-10-16
 - **As filed:** sha256 `c12a2e8de942825f1d016b99467e3a3220d0783330cd118b614072cd91ebec15` of the proposal as filed: every byte after the
   `---` line below and the blank line that follows it
 
