@@ -52,4 +52,4 @@ and suppliers.
 ## 8. Writing the rubric for a new lens
 
 Propose and validate a lens the standard does not yet cover well — for example operational resilience or
-energy efficiency — through the [RFC process](rfcs/).
+energy efficiency — through a [proposal](proposals/README.md).

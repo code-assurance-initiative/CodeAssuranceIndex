@@ -13,4 +13,5 @@ report ([CHALLENGE.md](../CHALLENGE.md)).
 | [cai-registry.md](cai-registry.md) | The registry API |
 | [../GOVERNANCE.md](../GOVERNANCE.md) · [../IPR.md](../IPR.md) | How the standard is changed, and under what terms it is used |
 
-Changes go through the RFC process ([rfcs/](../rfcs/)).
+Changes go through a proposal ([proposals/](../proposals/README.md)) and take effect only through a recorded decision
+([decisions/](../decisions/README.md)).
