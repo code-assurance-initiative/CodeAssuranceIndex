@@ -9,7 +9,7 @@
   benefits from the credibility that gives the standard and pays for it in Watchdog's release cadence.
 - **Moves scores:** no. It changes no published catalog and no rule a scorer applies. It changes who may publish a
   catalog and when a new version may be minted.
-- **Status:** Proposed
+- **Status:** Accepted by [decision 0002](../decisions/0002-rubric-versions-are-published-by-the-initiative.md), 2026-10-16
 
 ## Problem
 

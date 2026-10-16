@@ -85,4 +85,4 @@ Anything the proposer cannot settle alone. The decision answers each one.
 | Proposal | Title | Filed | Status |
 |---|---|---|---|
 | [0001](0001-answer-key-dispute-path.md) | A dispute path for CAI answer keys | 2026-10-16 | Accepted by [decision 0001](../decisions/0001-adopt-the-answer-key-dispute-path.md) |
-| [0002](0002-rubric-versions-are-published-by-the-initiative.md) | Rubric versions are published by the Initiative, not by an implementation | 2026-10-16 | Proposed |
+| [0002](0002-rubric-versions-are-published-by-the-initiative.md) | Rubric versions are published by the Initiative, not by an implementation | 2026-10-16 | Accepted by [decision 0002](../decisions/0002-rubric-versions-are-published-by-the-initiative.md) |

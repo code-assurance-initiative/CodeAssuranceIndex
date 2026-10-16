@@ -33,6 +33,15 @@ dotnet test Cai.slnx          # the suite is fast; run it before you push
 dotnet run --project src/Cai.Cli -- score examples/evidence.sample.json
 ```
 
+## Changing a rubric
+
+A new rubric version is a new directory under `rubrics/`, added by pull request; published versions are never edited.
+The rubric gate classifies it against the newest published version and says what it needs: a version that moves a
+score needs an accepted proposal first ([docs/proposals/](docs/proposals/README.md)), a wording change needs a
+maintainer's review, and a catalog identical to its predecessor apart from its name is refused
+([decision 0002](docs/decisions/0002-rubric-versions-are-published-by-the-initiative.md)). Try it locally:
+`tools/rubric/classify-rubric-change.py rubrics/<previous> rubrics/<yours>`.
+
 ## What a good PR looks like here
 
 This codebase has an unusual convention and it is worth knowing before you write a comment:

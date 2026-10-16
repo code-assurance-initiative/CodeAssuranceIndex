@@ -92,12 +92,18 @@ The Initiative will not describe its governance as *independent* until all four 
    group exists, this bar is met on paper and not in substance. Nothing has been refused yet.)*
 3. More than one organisation scores codebases under the standard, so it is not being written around a single
    product.
-4. The rubric versions are published by the Initiative, not by an implementation.
+4. The rubric versions are published by the Initiative, not by an implementation. *(Since 2026-10-16, by
+   [decision 0002](decisions/0002-rubric-versions-are-published-by-the-initiative.md), a version enters `rubrics/`
+   only through a pull request a maintainer merges, the rubric gate refuses a version that changes nothing the scorer
+   reads, and a score-relevant version needs an accepted proposal. No implementation writes to this repository.)*
 
-**The fourth is the one that is furthest away, and it is the most important.** Rubric catalogs are currently minted
-and pushed by one implementation, which is a commercial product. An implementation that writes the rules it is
-measured by is precisely the conflict this page exists to be honest about. Until that changes, "open standard"
-describes the licences and the published rules — not the decision rights.
+**The fourth is the most important, and it is met in form, not yet in substance.** Until 2026-10-16 rubric catalogs
+were minted and pushed by one implementation, which is a commercial product: an implementation writing the rules it
+is measured by, which is precisely the conflict this page exists to be honest about. Publication is now the
+Initiative's. But every catalog so far was still written by that implementation's emitter, and the one maintainer
+who merges also maintains it. A second maintainer with no tie to it is what turns the merge into a review. Until
+then, "open standard" describes the licences, the published rules and a published process, not independent
+decision rights.
 
 ## Disagreeing
 

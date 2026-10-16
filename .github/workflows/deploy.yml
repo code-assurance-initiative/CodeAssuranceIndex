@@ -88,7 +88,8 @@ jobs:
           git commit -m "chore(corpus): publish the signing key this host generated [skip ci]"
           if ! git push origin HEAD:main; then
             echo "::warning::could not push the new public key — the SITE is signed correctly, but the "\
-                 "repository copy is stale. Re-run this workflow or commit src/Cai.Web.Noise/corpus/ by hand."
+                 "repository copy is stale. main takes changes only through pull requests (decision 0002): "\
+                 "open one with src/Cai.Web.Noise/corpus/*.pub.pem and *.json.sig from this run."
           fi
 
       # ★★ THE OTHER HALF OF THE SEPARATION. deploy-preprod.yml rewrites the corpus in ITS checkout to a

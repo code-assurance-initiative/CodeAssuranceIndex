@@ -1,0 +1,23 @@
+name: Rubric gate
+# Decision 0002: a rubric version is published by a maintainer merging a pull request, and only for a change to the
+# standard. This refuses a change to a published version, a mislabelled catalog, a name-only version, and a
+# score-relevant version whose pull request links no accepted decision. Logic: tools/rubric/check-rubric-pr.py.
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+permissions:
+  contents: read
+jobs:
+  rubric-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Is this rubric change allowed?
+        env:
+          # The body travels in the environment, never interpolated into the script: it is attacker-controlled text.
+          PR_BODY: ${{ github.event.pull_request.body }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 tools/rubric/check-rubric-pr.py "$BASE_SHA" "$HEAD_SHA"
