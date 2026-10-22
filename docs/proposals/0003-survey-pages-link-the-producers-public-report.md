@@ -10,7 +10,7 @@
   repository, gives every producer the same card on the same terms, and lets no producer write any part of it.
 - **Moves scores:** no. No rubric, dimension, weight or scorer rule changes. A survey's number is the same with or
   without a report, and the change below forbids making it depend on one.
-- **Status:** Proposed
+- **Status:** Accepted as amended by [decision 0003](../decisions/0003-survey-pages-link-the-producers-public-report.md), 2026-10-22
 
 ## Problem
 

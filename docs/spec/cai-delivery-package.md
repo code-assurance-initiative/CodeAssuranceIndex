@@ -60,6 +60,7 @@ A package is exactly two members: the `payload` (signed content) and the detache
 | `rubricVersion` | string | The frozen rubric the verdict was computed under (e.g. `rubric-2026.08.15`). |
 | `qualityBar` | string \| null | The band cutline profile (absent ⇒ production baseline). |
 | `measurement` | object | `{ measuredLoc?, productionLoc, analyzableProjects, scannedAt? }` — scale provenance (never re-folded). |
+| `reports` | array \| absent | `[ { url, system } ]`: where the producer's public reports about **this** measurement are read, one per system that wrote one. MINOR 1.3 ([decision 0003](../decisions/0003-survey-pages-link-the-producers-public-report.md)). `url` is `https`, readable without an account or payment, about this delivery's subject and commit, and readable while the survey is published; `system` is an id from the [producer listing](../../producers/README.md). Absent, never empty. Descriptive only — never scored. |
 | `verdict` | object | The CAI verdict cai recomputed — §4.1. |
 | `evidence` | object | The embedded evidence bundle — the open record the verdict folds from. §4.2. |
 
@@ -146,7 +147,8 @@ frozen-forever discipline as rubric versions ([ADR-0004](../adr/0004-versioned-f
 ## 8. Versioning & compatibility
 
 - **MINOR bump** — additive, backward-compatible (new optional fields). Verifiers ignore unknown fields; old packages
-  keep verifying.
+  keep verifying. 1.1 added `subject.languages`, `subject.origin` and `evidence.securityReading`; 1.2 added
+  `narration`; 1.3 added `reports`.
 - **MAJOR bump** — a breaking shape or trust change (removed/renamed/retyped required field, or a new
   canonicalization/signature scheme). Verifiers **must reject** a MAJOR they do not implement.
 - `schemaVersion` is inside the signed payload, so the version cannot be stripped or downgraded on the wire.
