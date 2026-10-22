@@ -1,0 +1,20 @@
+{
+  "$comment": "The producer listing (decision 0003). A survey page links a public report only when the delivery's producer is listed here, the report names one of that producer's systems, and the report's URL is https on that system's host. Changed only by pull request; see producers/README.md.",
+  "producers": [
+    {
+      "producer": "watchdog.canine.dev",
+      "name": "Watchdog",
+      "homepage": "https://watchdog.canine.dev/",
+      "mark": "watchdog",
+      "interests": "Watchdog is a commercial engine. The Initiative's acting maintainer also maintains Watchdog.",
+      "systems": [
+        {
+          "id": "watchdog",
+          "name": "Watchdog",
+          "homepage": "https://watchdog.canine.dev/",
+          "mark": "watchdog"
+        }
+      ]
+    }
+  ]
+}

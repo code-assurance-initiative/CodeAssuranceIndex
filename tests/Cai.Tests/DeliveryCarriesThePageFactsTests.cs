@@ -82,7 +82,8 @@ public sealed class DeliveryCarriesThePageFactsTests
     [Fact]
     public void The_additions_announce_themselves_as_a_higher_minor()
     {
-        Assert.Equal("1.2", DeliverySchema.Current);
+        // ★ AT LEAST 1.1: later MINORs (1.2 narration, 1.3 reports) are additive by the same rule.
+        Assert.True(int.Parse(DeliverySchema.Current.Split('.')[1], System.Globalization.CultureInfo.InvariantCulture) >= 1);
         Assert.Equal(1, DeliverySchema.MajorOf(DeliverySchema.Current));
     }
 
