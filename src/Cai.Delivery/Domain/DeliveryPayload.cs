@@ -90,6 +90,25 @@ public sealed record DeliveryPayload
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DeliveryNarration? Narration { get; init; }
 
+    /// <summary>
+    /// Where the producer's public reports about this measurement can be read. ADDED AT MINOR 1.3
+    /// (decision 0003). Null when the producer offers none.
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ A LIST, BECAUSE ONE MEASUREMENT CAN HAVE SEVERAL WRITE-UPS. One engine measures, and several
+    /// systems built on it may each publish a report about the same scan. Each report names the listed system
+    /// that wrote it, so a page can say whose report a reader is opening.</para>
+    ///
+    /// <para>★ A LINK, NOT THE FINDINGS. The report is the producer's judgement and the producer answers for it
+    /// (ADR-0003); the standard only carries where to read it, signed with the measurement it is about.</para>
+    ///
+    /// <para>★ NULL, NEVER EMPTY. Not publishing a report is a legitimate choice, and an empty list would be a
+    /// field that says nothing.</para>
+    /// </remarks>
+    [JsonPropertyName("reports")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyList<DeliveryReport>? Reports { get; init; }
+
     /// <summary>The CAI verdict cai recomputed from <see cref="Evidence"/> — the headline, band and per-lens/per-category
     /// roll-up. This is what a reader consumes; <see cref="Evidence"/> is what lets them reproduce it.</summary>
     [JsonPropertyName("verdict")] public DeliveryVerdict Verdict { get; init; } = new();
@@ -240,6 +259,22 @@ public sealed record DeliveryNarration
     [JsonPropertyName("systemOverview")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? SystemOverview { get; init; }
+}
+
+/// <summary>One public report about a measurement, and the listed system that wrote it.</summary>
+/// <remarks>
+/// ★ The URL must be https and readable without an account or a payment, describe the same subject and commit as
+/// the delivery, and stay readable while the survey that links it is published (decision 0003). The system is an
+/// id from the standard's producer listing; a page shows a report only when the listing lets this producer name
+/// that system and the URL's host belongs to it.
+/// </remarks>
+public sealed record DeliveryReport
+{
+    /// <summary>Where the report is read: an absolute <c>https</c> URL about this delivery's commit.</summary>
+    [JsonPropertyName("url")] public string Url { get; init; } = "";
+
+    /// <summary>The listed system that wrote it, e.g. <c>watchdog</c>.</summary>
+    [JsonPropertyName("system")] public string System { get; init; } = "";
 }
 
 /// <summary>Measurement-scale provenance shown to a reader (never re-folded into the score).</summary>

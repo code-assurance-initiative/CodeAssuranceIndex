@@ -37,9 +37,9 @@
         "schemaVersion": {
           "type": "string",
           "pattern": "^[0-9]+\\.[0-9]+$",
-          "description": "Package format version MAJOR.MINOR. This document describes MAJOR 1, currently MINOR 2.",
+          "description": "Package format version MAJOR.MINOR. This document describes MAJOR 1, currently MINOR 3.",
           "examples": [
-            "1.2"
+            "1.3"
           ]
         },
         "deliveryId": {
@@ -233,6 +233,31 @@
               ],
               "format": "date-time"
             }
+          }
+        },
+        "reports": {
+          "type": "array",
+          "description": "Where the producer's public reports about THIS measurement can be read, one per system that wrote one. ADDED AT MINOR 1.3 by decision 0003. Absent, never empty, when the producer offers none: not publishing a report is a legitimate choice and changes no score. A link rather than the findings, because the report is the producer's judgement and the producer answers for it (ADR-0003); inside the signed payload because it is a claim about this measurement and must not be swappable by a sharer. A survey page shows a report only when the standard's producer listing lets this producer name the system and the URL's host belongs to that system.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "url",
+              "system"
+            ],
+            "properties": {
+              "url": {
+                "type": "string",
+                "pattern": "^https://[^\\s/]+/\\S*$",
+                "description": "An absolute https URL, readable without an account or a payment, describing the same subject and commit as this delivery, and readable for as long as the survey that links it is published."
+              },
+              "system": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$",
+                "description": "The id of the listed system that wrote the report, e.g. watchdog."
+              }
+            },
+            "additionalProperties": false
           }
         },
         "narration": {

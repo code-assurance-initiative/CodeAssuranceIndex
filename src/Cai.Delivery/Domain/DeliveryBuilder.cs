@@ -32,6 +32,13 @@ public sealed record DeliveryBuildRequest
     /// </remarks>
     public DeliveryNarration? Narration { get; init; }
 
+    /// <summary>
+    /// Where the producer's public reports about this measurement are read (decision 0003). Null or empty when it
+    /// offers none; either way the payload carries no field.
+    /// </summary>
+    /// <remarks>★ Like narration, it rides beside the evidence and cannot move the verdict.</remarks>
+    public IReadOnlyList<DeliveryReport>? Reports { get; init; }
+
     /// <summary>The standard's own issuer identity — the name stamped into a payload this build mints.
     /// <para>★ NAMED, because more than one thing has to agree on it: the builder stamps it, and the tool that
     /// regenerates the published example reads it from here rather than repeating the string. It moved once
@@ -88,6 +95,7 @@ public static class DeliveryBuilder
             QualityBar = evidence.QualityBar,
             Measurement = measurement,
             Narration = request.Narration,
+            Reports = request.Reports is { Count: > 0 } reports ? reports : null,
             Verdict = ToVerdict(score),
             Evidence = evidence,
         };

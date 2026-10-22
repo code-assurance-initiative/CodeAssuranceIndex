@@ -60,6 +60,9 @@ mechanical; the **measurement** — "was this dimension scored correctly for *th
 reachable?", "this is dead scaffolding, not a God-class" — is the surveyor's judgment call, attested by a **named
 human**. Disputing a measurement is therefore a conversation with **the issuer of that survey**, not with cai.
 
+- A survey page links the issuer's public report, and the issuer itself, whenever the issuer has published one
+  ([decision 0003](decisions/0003-survey-pages-link-the-producers-public-report.md)): that is where the finding you
+  would dispute is written down.
 - Every issuer publishes its own route for disputing a scored finding. What the standard requires of that route: a
   named human adjudicates, and a finding is never made to disappear without a fix or a documented reason. Advisory,
   model-judged readings do not affect the number, so they are reported for improvement rather than disputed.

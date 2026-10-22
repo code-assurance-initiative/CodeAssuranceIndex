@@ -121,9 +121,10 @@ public sealed class NarrationRidesInTheDeliveryTests
 
     /// <summary>★ Adding a field additively is a MINOR bump, and the version says so.</summary>
     [Fact]
-    public void The_format_version_moved_to_one_point_two()
+    public void The_format_version_is_at_least_one_point_two()
     {
-        Assert.Equal("1.2", DeliverySchema.Current);
+        // ★ AT LEAST, not equal: 1.3 added reports (decision 0003) by the same additive rule.
+        Assert.True(int.Parse(DeliverySchema.Current.Split('.')[1], System.Globalization.CultureInfo.InvariantCulture) >= 2);
         Assert.Equal(1, DeliverySchema.SupportedMajor);
     }
 

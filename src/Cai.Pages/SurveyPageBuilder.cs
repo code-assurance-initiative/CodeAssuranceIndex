@@ -60,9 +60,13 @@ public static class SurveyPageBuilder
     }
 
     /// <summary>The page for one measured subject, or null when the subject cannot be addressed.</summary>
-    public static SurveyPage? Build(SurveyRecord record)
+    public static SurveyPage? Build(SurveyRecord record) => Build(record, ProducerListing.Published);
+
+    /// <summary>The page for one measured subject, linking reports by the producers <paramref name="listing"/> names.</summary>
+    public static SurveyPage? Build(SurveyRecord record, ProducerListing listing)
     {
         ArgumentNullException.ThrowIfNull(record);
+        ArgumentNullException.ThrowIfNull(listing);
 
         var latest = record.Latest;
         var subject = latest.Subject;
@@ -153,7 +157,7 @@ public static class SurveyPageBuilder
         // And where to go from here, as cards with a mark on each. No producer chooses these: they are
         // the standard's own routes out of its own page.
         sections.Add(PageNodes.Section(null, "elsewhere",
-            PageNodes.Widget("cai-link-cards", ("links", Destinations(record)))));
+            PageNodes.Widget("cai-link-cards", ("links", Destinations(record, listing)))));
 
         return new SurveyPage(path, title, MetaDescription(record), PageNodes.Section([.. sections]));
     }
@@ -251,10 +255,25 @@ public static class SurveyPageBuilder
     /// ★ THE STANDARD'S OWN ROUTES OUT OF ITS OWN PAGE, chosen here rather than supplied. A producer
     /// that could choose them could point the standard's readers wherever it liked.
     /// </remarks>
-    private static string Destinations(SurveyRecord record)
+    private static string Destinations(SurveyRecord record, ProducerListing listing)
     {
         var subject = record.Latest.Subject;
-        var links = new List<object>
+        var links = new List<object>();
+
+        if (SourceUrl(subject) is { } source)
+        {
+            links.Add(new
+            {
+                icon = "",
+                label = "The project's source repository",
+                note = $"{subject.Host}/{subject.Repository}",
+                href = source,
+            });
+        }
+
+        links.AddRange(Reports(record, listing));
+
+        links.AddRange(new object[]
         {
             new
             {
@@ -270,20 +289,64 @@ public static class SurveyPageBuilder
                 note = "Reproduce the number from the published evidence",
                 href = "/verify/",
             },
-        };
+        });
 
-        if (SourceUrl(subject) is { } source)
+        return JsonSerializer.Serialize(links);
+    }
+
+    /// <summary>
+    /// The public reports written about this subject, and who measured it, as cards (decision 0003).
+    /// </summary>
+    /// <remarks>
+    /// <para>★★ EACH PRODUCER SPEAKS THROUGH ITS OWN NEWEST DELIVERY. One engine measures, several systems on it
+    /// may each write a report, and a second engine may measure the same code. The page's number is the latest
+    /// reading; a reader who wants another engine's findings can still reach them, dated so the two are not
+    /// mistaken for one measurement. A producer whose newest delivery carries no report has withdrawn it.</para>
+    /// <para>★★ THE WORDS AND THE MARK ARE THE LISTING'S. The delivery contributes a signed URL and a system id;
+    /// <see cref="ProducerListing.Resolve"/> decides whether the producer may name that system and whether the
+    /// URL lives where the system does. Anything it refuses is simply not linked.</para>
+    /// <para>★ NO REPORT, NO CARD, AND NO WORD ABOUT A MISSING ONE. Not publishing is a legitimate choice, and a
+    /// page that said "no report" would mark a producer down for it.</para>
+    /// </remarks>
+    private static IEnumerable<object> Reports(SurveyRecord record, ProducerListing listing)
+    {
+        // The latest reading's producer first, so the card beside the number is the one that measured it.
+        var newestPerProducer = record.Deliveries
+            .GroupBy(d => d.Producer.Name, StringComparer.Ordinal)
+            .Select(g => g.Last())
+            .OrderByDescending(d => ReferenceEquals(d, record.Latest))
+            .ThenByDescending(d => d.IssuedAt, StringComparer.Ordinal);
+
+        var reports = new List<object>();
+        var measuredBy = new List<object>();
+        foreach (var delivery in newestPerProducer)
         {
-            links.Insert(0, new
+            var shown = (delivery.Reports ?? [])
+                .Select(r => (Report: r, System: listing.Resolve(delivery.Producer.Name, r)))
+                .Where(x => x.System is not null)
+                .ToList();
+            if (shown.Count == 0 || listing.Find(delivery.Producer.Name) is not { } producer)
             {
-                icon = "",
-                label = "The project's source repository",
-                note = $"{subject.Host}/{subject.Repository}",
-                href = source,
+                continue;
+            }
+
+            reports.AddRange(shown.Select(x => (object)new
+            {
+                icon = x.System!.Mark,
+                label = $"The full report by {x.System.Name}",
+                note = $"Every finding behind the {MeasuredOn(delivery)} measurement, as {x.System.Name} published it",
+                href = x.Report.Url,
+            }));
+            measuredBy.Add(new
+            {
+                icon = producer.Mark,
+                label = $"Measured by {producer.Name}",
+                note = "The engine that produced the evidence behind this score",
+                href = producer.Homepage,
             });
         }
 
-        return JsonSerializer.Serialize(links);
+        return reports.Concat(measuredBy);
     }
 
     /// <summary>The forge address a subject can be read back at, or null when there is none to link.</summary>

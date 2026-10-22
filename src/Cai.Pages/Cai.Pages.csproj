@@ -30,4 +30,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Cai.Delivery\Cai.Delivery.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- The producer listing (decision 0003): who may link a report from a survey page, and under which name and
+         mark. It lives at the repository root so it is read and changed like any other governed document. -->
+    <EmbeddedResource Include="..\..\producers\producers.json" LogicalName="Cai.Pages.producers.json" Link="producers.json" />
+  </ItemGroup>
 </Project>

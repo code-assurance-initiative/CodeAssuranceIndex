@@ -190,6 +190,34 @@ check, qualified engines are also run on a sample of real public repositories. T
 Initiative publishes how closely the engines' results on real code follow their results on the holdout. If they drift
 apart, the protocol is changed.
 
+## Publishing your reports
+
+*Adopted by [decision 0003](decisions/0003-survey-pages-link-the-producers-public-report.md). This is guidance, not a
+condition of publishing a CAI.*
+
+A producer **should** publish a public report for every survey of open-source code it delivers. The report is how
+readers check the evidence behind a CAI, how the owners of measured code find what to dispute and what to fix, and how
+readers compare producers. A producer that publishes reports helps all three.
+
+A producer **may** publish a report for code that is not open source **only with the recorded consent of the
+organisation that owns the code.**
+
+A public report **must not**:
+
+- disclose a security finding that is not yet fixed in a form that helps someone exploit it. Report it as a count, a
+  category or a severity, and disclose the detail through the project's own security policy;
+- identify individual contributors beyond what the project's own public history already shows. For code that is not
+  open source, it identifies no individual at all.
+
+Publishing or withholding a report never changes a score, and a producer must not offer a different score, or a
+different measurement, in exchange for publication.
+
+A delivery names its reports in `reports` ([package MINOR 1.3](spec/cai-delivery-package.md)). The survey page links a
+report, under the mark of the system that wrote it, when the producer is in the
+[producer listing](../producers/README.md), the report names one of that producer's systems, and its URL is `https` on
+that system's host. The report URL must describe the delivery's own commit and stay readable while the survey is
+published: the standard does not probe it, so keeping it answering is the producer's obligation.
+
 ## What qualification is not
 
 - It is not a certification of any codebase, and it does not make any finding in any survey correct.

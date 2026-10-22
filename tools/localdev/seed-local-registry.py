@@ -251,6 +251,17 @@ def payload(ordinal, at, rng):
     if narration:
         body["narration"] = narration
 
+    # ★ THE PRODUCER'S PUBLIC REPORT (decision 0003, MINOR 1.3), on every subject but every fifth, so the
+    #   portrait renders with the report card AND without it. The thin subject never has one: a 1.0
+    #   delivery predates the field. The host is the listed system's own, or the page refuses the link.
+    if ordinal % 5 != 4:
+        owner, name = repository.split("/", 1)
+        body["schemaVersion"] = "1.3"
+        body["reports"] = [{
+            "url": f"https://watchdog.canine.dev/api/oss/{owner}/{name}/report?run=local-{ordinal}",
+            "system": "watchdog",
+        }]
+
     return body
 
 
