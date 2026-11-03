@@ -11,6 +11,11 @@ move a score for unchanged evidence mints a new rubric version (see
 ## [Unreleased]
 
 ### Governance
+- **Vulnerability-database findings are advisory** ([decision 0006](docs/decisions/0006-vulnerability-database-findings-are-advisory.md)).
+  `rubric-2026.11.2` declares D30 Dependency Vulnerabilities and D43 Malicious Dependencies `advisory: true`, and
+  cai-scoring.md §2.1 makes any reading matched against a vulnerability or malicious-package database advisory: the
+  databases change daily, so a score that folded them could not be recomputed from the code and the engine version.
+  Score-moving; deliveries under earlier rubric versions do not move.
 - **Rubric versions are published by the Initiative, not by an implementation** ([decision 0002](docs/decisions/0002-rubric-versions-are-published-by-the-initiative.md)).
   `main` takes changes only through pull requests. The rubric gate (`.github/workflows/rubrics.yml`) refuses a change
   to a published version, a mislabelled catalog, a version identical to its predecessor apart from its name, and a

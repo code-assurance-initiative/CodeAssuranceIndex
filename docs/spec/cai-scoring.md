@@ -54,7 +54,10 @@ under, so they keep reproducing.
 
 An **advisory** contributor is reported but never folded: it does not enter its category or lens, and it cannot
 trigger the critical gate. Readings made by a language model are advisory, as are readings the rubric publishes as
-evidence only.
+evidence only, and readings answered by matching the code's dependencies against a vulnerability or malicious-package
+database (OSV, GHSA, NVD, a package registry's advisory feed): such a database changes independently of the code, so a
+score that included them could not be recomputed from the code and the engine version
+([decision 0006](../decisions/0006-vulnerability-database-findings-are-advisory.md)).
 
 - **When the catalog declares `advisory` for a contributor, the catalog decides.** A contributor the catalog declares
   advisory is left out whatever the bundle says. A bundle that marks advisory a contributor the catalog declares
