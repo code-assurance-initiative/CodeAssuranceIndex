@@ -32,3 +32,4 @@ links to its successor.
 |---|---|---|---|---|
 | [0001](0001-adopt-the-answer-key-dispute-path.md) — Adopt the answer-key dispute path | [0001](../proposals/0001-answer-key-dispute-path.md) | Accepted, with the proposal's four questions answered | 2026-10-16 | Jimmy Borch, for the CAI team |
 | [0002](0002-rubric-versions-are-published-by-the-initiative.md): Rubric versions are published by the Initiative | [0002](../proposals/0002-rubric-versions-are-published-by-the-initiative.md) | Accepted, the proposal's three questions answered; comment period not taken | 2026-10-16 | Jimmy Borch, for the CAI team |
+| [0004](0004-producers-are-named-by-their-products.md): Producers are named by their products | [0004](../proposals/0004-producers-are-named-by-their-products.md) | Accepted as written; comment period not taken | 2026-11-04 | Jimmy Borch, for the CAI team |

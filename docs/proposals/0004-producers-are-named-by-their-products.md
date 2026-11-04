@@ -7,7 +7,7 @@
   Canine Code Analyzer, CCA) produce CAI evidence, and whose own code (kennel.canine.dev) is measured by CAI. This proposal
   renames that producer in the standard's pages and defaults. It changes no score and no rule.
 - **Moves scores:** no. No catalog, weight, formula or band changes, and no published delivery is edited.
-- **Status:** Proposed
+- **Status:** Accepted by [decision 0004](../decisions/0004-producers-are-named-by-their-products.md), 2026-11-04
 
 ## Problem
 
