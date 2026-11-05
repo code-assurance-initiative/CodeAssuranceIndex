@@ -152,7 +152,7 @@ public static class SurveyPageBuilder
                 + "same rubric, at a pinned commit, with the result published in full. Point a surveyor at a "
                 + "repository you know and see whether you agree with it."))));
 
-        sections.Add(About(record));
+        sections.Add(About(record, listing));
 
         // And where to go from here, as cards with a mark on each. No producer chooses these: they are
         // the standard's own routes out of its own page.
@@ -406,7 +406,7 @@ public static class SurveyPageBuilder
     /// Neutral does not mean anonymous: a reader is entitled to know who took the measurement, and the
     /// standard's claim is that the METHOD was the same, not that the measurer was.
     /// </remarks>
-    private static object About(SurveyRecord record)
+    private static object About(SurveyRecord record, ProducerListing listing)
     {
         var latest = record.Latest;
         var lines = new List<string>
@@ -424,7 +424,7 @@ public static class SurveyPageBuilder
             $"Scored under {PageProse.Escape(latest.RubricVersion)} — the same rubric and the same method as "
             + "every other entry in this index.");
 
-        lines.Add($"Measured by {PageProse.Escape(Attribution(latest.Producer))}.");
+        lines.Add($"Measured by {PageProse.Escape(Attribution(latest.Producer, listing))}.");
 
         // ★ THE APPEARANCE IS THE VOCABULARY'S CONSTANT AND THE ANCHOR IS "about". Ported by hand as a
         //   lower-case literal with no anchor, which the theme does not style and no link can reach — caught
@@ -435,12 +435,21 @@ public static class SurveyPageBuilder
     }
 
     /// <summary>Who measured it, and with what — the producer's own words for its scanner.</summary>
-    private static string Attribution(DeliveryProducer producer) =>
-        producer.Scanner is { Length: > 0 } scanner
-            ? (producer.ScannerVersion is { Length: > 0 } version
-                ? $"{producer.Name} using {scanner} {version}"
-                : $"{producer.Name} using {scanner}")
+    /// <remarks>★ A LISTED, CURRENT producer is named by the name the standard lists for it, with the signed producer id beside it
+    /// ("Canine Code Analyzer (cca.canine.dev)"), so a reader meets a product rather than a host. A retired producer keeps its signed
+    /// id alone: the listing still knows its old name, and a page that has not changed in substance should not start advertising a
+    /// product that no longer exists. Unlisted producers are named by their id, as before.</remarks>
+    private static string Attribution(DeliveryProducer producer, ProducerListing listing)
+    {
+        var who = listing.Find(producer.Name) is { Retired: null or "" } listed && listed.Name is { Length: > 0 } name && name != producer.Name
+            ? $"{name} ({producer.Name})"
             : producer.Name;
+        return producer.Scanner is { Length: > 0 } scanner
+            ? (producer.ScannerVersion is { Length: > 0 } version
+                ? $"{who} using {scanner} {version}"
+                : $"{who} using {scanner}")
+            : who;
+    }
 
     private static string MetaDescription(SurveyRecord record) =>
         $"{record.Latest.Subject.Repository} scored {Number(record.Latest.Verdict.Cai)} on the Code "
