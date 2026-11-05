@@ -44,8 +44,8 @@ converges, for the estate D5 does not reach — and it must not repeat the mista
 This proposal fills that gap as an **advisory, descriptive** dimension that names the convergence and *defers the
 risk judgement to D5 and D35*, rather than asserting risk from concentration alone.
 
-See issue [TODO: link the governing issue](../../../issues) (required by the filing process; opened before this
-revision is decided).
+See issue [#45](https://github.com/code-assurance-initiative/CodeAssuranceIndex/issues/45) (required by the filing
+process).
 
 ## Change
 
@@ -159,7 +159,7 @@ the risk judgement, and contributing to no score is the honest treatment.
 
 ## Governance
 
-- **Process.** Filing step 1 (a governing issue) is [TODO: link] and must be linked before decision. This is a new,
+- **Process.** Filing step 1 (a governing issue) is [#45](https://github.com/code-assurance-initiative/CodeAssuranceIndex/issues/45). This is a new,
   named, published dimension — material content, not a correction-that-moves-no-number — so it is **not** a standstill
   carve-out and takes the full route: the 14-day comment period on the pull request, then a numbered decision.
 - **Comment period.** Filed 2026-11-05; the earliest a decision may be taken is **2026-11-19**.
