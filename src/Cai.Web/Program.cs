@@ -26,11 +26,11 @@ builder.Services.AddRazorComponents();
 
 // Server-side fetch of the surveyor's public aggregate scan stats (LoC scanned + completed scans) for /registry —
 // the standard shows the scanned-corpus SCALE; the survey records themselves stay on the surveyor (data ownership).
-// Base URL is configurable (Watchdog:BaseUrl), defaulting to production; the page degrades gracefully if unreachable.
-// The named "watchdog" client carries a standard resilience pipeline (timeout + retry-with-backoff + circuit breaker)
+// The base URL defaults to production; the page degrades gracefully if unreachable.
+// The named "cca" client (the Canine Code Analyzer's public API, decision 0007) carries a standard resilience pipeline (timeout + retry-with-backoff + circuit breaker)
 // so a slow or failing surveyor can never stall the /registry render — timeouts are tightened for an SSR best-effort
 // call (the page renders without the stats rather than hanging on a dependency).
-builder.Services.AddHttpClient("watchdog").AddStandardResilienceHandler(o =>
+builder.Services.AddHttpClient("cca").AddStandardResilienceHandler(o =>
 {
     o.AttemptTimeout.Timeout = TimeSpan.FromSeconds(2);
     o.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(5);
@@ -549,7 +549,7 @@ app.MapGet("/llms.txt", [AllowAnonymous] (RubricCatalogStore store) =>
     var text =
 $@"# CAI — the Code Assurance Index
 
-> CAI is an open, reproducible 0–100 standard for the health of a C#/.NET codebase. Same evidence in, same score out — a measurement anyone can verify, not an opinion. The method is open and free; the independent, signed survey (the deductions and what to do about them) is a service from the surveyor, watchdog.canine.dev. Stewarded by Watchdog.
+> CAI is an open, reproducible 0–100 standard for the health of a C#/.NET codebase. Same evidence in, same score out — a measurement anyone can verify, not an opinion. The method is open and free; the independent, signed survey (the deductions and what to do about them) is a service from a producer, such as Assure (https://assure.canine.dev), built on the Canine Code Analyzer.
 
 The score is deterministic: identical evidence under the same rubric version always folds to the same number. The weights ship in the evidence, so anyone can reproduce — or falsify — a published CAI with no access to the analyzer. That is the difference from an LLM (a different answer each run) and from a secret proprietary score (uncheckable).
 
@@ -581,7 +581,7 @@ The score is deterministic: identical evidence under the same rubric version alw
 - The vocabulary as schema.org DefinedTermSet (JSON-LD): https://codeassuranceindex.info/glossary.jsonld
 
 ## Get an independent survey
-The standard is free to use. An independent, signed CAI survey — with the deductions and what to do about them — is a service from the surveyor: https://watchdog.canine.dev
+The standard is free to use. An independent, signed CAI survey — with the deductions and what to do about them — is a service from a producer, such as Assure: https://assure.canine.dev
 ";
     return Results.Text(text, "text/plain; charset=utf-8");
 });
@@ -714,7 +714,7 @@ static string[] ReadCorsOrigins(IConfiguration cfg)
         // third-party traffic to strand.
         : ["https://codeassuranceindex.info", "https://www.codeassuranceindex.info",
            "https://imprint.canine.dev",
-           "https://watchdog.canine.dev", "https://assay.canine.dev"];
+           "https://assure.canine.dev", "https://assert.canine.dev", "https://assay.canine.dev", "https://cca.canine.dev"];
 }
 
 

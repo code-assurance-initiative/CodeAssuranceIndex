@@ -17,8 +17,10 @@ public sealed record ListedSystem(string Id, string Name, string Homepage, strin
 /// <param name="Homepage">Where the "Measured by" card links.</param>
 /// <param name="Mark">The mark the site draws on that card.</param>
 /// <param name="Systems">The systems it may name as the author of a report.</param>
+/// <param name="Retired">The day the producer was retired (decision 0007), or null while it produces. A retired producer's
+/// deliveries stay exactly as signed and are still shown as its own.</param>
 public sealed record ListedProducer(
-    string Producer, string Name, string Homepage, string Mark, IReadOnlyList<ListedSystem> Systems);
+    string Producer, string Name, string Homepage, string Mark, IReadOnlyList<ListedSystem> Systems, string? Retired = null);
 
 /// <summary>
 /// Who may put a report link on the standard's survey pages, and under which name and mark (decision 0003).
@@ -94,7 +96,8 @@ public sealed class ProducerListing
                 Required(entry.Name, $"name of producer '{entry.Producer}'"),
                 Https(entry.Homepage, $"homepage of producer '{entry.Producer}'"),
                 Required(entry.Mark, $"mark of producer '{entry.Producer}'"),
-                systems));
+                systems,
+                Day(entry.Retired, $"retirement day of producer '{entry.Producer}'")));
         }
 
         if (producers.GroupBy(p => p.Producer, StringComparer.Ordinal).FirstOrDefault(g => g.Count() > 1) is { } twice)
@@ -132,6 +135,12 @@ public sealed class ProducerListing
             ? present
             : throw new InvalidDataException($"The producer listing is missing the {what}.");
 
+    private static string? Day(string? value, string what) =>
+        value is null ? null
+        : DateOnly.TryParseExact(value, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture,
+              System.Globalization.DateTimeStyles.None, out _) ? value
+        : throw new InvalidDataException($"The {what} must be a yyyy-MM-dd date.");
+
     private static string Https(string? value, string what) =>
         Uri.TryCreate(Required(value, what), UriKind.Absolute, out var uri) && uri.Scheme == Uri.UriSchemeHttps
             ? value!
@@ -149,6 +158,7 @@ public sealed class ProducerListing
         [JsonPropertyName("homepage")] public string? Homepage { get; init; }
         [JsonPropertyName("mark")] public string? Mark { get; init; }
         [JsonPropertyName("systems")] public List<ListingSystem>? Systems { get; init; }
+        [JsonPropertyName("retired")] public string? Retired { get; init; }
     }
 
     private sealed class ListingSystem

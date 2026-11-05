@@ -29,18 +29,34 @@ internal sealed class IssuerCatalog
         var configured = config.GetSection("Badges:Issuers").Get<List<Issuer>>() ?? [];
         if (configured.Count == 0)
         {
-            // The deployment default, so a clone with no extra configuration serves the same badges production does.
-            configured = [new Issuer("watchdog", "watchdog.canine.dev", "https://watchdog.canine.dev")];
+            // The deployment default, so a clone with no extra configuration serves the same badges production does: the
+            // Canine Code Analyzer's public corpus (decision 0007).
+            configured = [new Issuer(DefaultId, "cca.canine.dev", "https://cca.canine.dev")];
         }
 
-        _byId = configured
+        var byId = configured
             .Where(i => !string.IsNullOrWhiteSpace(i.Id) && Uri.TryCreate(i.BaseUrl, UriKind.Absolute, out var u)
                         && u.Scheme == Uri.UriSchemeHttps)
             .ToDictionary(i => i.Id, StringComparer.OrdinalIgnoreCase);
+        // Decision 0007: `watchdog` stays an alias of `cca` for good, so every badge URL already embedded in a README
+        // (?issuer=watchdog) keeps drawing. Only when nothing configures that id itself.
+        if (byId.TryGetValue(DefaultId, out var cca) && !byId.ContainsKey(RetiredAlias))
+        {
+            byId[RetiredAlias] = cca;
+        }
+
+        _byId = byId;
     }
 
-    /// <summary>The issuer used when the caller names none — meaningful only while there is exactly one.</summary>
-    public Issuer? Default => _byId.Count == 1 ? _byId.Values.First() : null;
+    /// <summary>The default issuer's id: the Canine Code Analyzer (decision 0007).</summary>
+    public const string DefaultId = "cca";
+
+    /// <summary>The retired issuer id kept as an alias of <see cref="DefaultId"/> (decision 0007).</summary>
+    public const string RetiredAlias = "watchdog";
+
+    /// <summary>The issuer used when the caller names none — meaningful only while there is exactly one (an alias is the
+    /// same issuer, not a second one).</summary>
+    public Issuer? Default => _byId.Values.Distinct().Count() == 1 ? _byId.Values.First() : null;
 
     public bool TryGet(string id, out Issuer issuer) => _byId.TryGetValue(id, out issuer!);
 

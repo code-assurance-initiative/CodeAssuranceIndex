@@ -4,15 +4,76 @@
     {
       "producer": "watchdog.canine.dev",
       "name": "Watchdog",
-      "homepage": "https://watchdog.canine.dev/",
+      "homepage": "https://codeassuranceindex.info/implementations/",
       "mark": "watchdog",
-      "interests": "Watchdog is a commercial engine. The Initiative's acting maintainer also maintains Watchdog.",
+      "interests": "Watchdog was a commercial engine of Canine Development ApS, retired on 2026-11-04 (decision 0007). Its deliveries stay as they were signed. The Initiative's acting maintainer runs Canine Development.",
       "systems": [
         {
           "id": "watchdog",
           "name": "Watchdog",
           "homepage": "https://watchdog.canine.dev/",
           "mark": "watchdog"
+        }
+      ],
+      "retired": "2026-11-04"
+    },
+    {
+      "producer": "assure.canine.dev",
+      "name": "Assure",
+      "homepage": "https://assure.canine.dev/",
+      "mark": "assure",
+      "interests": "Assure is a commercial product of Canine Development ApS, measuring through the Canine Code Analyzer. The Initiative's acting maintainer runs Canine Development.",
+      "systems": [
+        {
+          "id": "assure",
+          "name": "Assure",
+          "homepage": "https://assure.canine.dev/",
+          "mark": "assure"
+        }
+      ]
+    },
+    {
+      "producer": "assert.canine.dev",
+      "name": "Assert",
+      "homepage": "https://assert.canine.dev/",
+      "mark": "assert",
+      "interests": "Assert is a commercial product of Canine Development ApS, measuring through the Canine Code Analyzer. The Initiative's acting maintainer runs Canine Development.",
+      "systems": [
+        {
+          "id": "assert",
+          "name": "Assert",
+          "homepage": "https://assert.canine.dev/",
+          "mark": "assert"
+        }
+      ]
+    },
+    {
+      "producer": "assay.canine.dev",
+      "name": "Assay",
+      "homepage": "https://assay.canine.dev/",
+      "mark": "assay",
+      "interests": "Assay is a commercial product of Canine Development ApS, measuring through the Canine Code Analyzer. The Initiative's acting maintainer runs Canine Development.",
+      "systems": [
+        {
+          "id": "assay",
+          "name": "Assay",
+          "homepage": "https://assay.canine.dev/",
+          "mark": "assay"
+        }
+      ]
+    },
+    {
+      "producer": "cca.canine.dev",
+      "name": "Canine Code Analyzer",
+      "homepage": "https://cca.canine.dev/",
+      "mark": "cca",
+      "interests": "The Canine Code Analyzer is Canine Development ApS's engine, offered for anyone to build a product on; Assure, Assert and Assay measure through it. The Initiative's acting maintainer runs Canine Development.",
+      "systems": [
+        {
+          "id": "cca",
+          "name": "Canine Code Analyzer",
+          "homepage": "https://cca.canine.dev/",
+          "mark": "cca"
         }
       ]
     }

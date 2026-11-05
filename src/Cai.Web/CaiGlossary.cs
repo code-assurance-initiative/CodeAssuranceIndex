@@ -34,7 +34,7 @@ internal static class CaiGlossary
         new("firewall", "The firewall", null,
             "The boundary between the open, deterministic measurement (score, findings, algorithm) and the surveyor's paid advisory judgment (deductions and non-score enhancements). It is also the free/paid line."),
         new("survey", "Survey", null,
-            "An independent, signed CAI assessment of a codebase issued by a surveyor (watchdog.canine.dev): the CAI plus the deductions and what to do about them. The standard is free; the survey is the service."),
+            "An independent, signed CAI assessment of a codebase issued by a producer (for example assure.canine.dev): the CAI plus the deductions and what to do about them. The standard is free; the survey is the service."),
         new("salgsopstilling", "Salgsopstilling (listing)", "salgsopstilling",
             "A surveyor-issued sell-sheet that packages a codebase's independently measured strengths for a buyer — honest by construction, because its numbers are the survey's numbers."),
         new("reproducibility", "Reproducibility", null,

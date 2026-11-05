@@ -74,7 +74,7 @@ internal static class BadgeEndpoints
             string bundleJson;
             try
             {
-                var client = clients.CreateClient("watchdog");
+                var client = clients.CreateClient("cca");
                 // Only ever the issuer's published-corpus route, composed here from an allowlisted origin and the
                 // route values — never a URL the caller supplied.
                 // The host travels to the issuer too. Without it the issuer resolves the pair its own way, and a
