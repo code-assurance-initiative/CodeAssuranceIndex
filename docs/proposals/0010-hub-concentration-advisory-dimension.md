@@ -97,7 +97,8 @@ published standard alone and cannot change silently when an implementation chang
   - **Calibration is a condition of acceptance.** Before the card fires, the top-1 share must be measured over a
     **deduplicated corpus of distinct real repositories** — one latest graph per repository from the onboarded
     public-corpus scan — and a top-decile (p90) threshold derived on that. The decision pins the resulting number in
-    the rubric version. A tracking task for that measurement is filed alongside this proposal.
+    the rubric version. A tracking task for that measurement is filed alongside this proposal (engine backlog
+    `01a1ade5-f452-739d-9434-2e6bd9e912f4`), and its completion is a precondition of acceptance.
   - Until a representative threshold is pinned, AX11 is defined but **dormant** (it computes and stores the share but
     raises no card).
 - **Plain language (the user-facing wording).** Descriptive, volatility-aware, no unconditional advice:
