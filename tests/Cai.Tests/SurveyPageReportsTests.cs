@@ -50,6 +50,34 @@ public sealed class SurveyPageReportsTests
         """);
 
     [Fact]
+    public void The_about_section_names_a_current_producer_by_its_listed_name_and_a_retired_one_by_its_id()
+    {
+        var retiredListing = ProducerListing.Parse(
+            """
+            { "producers": [
+              { "producer": "watchdog.canine.dev", "name": "Watchdog", "homepage": "https://watchdog.canine.dev/", "mark": "watchdog",
+                "retired": "2026-11-04", "systems": [] },
+              { "producer": "cca.example.org", "name": "Example Analyzer", "homepage": "https://cca.example.org/", "mark": "doc", "systems": [] }
+            ] }
+            """);
+
+        static string About(SurveyRecord record, ProducerListing listing)
+        {
+            var page = SurveyPageBuilder.Build(record, listing);
+            Assert.NotNull(page);
+            return JsonSerializer.Serialize(page.Node);
+        }
+
+        Assert.Contains("Measured by Example Analyzer (cca.example.org) using surveyor 1.0.",
+            About(Record(Delivery("cca.example.org", "2026-11-05T10:00:00Z")), retiredListing));
+        var retired = About(Record(Delivery(Watchdog, "2026-10-01T10:00:00Z")), retiredListing);
+        Assert.Contains("Measured by watchdog.canine.dev using surveyor 1.0.", retired);
+        Assert.DoesNotContain("Measured by Watchdog", retired);
+        Assert.Contains("Measured by unlisted.example using surveyor 1.0.",
+            About(Record(Delivery("unlisted.example", "2026-11-05T10:00:00Z")), retiredListing));
+    }
+
+    [Fact]
     public void A_listed_producers_report_is_linked_under_its_systems_mark()
     {
         var cards = Cards(Record(Delivery(Watchdog, "2026-10-01T10:00:00Z", Report(WatchdogReport, "watchdog"))));
