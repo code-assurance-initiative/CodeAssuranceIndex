@@ -46,7 +46,7 @@ Every scheme must produce the same claim contract — that contract is the whole
 
 | Claim | Meaning |
 |---|---|
-| `name` | Human-readable principal (logs/provenance), e.g. `watchdog.canine.dev`. |
+| `name` | Human-readable principal (logs/provenance), e.g. `assure.canine.dev`. |
 | `cai:org` | The org the caller acts as — ownership and grant checks run against this. |
 | role `producer` | May publish deliveries. Publishing is the ONLY role-gated operation. |
 

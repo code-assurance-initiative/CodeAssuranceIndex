@@ -197,7 +197,7 @@ async Task<int> RunSign(string[] a, ILogger l)
         Subject = new DeliverySubject { Repository = repo, Commit = ParseString(a, "--commit"), Host = ParseString(a, "--host") },
         Producer = new DeliveryProducer
         {
-            Name = ParseString(a, "--producer") ?? "watchdog.canine.dev",
+            Name = ParseString(a, "--producer") ?? "cca.canine.dev",
             Scanner = ParseString(a, "--scanner"),
             ScannerVersion = ParseString(a, "--scanner-version"),
         },

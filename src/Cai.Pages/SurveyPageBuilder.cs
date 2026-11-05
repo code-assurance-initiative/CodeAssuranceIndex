@@ -341,7 +341,9 @@ public static class SurveyPageBuilder
             {
                 icon = producer.Mark,
                 label = $"Measured by {producer.Name}",
-                note = "The engine that produced the evidence behind this score",
+                note = producer.Retired is { } retired
+                    ? $"The engine that produced the evidence behind this score, a producer retired on {retired}; the record stays as it was signed"
+                    : "The engine that produced the evidence behind this score",
                 href = producer.Homepage,
             });
         }

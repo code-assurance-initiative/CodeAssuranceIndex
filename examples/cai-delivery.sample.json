@@ -8,8 +8,8 @@
       "keyId": "cai-ed25519-sample"
     },
     "producer": {
-      "name": "watchdog.canine.dev",
-      "scanner": "watchdog-surveyor",
+      "name": "assure.canine.dev",
+      "scanner": "cca",
       "scannerVersion": "4.2.0"
     },
     "subject": {
@@ -306,6 +306,6 @@
     "alg": "Ed25519",
     "keyId": "cai-ed25519-sample",
     "canon": "RFC8785-json",
-    "value": "e-HoUlohNqbxzaj1oNonh8qiNm-Y_TVM3mB0SUbkWo58fs9h1f3VzpNut2irhNbeA-hEAsBZksB9xnWecQ4oCw"
+    "value": "Z_-_05IqxE3L_c4giPE8VvAMKFMlaUPWH5GlLIDFiPFbZNcyO6_u2e14Q_eDjBZdJ-gPJLsJHz7hn0f0Bv_dDw"
   }
 }
