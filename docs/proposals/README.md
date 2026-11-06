@@ -92,3 +92,4 @@ Anything the proposer cannot settle alone. The decision answers each one.
 | [0007](0007-producers-are-named-by-their-products.md) | Producers are named by their products, not by Watchdog | 2026-11-04 | Accepted by [decision 0007](../decisions/0007-producers-are-named-by-their-products.md) |
 | [0008](0008-a-scanner-mapping-covers-every-rule-its-scanner-emits.md) | Correct the Watchdog mapping for its engine's rule-id rename, and require a mapping to cover every rule its scanner emits | 2026-11-05 | Proposed |
 | [0009](0009-concepts-a-known-defect-corpus-needs.md) | Add the concepts a known-defect corpus needs to the taxonomy | 2026-11-05 | Proposed |
+| [0010](0010-hub-concentration-advisory-dimension.md) | Hub concentration as an advisory architecture dimension | 2026-11-05 | Proposed |
