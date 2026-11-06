@@ -72,6 +72,39 @@ taken here and does not take its own.
 6. **Release.** An accepted proposal that moves a score ships only in a new rubric version, with the measured effect
    on published scores stated in its release note.
 
+## What the catalog holds, and the evidence a dimension needs
+
+Adopted by [decision 0013](decisions/0013-a-dimension-enters-the-standard-on-evidence.md).
+
+**What the catalog holds.** A **scored** dimension is the standard: every producer measures it to the same definition,
+and it moves the score. An **advisory** dimension is in the catalog only when producers must be comparable on it — a
+candidate on its way to being scored, or a descriptive reading that readers compare across producers. Anything that
+needs no comparison across producers — advice, remediation tasks, a producer's own signals — is the producer's
+extension on top of the standard, outside the catalog, and is never read as a CAI result.
+
+**Evidence before a proposal.** A proposal to add a dimension, re-define one or retire one is filed with a measurement
+of an implementation of exactly that definition over a corpus whose repositories and commits are named, so that
+another producer can reproduce it; evidence from any producer counts. It reports, per language:
+
+1. **Activation** — the share of repositories it applies to.
+2. **Repositories hit** per (dimension, kind) — never a share of rows, which measures the draw, not the definition.
+3. **Saturation** — the share at the scale's floor and at its ceiling.
+4. **Blind-judge precision** — on a random sample of its results, the share that independent judges who did not see
+   the proposal call valid, and how far the judges agree.
+5. **Disputes** — where results were disputed by the people or agents fixing them, the share disputed and the share
+   of disputes upheld.
+6. **The construct** — named repositories from the top and the bottom of its scale, and why they differ in the
+   quality the dimension names rather than in what kind of code they are.
+
+**Bars.** Proposed values — at least 200 repositories in at least three languages; a blind sample of at least 50
+results with at least four of five judges agreeing and at least 75 % valid; upheld disputes at most 25 % for a scored
+dimension; an argument for any dimension with more than half its repositories at one end of its scale — are reported
+against from today and become binding with the first rubric version after the review below, at values it calibrates.
+
+**Review of the scored dimensions.** Every scored dimension publishes the six measures by **2027-03-01**. One that
+misses a bar is reviewed — re-defined, made advisory, retired, or kept with a recorded reason — never removed
+automatically.
+
 ## The steering group (being formed)
 
 Its purpose is to make step 4 a decision by several independent parties instead of one.

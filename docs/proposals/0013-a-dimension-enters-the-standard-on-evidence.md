@@ -8,7 +8,7 @@
   raises the bar every producer's candidate dimension must clear, the proposer's included, and moves no score. The
   proposer is also the acting maintainer, i.e. the decider ([decision 0011](../decisions/0011-interim-pragmatic-governance.md)).
 - **Moves scores:** no.
-- **Status:** Proposed
+- **Status:** Accepted as amended by [decision 0013](../decisions/0013-a-dimension-enters-the-standard-on-evidence.md)
 
 ## Problem
 
