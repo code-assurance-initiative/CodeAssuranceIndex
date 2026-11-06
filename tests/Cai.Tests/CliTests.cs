@@ -111,7 +111,7 @@ public sealed class CliTests : IDisposable
 
         var sign = await Cai(
             "sign", Evidence, "--key", pair, "--rubrics", Rubrics, "--repo", "acme/api",
-            "--commit", "3f9a1c2", "--issued-at", "2026-09-29T12:00:00Z", "--out", package);
+            "--commit", "3f9a1c2", "--producer", "example-producer.example", "--issued-at", "2026-09-29T12:00:00Z", "--out", package);
         Assert.True(sign.Exit == 0, sign.Err);
 
         var verify = await Cai("verify-delivery", package, "--keys", keys, "--rubrics", Rubrics);

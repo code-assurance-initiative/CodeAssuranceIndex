@@ -75,7 +75,14 @@
           "homepage": "https://cca.canine.dev/",
           "mark": "cca"
         }
-      ]
+      ],
+      "badges": {
+        "id": "cca",
+        "baseUrl": "https://cca.canine.dev",
+        "aliases": [
+          "watchdog"
+        ]
+      }
     }
   ]
 }

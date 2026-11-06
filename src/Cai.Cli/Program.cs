@@ -178,9 +178,11 @@ async Task<int> RunSign(string[] a, ILogger l)
 
     var keyPath = ParseString(a, "--key");
     var repo = ParseString(a, "--repo");
-    if (keyPath is null || repo is null)
+    // Decision 0012: the reference tool names no producer, so a delivery says who produced it because the caller said so.
+    var producer = ParseString(a, "--producer");
+    if (keyPath is null || repo is null || producer is null)
     {
-        Console.Error.WriteLine("error: sign needs --key <keypair.json> and --repo <name>.");
+        Console.Error.WriteLine("error: sign needs --key <keypair.json>, --repo <name> and --producer <listed producer>.");
         return 2;
     }
 
@@ -197,7 +199,7 @@ async Task<int> RunSign(string[] a, ILogger l)
         Subject = new DeliverySubject { Repository = repo, Commit = ParseString(a, "--commit"), Host = ParseString(a, "--host") },
         Producer = new DeliveryProducer
         {
-            Name = ParseString(a, "--producer") ?? "cca.canine.dev",
+            Name = producer,
             Scanner = ParseString(a, "--scanner"),
             ScannerVersion = ParseString(a, "--scanner-version"),
         },

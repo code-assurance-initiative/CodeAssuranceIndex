@@ -23,6 +23,7 @@ The cards' wording is the standard's and is the same for every producer. A produ
 | `homepage` | Where the "Measured by" card links. `https`. |
 | `mark` | The mark the site draws on the card, as a name the site knows (today: `watchdog`, `assay`, `cai`, `github`, `gitlab`, `html`, `doc`). An unknown name draws a plain document. Adding a new mark is a change to the site. |
 | `interests` | What the producer declares, as a proposal would. |
+| `badges` | Optional. The producer's badge issuer (decision 0012): `id` (what a badge URL's `?issuer=` names), `baseUrl` (the `https` origin whose public evidence the badge endpoint fetches) and `aliases` (ids that resolve to it, such as a retired name). The standard's code names no issuer; the badge endpoint serves the issuers listed here unless an operator configures `Badges:Issuers`. |
 | `retired` | Optional, `yyyy-MM-dd`: the day the producer stopped producing (decision 0007). Its deliveries stay as signed and are shown as its own; the card says it is retired. |
 | `systems` | The systems this producer may name as the author of a report: `id` (what a delivery names), `name` ("The full report by {name}"), `homepage` (the host a report URL must be on) and `mark`. |
 

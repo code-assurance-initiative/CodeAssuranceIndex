@@ -27,10 +27,10 @@ builder.Services.AddRazorComponents();
 // Server-side fetch of the surveyor's public aggregate scan stats (LoC scanned + completed scans) for /registry —
 // the standard shows the scanned-corpus SCALE; the survey records themselves stay on the surveyor (data ownership).
 // The base URL defaults to production; the page degrades gracefully if unreachable.
-// The named "cca" client (the Canine Code Analyzer's public API, decision 0007) carries a standard resilience pipeline (timeout + retry-with-backoff + circuit breaker)
+// The named "badge-issuer" client (a listed producer's public badge API, decision 0012) carries a standard resilience pipeline (timeout + retry-with-backoff + circuit breaker)
 // so a slow or failing surveyor can never stall the /registry render — timeouts are tightened for an SSR best-effort
 // call (the page renders without the stats rather than hanging on a dependency).
-builder.Services.AddHttpClient("cca").AddStandardResilienceHandler(o =>
+builder.Services.AddHttpClient("badge-issuer").AddStandardResilienceHandler(o =>
 {
     o.AttemptTimeout.Timeout = TimeSpan.FromSeconds(2);
     o.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(5);
@@ -581,7 +581,7 @@ The score is deterministic: identical evidence under the same rubric version alw
 - The vocabulary as schema.org DefinedTermSet (JSON-LD): https://codeassuranceindex.info/glossary.jsonld
 
 ## Get an independent survey
-The standard is free to use. An independent, signed CAI survey — with the deductions and what to do about them — is a service from a producer, such as Assure: https://assure.canine.dev
+The standard is free to use. An independent, signed CAI survey — with the deductions and what to do about them — is a service from a producer; the producers are listed at https://codeassuranceindex.info/implementations/
 ";
     return Results.Text(text, "text/plain; charset=utf-8");
 });
@@ -701,20 +701,19 @@ static string[] ReadCorsOrigins(IConfiguration cfg)
     var configured = cfg.GetSection(key).GetChildren()
         .Select(c => c.Value).Where(v => !string.IsNullOrWhiteSpace(v)).Select(v => v!.Trim()).ToArray();
 
-    // Default to the first-party marketing hosts rather than to nothing. "Fail closed" would be right if this were
-    // an allowlist of THIRD parties, but these four are our own sites, and every endpoint they reach is anonymous
-    // and read-only in effect — there is no credential to leak and no state to change. Defaulting to empty would
-    // instead mean the standard's interactive proof tools silently stop working on the very sites that link to
-    // them, which is the failure that actually costs something. Override the key to narrow or extend it.
+    // Default to the standard's OWN hosts rather than to nothing: every endpoint they reach is anonymous and read-only
+    // in effect, so there is no credential to leak and no state to change, and defaulting to empty would stop the
+    // standard's interactive proof tools working on its own site. Any other origin (a producer's site, a site editor)
+    // is an operator's configuration of this key, never a default in the standard's code (decision 0012).
     return configured.Length > 0
         ? configured
         // ★ cai.canine.dev was kept here through the domain move and is now GONE: its vhost is
         // 301-only (deploy/nginx), so nothing is rendered on the old hostname and no browser can
         // present it as an Origin. Removed 2026-08-17, before the public launch, with no live
         // third-party traffic to strand.
-        : ["https://codeassuranceindex.info", "https://www.codeassuranceindex.info",
-           "https://imprint.canine.dev",
-           "https://assure.canine.dev", "https://assert.canine.dev", "https://assay.canine.dev", "https://cca.canine.dev"];
+        // Decision 0012: the standard's code names no producer site. Its own hosts are the default; an operator who
+        // embeds the proof tools elsewhere (a producer's site, the site editor) lists those origins in configuration.
+        : ["https://codeassuranceindex.info", "https://www.codeassuranceindex.info"];
 }
 
 

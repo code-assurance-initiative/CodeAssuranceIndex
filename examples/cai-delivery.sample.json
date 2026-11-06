@@ -8,8 +8,8 @@
       "keyId": "cai-ed25519-sample"
     },
     "producer": {
-      "name": "assure.canine.dev",
-      "scanner": "cca",
+      "name": "example-producer.example",
+      "scanner": "example-scanner",
       "scannerVersion": "4.2.0"
     },
     "subject": {
@@ -306,6 +306,6 @@
     "alg": "Ed25519",
     "keyId": "cai-ed25519-sample",
     "canon": "RFC8785-json",
-    "value": "Z_-_05IqxE3L_c4giPE8VvAMKFMlaUPWH5GlLIDFiPFbZNcyO6_u2e14Q_eDjBZdJ-gPJLsJHz7hn0f0Bv_dDw"
+    "value": "kzSd2zOtFWrvf-3_s_icbUT-zdxEEoZhnVoRrgd2udPP0sYcb8iCeFTs0xTydoFEIyZcxnRr7aFID7O2ZnnxCA"
   }
 }

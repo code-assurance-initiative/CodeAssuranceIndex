@@ -24,35 +24,42 @@ internal sealed class IssuerCatalog
 {
     private readonly IReadOnlyDictionary<string, Issuer> _byId;
 
-    public IssuerCatalog(IConfiguration config)
+    public IssuerCatalog(IConfiguration config) : this(config, Cai.Pages.ProducerListing.Published)
     {
+    }
+
+    /// <summary>Configured issuers (<c>Badges:Issuers</c>) when an operator sets them; otherwise the badge issuers the
+    /// producer listing declares (decision 0012: CAI names no producer in code, only as data in the listing). An issuer's
+    /// listed aliases resolve to it unless something configures that id itself; decision 0007's retired id stays an alias
+    /// this way, declared by the listing rather than written into the standard's code.</summary>
+    internal IssuerCatalog(IConfiguration config, Cai.Pages.ProducerListing listing)
+    {
+        ArgumentNullException.ThrowIfNull(listing);
         var configured = config.GetSection("Badges:Issuers").Get<List<Issuer>>() ?? [];
+        var aliases = new List<(string Alias, string Of)>();
         if (configured.Count == 0)
         {
-            // The deployment default, so a clone with no extra configuration serves the same badges production does: the
-            // Canine Code Analyzer's public corpus (decision 0007).
-            configured = [new Issuer(DefaultId, "cca.canine.dev", "https://cca.canine.dev")];
+            foreach (var p in listing.Producers.Where(p => p.Badges is not null && p.Retired is null))
+            {
+                configured.Add(new Issuer(p.Badges!.Id, p.Producer, p.Badges.BaseUrl));
+                aliases.AddRange(p.Badges.Aliases.Select(a => (a, p.Badges.Id)));
+            }
         }
 
         var byId = configured
             .Where(i => !string.IsNullOrWhiteSpace(i.Id) && Uri.TryCreate(i.BaseUrl, UriKind.Absolute, out var u)
                         && u.Scheme == Uri.UriSchemeHttps)
             .ToDictionary(i => i.Id, StringComparer.OrdinalIgnoreCase);
-        // Decision 0007: `watchdog` stays an alias of `cca` for good, so every badge URL already embedded in a README
-        // (?issuer=watchdog) keeps drawing. Only when nothing configures that id itself.
-        if (byId.TryGetValue(DefaultId, out var cca) && !byId.ContainsKey(RetiredAlias))
+        foreach (var (alias, of) in aliases)
         {
-            byId[RetiredAlias] = cca;
+            if (!byId.ContainsKey(alias) && byId.TryGetValue(of, out var issuer))
+            {
+                byId[alias] = issuer;
+            }
         }
 
         _byId = byId;
     }
-
-    /// <summary>The default issuer's id: the Canine Code Analyzer (decision 0007).</summary>
-    public const string DefaultId = "cca";
-
-    /// <summary>The retired issuer id kept as an alias of <see cref="DefaultId"/> (decision 0007).</summary>
-    public const string RetiredAlias = "watchdog";
 
     /// <summary>The issuer used when the caller names none — meaningful only while there is exactly one (an alias is the
     /// same issuer, not a second one).</summary>

@@ -59,7 +59,12 @@ var pair = new DeliveryKeyPair
 var samplePath = Path.Combine(examples, "cai-delivery.sample.json");
 var existing = DeliveryPackage.Parse(File.ReadAllText(samplePath));
 var currentIssuer = DeliveryBuildRequest.DefaultIssuerName;
-var payload = existing.Payload with { Issuer = existing.Payload.Issuer with { Name = currentIssuer } };
+// Decision 0012: the standard's own example names no producer, so the sample is produced by a placeholder.
+var payload = existing.Payload with
+{
+    Issuer = existing.Payload.Issuer with { Name = currentIssuer },
+    Producer = existing.Payload.Producer with { Name = "example-producer.example", Scanner = "example-scanner" },
+};
 
 using var signer = new DeliverySigner(pair);
 var resigned = signer.SignPackage(payload);
