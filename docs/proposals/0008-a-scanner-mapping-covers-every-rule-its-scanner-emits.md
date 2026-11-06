@@ -11,7 +11,7 @@
   score of any codebase moves.
 - **Kind:** a defect correction against the benchmark's own contract: a mapping that cannot place rows its scanner
   emits scores real detections as misses.
-- **Status:** Proposed
+- **Status:** Accepted by [decision 0008](../decisions/0008-a-scanner-mapping-covers-every-rule-its-scanner-emits.md)
 
 ## Problem
 

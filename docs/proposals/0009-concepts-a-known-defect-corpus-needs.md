@@ -9,7 +9,7 @@
   than hiding it.
 - **Moves scores:** no CAI score moves. Benchmark recall moves only for keys that use the new concepts, which no
   published key does today.
-- **Status:** Proposed
+- **Status:** Accepted by [decision 0009](../decisions/0009-concepts-a-known-defect-corpus-needs.md)
 
 ## Problem
 
