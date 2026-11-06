@@ -164,11 +164,18 @@ the risk judgement, and contributing to no score is the honest treatment.
   carve-out and takes the full route: the 14-day comment period on the pull request, then a numbered decision.
 - **Comment period.** Filed 2026-11-05; the earliest a decision may be taken is **2026-11-19**.
 - **Conflicted decider.** The proposer is the acting maintainer and the sole decider, maintains the CCA engine that
-  produces this evidence, and owns code CAI measures. Per `GOVERNANCE.md`, a change may be accepted by the acting
-  maintainer only if no unresolved objection remains from a commenter **not affiliated with the proposer**. Because no
-  unaffiliated reviewer yet exists, the honest status is that this proposal **waits for the steering group, or for an
-  unaffiliated reviewer to comment and be satisfied**, before it can be accepted — even though it moves no score. The
-  decision record must state this conflict explicitly.
+  produces this evidence, and owns code CAI measures. `GOVERNANCE.md` reserves the unaffiliated-objection standstill
+  for **score-moving** proposals: the acting maintainer may accept a score-moving change alone only if no unresolved
+  objection remains from a commenter not affiliated with the proposer. **This proposal moves no score**, so that
+  standstill does not bind it — after the comment period the acting maintainer may decide it alone. The decision record
+  must still state the conflict explicitly.
+- **What actually gates acceptance here is substance, not that standstill.** Two things must be true before a
+  sensible *accept*: (1) the comment period has elapsed (earliest 2026-11-19), and (2) the firing threshold has been
+  calibrated over a deduplicated real-repository corpus and pinned in the rubric version (backlog
+  `01a1ade5-f452-739d-9434-2e6bd9e912f4`). Until (2), the dimension's rule cannot fire, so accepting it would accept a
+  rule that does not yet exist. The proposer also chooses to invite at least one **unaffiliated** reviewer before
+  deciding — not because the rules require it for a no-score change, but because the standard's credibility is the
+  whole point, and the first decision (0001) already skipped its comment period on paper.
 
 ## What the CCA engine will do on its own side (noted, not part of the proposal)
 
