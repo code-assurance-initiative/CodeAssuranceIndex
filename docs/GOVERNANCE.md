@@ -7,12 +7,27 @@ disagree, this file is wrong and should be corrected.
 
 Today: one person, publishing under the Code Assurance Initiative. The steering group that is meant to decide is
 being assembled and does not exist yet, and the association that is meant to own the standard has not been founded
-yet. Until the steering group exists, the standard is **held still**: CAI is not materially changed while the body
-that ought to decide such changes is still being put together. Corrections that move no number (clarifications,
-documentation, defects in the reference scorer that make it disagree with the published text) continue.
+yet. As of 2026-11-06 the group has **no founding date**.
 
-That standstill is the substitute for governance, and it is a weak one. It is written down so the weakness is
-visible rather than papered over.
+Until the steering group exists, the standard is **not frozen**: it is changed deliberately, on the record, and
+reversibly ([decision 0011](decisions/0011-interim-pragmatic-governance.md)). The acting maintainer may decide any
+proposal — a number-moving one included — rather than wait for a body that has no founding date, because a standstill
+of the one-to-five years an open-ended wait could run would stop the standard raising quality, which is the only
+reason it exists. Three things make deciding now safe enough to do without the group, and they are mechanical, not a
+matter of good behaviour:
+
+1. **Every decision is recorded** in [`docs/decisions/`](decisions/README.md), with the proposer's and decider's
+   conflict stated, the reasons written, and a note that it was taken under this interim rule.
+2. **The comment period runs after adoption**, not before: 30 days for a change that moves a number, 14 otherwise. An
+   unresolved objection from a commenter **not affiliated with the proposer** reopens the decision. Nothing is accepted
+   in a way that cannot be reopened.
+3. **The steering group may revisit any interim decision** when it exists, and this rule asks it to. An interim
+   decision is the working rule, not a settled one.
+
+The mechanical guarantees below hold throughout, so a disputed decision can always be read, traced and, failing
+persuasion, forked. This is written down so the weakness — one conflicted person deciding — stays visible rather than
+papered over, and so the interim state cannot quietly become permanent: at each year's turn the acting maintainer
+re-states here whether it still applies and why the group does not yet exist.
 
 ## What holds in the meantime
 
@@ -45,9 +60,10 @@ taken here and does not take its own.
 3. **Public comment.** The proposal is open for comment for **at least 30 days** (14 for a change that moves no
    number). Comments happen on the pull request, where everyone can read them.
 4. **Decision.** The steering group decides by simple majority of the members who are not conflicted (see below),
-   with at least half of all members taking part. Until the steering group exists, the acting maintainer decides —
-   and may only **accept** a proposal that moves a score if no unresolved objection remains from a commenter who is
-   not affiliated with the proposer; otherwise the proposal waits for the steering group.
+   with at least half of all members taking part. Until the steering group exists, the acting maintainer decides,
+   under the interim pragmatic rule above ([decision 0011](decisions/0011-interim-pragmatic-governance.md)): the
+   decision is recorded with its conflict and reasons, the comment period runs after adoption, and an unaffiliated
+   objection reopens it. A proposal is no longer made to wait for the group.
 5. **Record.** Every decision is a numbered record in [`docs/decisions/`](decisions/README.md): accepted, accepted as
    amended, or rejected; by whom; the vote and the recusals where there were any; the comment taken; and **the
    reasons**. Nothing changes until that record exists. A rejected proposal stays in the repository with its reasons;
@@ -88,8 +104,11 @@ The Initiative will not describe its governance as *independent* until all four 
    the procedure exists and has been used: proposals in [`docs/proposals/`](proposals/README.md), decisions in
    [`docs/decisions/`](decisions/README.md). [Decision 0001](decisions/0001-adopt-the-answer-key-dispute-path.md) is
    the first. What is still missing is the steering group: every decision so far was taken by one person, who also
-   maintains an engine measured by the benchmark, and the first one skipped its comment period and says so. Until the
-   group exists, this bar is met on paper and not in substance. Nothing has been refused yet.)*
+   maintains an engine measured by the benchmark, and the first one skipped its comment period and says so. Since
+   [decision 0011](decisions/0011-interim-pragmatic-governance.md) (2026-11-06) the maintainer decides under an
+   explicit interim rule — recorded, reversible, with the comment period after adoption — rather than under a
+   standstill the practice had already left behind. Until the group exists, this bar is met on paper and not in
+   substance. Nothing has been refused yet.)*
 3. More than one organisation scores codebases under the standard, so it is not being written around a single
    product.
 4. The rubric versions are published by the Initiative, not by an implementation. *(Since 2026-10-16, by
