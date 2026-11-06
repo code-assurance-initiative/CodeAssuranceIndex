@@ -186,7 +186,7 @@ To regenerate the sample (writes a fresh key pair to a scratch path; commit only
 cai keygen cai-ed25519-2026-07 --out /tmp/signing-key.json > examples/cai-delivery.keys.json
 cai sign examples/evidence.sample.json --key /tmp/signing-key.json --rubrics rubrics \
     --repo acme/checkout-api --commit 3f9a1c2 --host github.com \
-    --producer assure.canine.dev --scanner cca --scanner-version 4.2.0 \
+    --producer example-producer.example --scanner example-scanner --scanner-version 4.2.0 \
     --id cd_acme_checkout-api_3f9a1c2 --issued-at 2026-07-01T10:32:04Z \
     --out examples/cai-delivery.sample.json
 ```

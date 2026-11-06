@@ -43,9 +43,6 @@ public sealed class PublicCorsTests(RegistryApiFixture fx) : IClassFixture<Regis
                      "https://codeassuranceindex.info", "https://www.codeassuranceindex.info",
                      // ★ cai.canine.dev is deliberately ABSENT: the vhost is 301-only, so no page is
                      // served from it and no browser can present it as an Origin.
-                     "https://imprint.canine.dev",
-                     "https://assure.canine.dev", "https://assert.canine.dev", "https://assay.canine.dev",
-                     "https://cca.canine.dev",
                  })
         {
             using var response = await PreflightAsync(origin);
@@ -56,6 +53,17 @@ public sealed class PublicCorsTests(RegistryApiFixture fx) : IClassFixture<Regis
     }
 
     /// <summary>Decision 0007: watchdog.canine.dev only redirects to Assure now, so no page there calls the API.</summary>
+    [Fact]
+    public async Task No_producer_site_is_allowed_by_default()
+    {
+        // Decision 0012: the standard's code names no producer site; an operator lists such origins in configuration.
+        foreach (var origin in new[] { "https://assure.canine.dev", "https://cca.canine.dev", "https://imprint.canine.dev" })
+        {
+            using var response = await PreflightAsync(origin);
+            Assert.False(response.Headers.Contains("Access-Control-Allow-Origin"), origin);
+        }
+    }
+
     [Fact]
     public async Task The_retired_watchdog_host_is_not_allowed()
     {

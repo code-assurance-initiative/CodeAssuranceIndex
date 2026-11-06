@@ -19,8 +19,13 @@ public sealed record ListedSystem(string Id, string Name, string Homepage, strin
 /// <param name="Systems">The systems it may name as the author of a report.</param>
 /// <param name="Retired">The day the producer was retired (decision 0007), or null while it produces. A retired producer's
 /// deliveries stay exactly as signed and are still shown as its own.</param>
+/// <summary>A producer's badge issuer, as data in the listing (decision 0012): the id a badge URL names (<c>?issuer=</c>),
+/// the https origin the badge endpoint fetches the producer's public evidence from, and ids kept as aliases of it.</summary>
+public sealed record ListedBadgeIssuer(string Id, string BaseUrl, IReadOnlyList<string> Aliases);
+
 public sealed record ListedProducer(
-    string Producer, string Name, string Homepage, string Mark, IReadOnlyList<ListedSystem> Systems, string? Retired = null);
+    string Producer, string Name, string Homepage, string Mark, IReadOnlyList<ListedSystem> Systems, string? Retired = null,
+    ListedBadgeIssuer? Badges = null);
 
 /// <summary>
 /// Who may put a report link on the standard's survey pages, and under which name and mark (decision 0003).
@@ -97,7 +102,12 @@ public sealed class ProducerListing
                 Https(entry.Homepage, $"homepage of producer '{entry.Producer}'"),
                 Required(entry.Mark, $"mark of producer '{entry.Producer}'"),
                 systems,
-                Day(entry.Retired, $"retirement day of producer '{entry.Producer}'")));
+                Day(entry.Retired, $"retirement day of producer '{entry.Producer}'"),
+                entry.Badges is { } b
+                    ? new ListedBadgeIssuer(Required(b.Id, $"badge issuer id of producer '{entry.Producer}'"),
+                        Https(b.BaseUrl, $"badge issuer base URL of producer '{entry.Producer}'"),
+                        [.. (b.Aliases ?? []).Where(a => !string.IsNullOrWhiteSpace(a))])
+                    : null));
         }
 
         if (producers.GroupBy(p => p.Producer, StringComparer.Ordinal).FirstOrDefault(g => g.Count() > 1) is { } twice)
@@ -159,6 +169,14 @@ public sealed class ProducerListing
         [JsonPropertyName("mark")] public string? Mark { get; init; }
         [JsonPropertyName("systems")] public List<ListingSystem>? Systems { get; init; }
         [JsonPropertyName("retired")] public string? Retired { get; init; }
+        [JsonPropertyName("badges")] public ListingBadges? Badges { get; init; }
+    }
+
+    private sealed class ListingBadges
+    {
+        [JsonPropertyName("id")] public string? Id { get; init; }
+        [JsonPropertyName("baseUrl")] public string? BaseUrl { get; init; }
+        [JsonPropertyName("aliases")] public List<string>? Aliases { get; init; }
     }
 
     private sealed class ListingSystem

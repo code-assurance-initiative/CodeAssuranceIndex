@@ -4,12 +4,39 @@ using Xunit;
 
 namespace Cai.Tests;
 
-/// <summary>Decision 0007: the default badge issuer is the Canine Code Analyzer, and the retired id <c>watchdog</c> stays an alias
-/// of it for good, so every badge URL already in a README keeps drawing.</summary>
+/// <summary>Decision 0012: the standard's code names no issuer; the badge issuers are the producer listing's (data), or an
+/// operator's configuration. Decision 0007's promise still holds, declared by the listing: the retired id <c>watchdog</c>
+/// is an alias of the cca issuer, so every badge URL already in a README keeps drawing.</summary>
 public sealed class IssuerCatalogTests
 {
     private static IssuerCatalog Catalog(Dictionary<string, string?>? settings = null) =>
         new(new ConfigurationBuilder().AddInMemoryCollection(settings ?? []).Build());
+
+    private static Cai.Pages.ProducerListing Listing(string producers) =>
+        Cai.Pages.ProducerListing.Parse($"{{\"producers\": [{producers}]}}");
+
+    private const string Plain = "{\"producer\": \"p.example\", \"name\": \"P\", \"homepage\": \"https://p.example/\", \"mark\": \"html\", \"systems\": []}";
+
+    [Fact]
+    public void The_code_names_no_issuer_a_listing_without_badges_serves_none()
+    {
+        var catalog = new IssuerCatalog(new ConfigurationBuilder().Build(), Listing(Plain));
+        Assert.Null(catalog.Default);
+        Assert.False(catalog.TryGet("cca", out _));
+        Assert.False(catalog.TryGet("watchdog", out _));
+    }
+
+    [Fact]
+    public void A_listed_badge_issuer_and_its_aliases_are_served()
+    {
+        var listed = "{\"producer\": \"q.example\", \"name\": \"Q\", \"homepage\": \"https://q.example/\", \"mark\": \"html\", \"systems\": [], "
+                     + "\"badges\": {\"id\": \"q\", \"baseUrl\": \"https://api.q.example\", \"aliases\": [\"old-q\"]}}";
+        var catalog = new IssuerCatalog(new ConfigurationBuilder().Build(), Listing(Plain + ", " + listed));
+        Assert.True(catalog.TryGet("q", out var q));
+        Assert.True(catalog.TryGet("old-q", out var old));
+        Assert.Same(q, old);
+        Assert.Equal("https://api.q.example", q.BaseUrl);
+    }
 
     [Fact]
     public void With_no_configuration_the_default_issuer_is_cca()

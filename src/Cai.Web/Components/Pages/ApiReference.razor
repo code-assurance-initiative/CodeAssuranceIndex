@@ -7,7 +7,7 @@
     <p class="eyebrow">API</p>
     <h1>Use the standard from anything.</h1>
     <p class="lede">codeassuranceindex.info is the authority for the rubric catalogs and the scoring fold, served over a small
-        JSON API. The catalogs are the open standard, so the read endpoints are public: the Canine Code Analyzer and
+        JSON API. The catalogs are the open standard, so the read endpoints are public: every producer and
         anyone else call these instead of carrying their own copy.</p>
 </div></div>
 
@@ -56,8 +56,8 @@
         (a valid bearer token is the abuse control — a per-principal allowance far above any real delivery loop) and
         the registry's <strong>public probes</strong> <code>/api/registry/keys</code> and
         <code>/api/registry/health</code> (per-IP, sized so offline verification and monitoring never trip it).</p>
-    <div class="callout"><p style="margin:0">The Canine Code Analyzer (cca.canine.dev) calls these same public
-        endpoints, exempt from the limit as a co-located partner.</p></div>
+    <div class="callout"><p style="margin:0">Producers call these same public endpoints. A partner key
+        (<code>X-CAI-Partner</code>) lifts the limit; a caller on the same host as the standard is exempt too.</p></div>
 </div></section>
 
 <section><div class="wrap">
