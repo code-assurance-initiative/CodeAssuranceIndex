@@ -54,6 +54,28 @@ public sealed class SitePublishHostedServiceTests
         await service.StopAsync(Ct);
     }
 
+    /// <summary>
+    /// ★★ A TIMEOUT IS NOT A SHUTDOWN. HttpClient's own timeout is an <see cref="OperationCanceledException"/>,
+    /// and a loop that let every one of those through ended on 2026-11-10 with the host stopping (exit 0, so
+    /// systemd's Restart=on-failure left it down for four hours). Only cancellation of the loop's own token ends it.
+    /// </summary>
+    [Fact]
+    public async Task A_sweep_that_times_out_is_logged_and_the_loop_keeps_running()
+    {
+        var logger = new CapturingLogger();
+        using var provider = Services(DispatchProxy.Create<IRegistryStore, TimingOutStore>(), new SiteSweepMemory());
+        var service = Hosted(provider, logger);
+
+        await service.StartAsync(Ct);
+        await Until(() => logger.Errors.Count > 0);
+
+        Assert.Contains("Site publish sweep failed", logger.Errors);
+        Assert.False(service.ExecuteTask!.IsCompleted, "a timeout must not end the loop");
+
+        await service.StopAsync(Ct);
+        Assert.True(service.ExecuteTask!.IsCompleted, "stopping the host still ends the loop");
+    }
+
     private static SitePublishHostedService Hosted(IServiceProvider provider, ILogger<SitePublishHostedService> logger) =>
         new(provider.GetRequiredService<IServiceScopeFactory>(),
             Options.Create(new SyndicationOptions { TickMinutes = 60 }),
@@ -102,6 +124,15 @@ public sealed class SitePublishHostedServiceTests
     {
         protected override object? Invoke(MethodInfo? targetMethod, object?[]? args) =>
             throw new InvalidOperationException("registry unavailable");
+    }
+
+    /// <summary>A registry behind a client whose timeout elapses: every call throws what HttpClient throws.</summary>
+    public class TimingOutStore : DispatchProxy
+    {
+        protected override object? Invoke(MethodInfo? targetMethod, object?[]? args) =>
+            throw new TaskCanceledException(
+                "The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing.",
+                new TimeoutException("The operation was canceled."));
     }
 
     private sealed class CapturingLogger : ILogger<SitePublishHostedService>

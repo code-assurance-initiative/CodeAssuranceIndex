@@ -41,7 +41,10 @@ public sealed class SitePublishHostedService(
                         sweep.Built, sweep.Changed, sweep.Withdrawn, sweep.Failed);
                 }
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
+            // ★★ THE LOOP'S OWN TOKEN DECIDES, NOT THE EXCEPTION'S TYPE. An HttpClient timeout is an
+            //    OperationCanceledException too; filtering on the type let one through on 2026-11-10 and the host
+            //    stopped. Only a cancelled stoppingToken (the host shutting down) ends the loop.
+            catch (Exception ex) when (!stoppingToken.IsCancellationRequested)
             {
                 logger.LogError(ex, "Site publish sweep failed");
             }

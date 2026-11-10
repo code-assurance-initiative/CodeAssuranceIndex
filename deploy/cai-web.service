@@ -3,6 +3,8 @@ Description=CAI — codeassuranceindex.info (the open standard: rubric API + UI 
 Documentation=https://github.com/code-assurance-initiative/CodeAssuranceIndex
 After=network-online.target
 Wants=network-online.target
+# ★ In [Unit], where systemd reads it: under [Service] it was "Unknown key ... ignoring", so the restart limit applied.
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -21,9 +23,10 @@ Environment=Rubrics__Root=/home/jimmy/apps/cai-web/rubrics
 #    appsettings.Production.json inside the published app directory, which the host loads because
 #    ASPNETCORE_ENVIRONMENT=Production is set above.
 ExecStart=/usr/bin/dotnet /home/jimmy/apps/cai-web/app/Cai.Web.dll
-Restart=on-failure
+# ★★ ALWAYS, NOT on-failure. On 2026-11-10 a background service stopped the host CLEANLY (exit 0) and on-failure
+#    left the standard down for four hours. A web host that exits for any reason other than systemctl stop is wrong.
+Restart=always
 RestartSec=5
-StartLimitIntervalSec=0
 
 [Install]
 WantedBy=multi-user.target

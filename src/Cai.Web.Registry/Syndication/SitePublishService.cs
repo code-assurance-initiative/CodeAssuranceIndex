@@ -265,6 +265,19 @@ public sealed class SitePublishService(
         row.Codebases,
         row.MedianCai);
 
+    /// <summary>
+    /// The site did not answer: a refused or failed request, or the client's own timeout elapsing.
+    /// </summary>
+    /// <remarks>
+    /// ★★ A TIMEOUT IS A SITE FAILURE, NOT A SHUTDOWN. HttpClient reports its Timeout as a
+    /// <see cref="TaskCanceledException"/>, which is an <see cref="OperationCanceledException"/>; only the sweep's
+    /// OWN token being cancelled means "stop". On 2026-11-10 one slow Imprint answer escaped as exactly that and
+    /// stopped the whole CAI host.
+    /// </remarks>
+    private static bool IsSiteFailure(Exception e, CancellationToken cancellationToken) =>
+        e is HttpRequestException
+        || (e is OperationCanceledException && !cancellationToken.IsCancellationRequested);
+
     /// <summary>Push each page, counting real change and never stopping on one failure.</summary>
     private async Task<(int Changed, int Failed)> PushAsync(
         IReadOnlyList<SurveyPage> pages, CancellationToken cancellationToken)
@@ -281,7 +294,7 @@ public sealed class SitePublishService(
                     changed++;
                 }
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (IsSiteFailure(e, cancellationToken))
             {
                 failed++;
                 logger.LogWarning(e, "Page {Path} could not be published.", page.Path);
@@ -325,7 +338,7 @@ public sealed class SitePublishService(
                     withdrawn++;
                 }
             }
-            catch (HttpRequestException e)
+            catch (Exception e) when (IsSiteFailure(e, cancellationToken))
             {
                 logger.LogWarning(e, "Page {Path} could not be withdrawn.", path);
             }
@@ -340,7 +353,7 @@ public sealed class SitePublishService(
         {
             return await syndication.ListAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (HttpRequestException e)
+        catch (Exception e) when (IsSiteFailure(e, cancellationToken))
         {
             // ★ NULL, NOT EMPTY. The question was unanswerable, and an unanswerable question withdraws
             //   nothing — see the type's own remarks.
