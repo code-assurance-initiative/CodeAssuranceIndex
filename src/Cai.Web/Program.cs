@@ -138,6 +138,11 @@ builder.Services.Configure<SyndicationOptions>(builder.Configuration.GetSection(
 //   process has never swept" — an unconfigured environment answering nothing at all is exactly the silence
 //   that made a stopped publisher invisible for months.
 builder.Services.AddSingleton<SiteSweepMemory>();
+// ★★ BACKGROUND WORK NEVER TAKES THE STANDARD DOWN WITH IT. .NET's default (StopHost) stops the whole process when
+//   any BackgroundService throws; on 2026-11-10 one Imprint timeout in the site sweep did exactly that, and the rubric
+//   API, UI and registry were down four hours (exit 0, so Restart=on-failure never fired). The host logs the dead
+//   service at Critical either way; the API keeps answering.
+builder.Services.Configure<HostOptions>(o => o.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore);
 var syndication = builder.Configuration.GetSection(SyndicationOptions.Section).Get<SyndicationOptions>()
     ?? new SyndicationOptions();
 if (syndication.IsConfigured)

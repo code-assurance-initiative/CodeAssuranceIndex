@@ -141,6 +141,43 @@ public sealed class SitePublishServiceTests : IDisposable
         Assert.Empty(site.Withdrawn);
     }
 
+    /// <summary>
+    /// ★★ A SITE THAT TIMES OUT IS A FAILED PUSH, NOT AN ABORTED SWEEP. HttpClient reports its own timeout as a
+    /// <see cref="TaskCanceledException"/>, not an <see cref="HttpRequestException"/>; on 2026-11-10 one slow
+    /// Imprint answer escaped the sweep that way and took the whole CAI host (API, UI, registry) down for four hours.
+    /// </summary>
+    [Fact]
+    public async Task A_push_that_times_out_is_counted_failed_and_the_sweep_finishes()
+    {
+        var store = Store();
+        Deliver(store, "org-acme", "acme/checkout-api");
+        Deliver(store, "org-acme", "acme/billing-api");
+        store.GrantPublication("org-acme", "acme/checkout-api", "2026-09-01T10:00:00Z");
+        store.GrantPublication("org-acme", "acme/billing-api", "2026-09-01T10:00:00Z");
+
+        var site = new FakeSite(["surveys/github/acme/checkout-api"]) { TimeOutOn = "surveys/github/acme/checkout-api" };
+        var sweep = await Sweep(store, site);
+
+        Assert.Equal(1, sweep.Failed);
+        Assert.Contains(site.Published, p => p.Path == "surveys/github/acme/billing-api");
+        Assert.Empty(site.Withdrawn);
+    }
+
+    [Fact]
+    public async Task A_listing_that_times_out_withdraws_nothing_and_the_sweep_still_publishes()
+    {
+        var store = Store();
+        Deliver(store, "org-acme", "acme/checkout-api");
+        store.GrantPublication("org-acme", "acme/checkout-api", "2026-09-01T10:00:00Z");
+
+        var site = new FakeSite(["surveys/github/acme/gone-away"]) { TimeOutListing = true };
+        var sweep = await Sweep(store, site);
+
+        Assert.Empty(site.Withdrawn);
+        Assert.Equal(0, sweep.Withdrawn);
+        Assert.NotEmpty(site.Published);
+    }
+
     /// <summary>★ One sweep, one recorded reading — the point the trend line is drawn through.</summary>
     [Fact]
     public async Task The_sweep_records_the_reading_it_published()
@@ -267,8 +304,22 @@ public sealed class SitePublishServiceTests : IDisposable
 
         public bool FailListing { get; init; }
 
+        public string? TimeOutOn { get; init; }
+
+        public bool TimeOutListing { get; init; }
+
+        /// <summary>What HttpClient throws when its own Timeout elapses: cancellation the CALLER never asked for.</summary>
+        private static TaskCanceledException ClientTimeout() =>
+            new("The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing.",
+                new TimeoutException("The operation was canceled."));
+
         public Task<bool> PublishAsync(SurveyPage page, CancellationToken cancellationToken)
         {
+            if (TimeOutOn is { } slow && page.Path == slow)
+            {
+                throw ClientTimeout();
+            }
+
             if (FailOn is { } path && page.Path == path)
             {
                 throw new HttpRequestException($"publish '{path}' failed: 503");
@@ -285,7 +336,9 @@ public sealed class SitePublishServiceTests : IDisposable
         }
 
         public Task<IReadOnlyList<string>?> ListAsync(CancellationToken cancellationToken) =>
-            FailListing
+            TimeOutListing
+                ? throw ClientTimeout()
+                : FailListing
                 ? throw new HttpRequestException("list failed: 503")
                 : Task.FromResult(serving);
     }

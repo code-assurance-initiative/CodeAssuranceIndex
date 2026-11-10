@@ -12,7 +12,7 @@ watchdog (co-located on wrx1) ──http──▶ 127.0.0.1:8090 ─────
 ## Host: canine-wrx1 (the app)
 - **Service:** `cai-web.service` (see [`cai-web.service`](cai-web.service)) — runs `dotnet Cai.Web.dll` from
   `/home/jimmy/apps/cai-web/app`, binds `0.0.0.0:8090`, reads the rubric catalogs from
-  `/home/jimmy/apps/cai-web/rubrics`. `Restart=on-failure`.
+  `/home/jimmy/apps/cai-web/rubrics`. `Restart=always` (a clean exit is still an outage).
 - **Firewall:** `ufw allow from 192.168.1.0/24 to any port 8090 proto tcp` (lets dgx1's nginx reach it; the LAN only).
 - The public API rate-limits anonymous traffic per client IP (1/s · 3/min · 15/day); loopback callers are exempt, so
   watchdog calls `http://127.0.0.1:8090` and is never limited. Registry traffic has its own classes — authenticated

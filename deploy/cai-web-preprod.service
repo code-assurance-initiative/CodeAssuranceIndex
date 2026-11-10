@@ -14,6 +14,8 @@ Description=CAI — PREPROD (the open standard, on its own database)
 Documentation=https://github.com/code-assurance-initiative/CodeAssuranceIndex
 After=network-online.target
 Wants=network-online.target
+# ★ In [Unit], where systemd reads it: under [Service] it was "Unknown key ... ignoring", so the restart limit applied.
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -52,9 +54,10 @@ Environment=Registry__KeysPath=/home/jimmy/apps/cai-web-preprod/registry-data/tr
 #    sweep needs a preprod CMS site of its own, and until one exists this tier does not publish at all —
 #    which SyndicationOptions.IsConfigured enforces by refusing to register the loop.
 ExecStart=/usr/bin/dotnet /home/jimmy/apps/cai-web-preprod/app/Cai.Web.dll
-Restart=on-failure
+# ★★ ALWAYS, NOT on-failure. On 2026-11-10 a background service stopped the host CLEANLY (exit 0) and on-failure
+#    left the standard down for four hours. A web host that exits for any reason other than systemctl stop is wrong.
+Restart=always
 RestartSec=5
-StartLimitIntervalSec=0
 
 [Install]
 WantedBy=multi-user.target
