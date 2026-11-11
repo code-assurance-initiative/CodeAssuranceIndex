@@ -18,9 +18,10 @@ matter of good behaviour:
 
 1. **Every decision is recorded** in [`docs/decisions/`](decisions/README.md), with the proposer's and decider's
    conflict stated, the reasons written, and a note that it was taken under this interim rule.
-2. **The comment period runs after adoption**, not before: 30 days for a change that moves a number, 14 otherwise. An
-   unresolved objection from a commenter **not affiliated with the proposer** reopens the decision. Nothing is accepted
-   in a way that cannot be reopened.
+2. **The comment period is paused until the steering group exists** ([decision 0019](decisions/0019-the-comment-period-is-paused-until-the-steering-group-exists.md)). There is nobody to
+   comment yet, and a period nobody can use is a promise the page cannot keep. Each decision says so in its record. An
+   objection that does arrive is still answered on the record, and an unresolved one from a commenter **not affiliated
+   with the proposer** reopens the decision. Nothing is accepted in a way that cannot be reopened.
 3. **The steering group may revisit any interim decision** when it exists, and this rule asks it to. An interim
    decision is the working rule, not a settled one.
 
@@ -58,11 +59,12 @@ taken here and does not take its own.
    (measured, where it can be), the alternatives considered, and the proposer's declared interests. (This file called
    it an RFC until 2026-10-16; none was ever filed under that name.)
 3. **Public comment.** The proposal is open for comment for **at least 30 days** (14 for a change that moves no
-   number). Comments happen on the pull request, where everyone can read them.
+   number). Comments happen on the pull request, where everyone can read them. *Until the steering group exists this
+   step is paused ([decision 0019](decisions/0019-the-comment-period-is-paused-until-the-steering-group-exists.md))*.
 4. **Decision.** The steering group decides by simple majority of the members who are not conflicted (see below),
    with at least half of all members taking part. Until the steering group exists, the acting maintainer decides,
    under the interim pragmatic rule above ([decision 0011](decisions/0011-interim-pragmatic-governance.md)): the
-   decision is recorded with its conflict and reasons, the comment period runs after adoption, and an unaffiliated
+   decision is recorded with its conflict and reasons, no comment period runs until the group exists, and an unaffiliated
    objection reopens it. A proposal is no longer made to wait for the group.
 5. **Record.** Every decision is a numbered record in [`docs/decisions/`](decisions/README.md): accepted, accepted as
    amended, or rejected; by whom; the vote and the recusals where there were any; the comment taken; and **the
@@ -139,7 +141,7 @@ The Initiative will not describe its governance as *independent* until all four 
    the first. What is still missing is the steering group: every decision so far was taken by one person, who also
    maintains an engine measured by the benchmark, and the first one skipped its comment period and says so. Since
    [decision 0011](decisions/0011-interim-pragmatic-governance.md) (2026-11-06) the maintainer decides under an
-   explicit interim rule — recorded, reversible, with the comment period after adoption — rather than under a
+   explicit interim rule — recorded and reversible, with the comment period paused until the group exists — rather than under a
    standstill the practice had already left behind. Until the group exists, this bar is met on paper and not in
    substance. Nothing has been refused yet.)*
 3. More than one organisation scores codebases under the standard, so it is not being written around a single
