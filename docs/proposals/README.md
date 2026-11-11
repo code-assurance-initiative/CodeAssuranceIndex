@@ -97,7 +97,7 @@ Anything the proposer cannot settle alone. The decision answers each one.
 | [0012](0012-the-standard-names-no-producer.md) | The standard names no producer: every producer-specific file, default and promotion leaves CAI | 2026-11-06 | Accepted by [decision 0012](../decisions/0012-the-standard-names-no-producer.md) |
 | [0013](0013-a-dimension-enters-the-standard-on-evidence.md) | A dimension enters the standard on evidence, and the standard holds only what must be comparable | 2026-11-06 | Accepted as amended by [decision 0013](../decisions/0013-a-dimension-enters-the-standard-on-evidence.md) |
 | [0014](0014-retire-pf2-allocation-hygiene.md) | Retire PF2, allocation hygiene | 2026-11-06 | Proposed (exact recomputation by the reference scorer, then comment, before a decision) |
-| [0015](0015-retire-d39-il-efficiency.md) | Retire D39, IL efficiency | 2026-11-11 | Proposed |
-| [0016](0016-retire-ac7-a11y-enforcement.md) | Retire AC7, accessibility enforcement, and leave its advice to the markup dimensions | 2026-11-11 | Proposed |
-| [0017](0017-m1-and-m3-say-what-they-read.md) | M1 and M3 say what they read; project naming leaves M3 | 2026-11-11 | Proposed |
-| [0018](0018-retire-d9-test-distribution.md) | Retire D9, test distribution | 2026-11-11 | Proposed |
+| [0015](0015-retire-d39-il-efficiency.md) | Retire D39, IL efficiency | 2026-11-11 | Proposed (exact recomputation done, comment to 2026-12-11, then a decision) |
+| [0016](0016-retire-ac7-a11y-enforcement.md) | Retire AC7, accessibility enforcement, and leave its advice to the markup dimensions | 2026-11-11 | Proposed (exact recomputation done, comment to 2026-12-11, then a decision) |
+| [0017](0017-m1-and-m3-say-what-they-read.md) | M1 and M3 say what they read; project naming leaves M3 | 2026-11-11 | Proposed (exact recomputation done, comment to 2026-12-11, then a decision) |
+| [0018](0018-retire-d9-test-distribution.md) | Retire D9, test distribution | 2026-11-11 | Proposed (exact recomputation done, comment to 2026-12-11, then a decision) |
