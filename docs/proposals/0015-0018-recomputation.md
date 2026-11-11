@@ -57,5 +57,7 @@ counted as 0018's effect.
 
 ## Comment
 
-These proposals move published scores, so the comment period is **30 days**, to **2026-12-11** (GOVERNANCE.md, step
-3). Comment on the pull request that adds this file. A decision on each proposal follows the comment period.
+These proposals move published scores. Under the interim rule ([decision 0011](../decisions/0011-interim-pragmatic-governance.md))
+they were decided on this recomputation, and the **30-day** comment period runs after adoption, to **2026-12-11**.
+Comment on the pull request that adds this file; an unresolved objection from a commenter not affiliated with the
+proposer reopens the decision.

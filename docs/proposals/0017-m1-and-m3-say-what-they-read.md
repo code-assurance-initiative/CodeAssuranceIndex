@@ -9,7 +9,7 @@
   proposer is also the acting maintainer, i.e. the decider
   ([decision 0011](../decisions/0011-interim-pragmatic-governance.md)).
 - **Moves scores:** yes (M3 only).
-- **Status:** Proposed
+- **Status:** Accepted by [decision 0017](../decisions/0017-m1-and-m3-say-what-they-read.md)
 
 ## Problem
 

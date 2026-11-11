@@ -9,7 +9,7 @@
   producer alike. The proposer is also the acting maintainer, i.e. the decider
   ([decision 0011](../decisions/0011-interim-pragmatic-governance.md)).
 - **Moves scores:** yes.
-- **Status:** Proposed
+- **Status:** Accepted by [decision 0015](../decisions/0015-retire-d39-il-efficiency.md)
 
 ## Problem
 
