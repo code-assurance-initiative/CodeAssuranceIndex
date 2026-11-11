@@ -18,8 +18,10 @@ nobody recused.
 
 ## Comment
 
-None before adoption. This change moves published scores, so under the interim rule the **30-day** comment period runs
-after adoption, to **2026-12-11**. An unresolved objection from a commenter not affiliated with the proposer reopens it.
+None. The comment period is paused until the steering group exists
+([decision 0019](0019-the-comment-period-is-paused-until-the-steering-group-exists.md)): there is nobody to comment
+yet. The decision is recorded, its reasons are written and it is reversible; the steering group may revisit it when it
+exists.
 
 ## Reasons
 

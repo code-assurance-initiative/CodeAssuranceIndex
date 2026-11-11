@@ -101,3 +101,4 @@ Anything the proposer cannot settle alone. The decision answers each one.
 | [0016](0016-retire-ac7-a11y-enforcement.md) | Retire AC7, accessibility enforcement, and leave its advice to the markup dimensions | 2026-11-11 | Accepted by [decision 0016](../decisions/0016-retire-ac7-a11y-enforcement.md) |
 | [0017](0017-m1-and-m3-say-what-they-read.md) | M1 and M3 say what they read; project naming leaves M3 | 2026-11-11 | Accepted by [decision 0017](../decisions/0017-m1-and-m3-say-what-they-read.md) |
 | [0018](0018-retire-d9-test-distribution.md) | Retire D9, test distribution | 2026-11-11 | Accepted by [decision 0018](../decisions/0018-retire-d9-test-distribution.md) |
+| [0019](0019-the-comment-period-is-paused-until-the-steering-group-exists.md) | The comment period is paused until the steering group exists | 2026-11-11 | Accepted by [decision 0019](../decisions/0019-the-comment-period-is-paused-until-the-steering-group-exists.md) |
