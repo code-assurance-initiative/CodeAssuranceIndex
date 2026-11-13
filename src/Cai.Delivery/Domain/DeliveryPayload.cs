@@ -12,7 +12,7 @@ namespace Cai.Delivery;
 /// The signature attests: "codeassuranceindex.info folded THIS evidence under rubric <c>rubricVersion</c> to CAI
 /// <c>Verdict.Cai</c> for <c>Subject</c>, as submitted by <c>Producer</c>, at <c>IssuedAt</c>." It does NOT attest that
 /// the evidence is a truthful measurement of the real repository — that is the producer's claim (closed-loop: the
-/// producer is the trusted Watchdog surveyor; 3rd-party producer conformance is deferred).
+/// producer is a registered producer; 3rd-party producer conformance is deferred).
 /// </summary>
 public sealed record DeliveryPayload
 {
@@ -35,7 +35,7 @@ public sealed record DeliveryPayload
     [JsonPropertyName("issuer")] public DeliveryIssuer Issuer { get; init; } = new();
 
     /// <summary>Who MEASURED the code (produced the evidence). Stamped by cai from the authenticated producer identity at
-    /// push time, so a sharer cannot forge a false producer. Closed-loop: the Watchdog surveyor.</summary>
+    /// push time, so a sharer cannot forge a false producer.</summary>
     [JsonPropertyName("producer")] public DeliveryProducer Producer { get; init; } = new();
 
     /// <summary>What was measured — repository identity + the commit. Git-independent provenance carried IN the artifact,
@@ -135,10 +135,10 @@ public sealed record DeliveryIssuer
 /// <summary>Who measured the code (produced the evidence). Stamped by cai from the authenticated producer.</summary>
 public sealed record DeliveryProducer
 {
-    /// <summary>The producer's account/identity, e.g. <c>watchdog.canine.dev</c>.</summary>
+    /// <summary>The producer's account/identity, e.g. <c>producer.example</c>.</summary>
     [JsonPropertyName("name")] public string Name { get; init; } = "";
 
-    /// <summary>The scanner/analyzer that produced the evidence, e.g. <c>watchdog-surveyor</c>.</summary>
+    /// <summary>The scanner/analyzer that produced the evidence, e.g. <c>example-analyzer</c>.</summary>
     [JsonPropertyName("scanner")] public string? Scanner { get; init; }
 
     /// <summary>The scanner version — part of provenance so a reader knows which analyzer build measured the code.</summary>
@@ -273,7 +273,7 @@ public sealed record DeliveryReport
     /// <summary>Where the report is read: an absolute <c>https</c> URL about this delivery's commit.</summary>
     [JsonPropertyName("url")] public string Url { get; init; } = "";
 
-    /// <summary>The listed system that wrote it, e.g. <c>watchdog</c>.</summary>
+    /// <summary>The listed system that wrote it, e.g. <c>example-system</c>.</summary>
     [JsonPropertyName("system")] public string System { get; init; } = "";
 }
 

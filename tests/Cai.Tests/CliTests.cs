@@ -32,6 +32,27 @@ public sealed class CliTests : IDisposable
         Assert.Contains("cai — the Code Assurance Index reference tools", run.Err, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// ★ A DOWNLOADED PROGRAM SAYS WHICH IT IS. The CLI is released as a program (a GitHub release, one archive per platform), so
+    /// a buyer who verified a delivery must be able to say which release of the reference tools they verified it with.
+    /// </summary>
+    [Fact]
+    public async Task Version_prints_the_release_and_exits_0()
+    {
+        var run = await Cai("--version");
+
+        Assert.True(run.Exit == 0, run.Err);
+        var expected = CliVersion();
+        Assert.Equal($"cai {expected}", run.Out.Trim());
+    }
+
+    private static string CliVersion()
+    {
+        var cli = Assembly.Load("cai");
+        var informational = cli.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+        return informational.Split('+')[0];
+    }
+
     /// <summary>★ A number is only meaningful under the rubric it was folded with, so there is no default.</summary>
     [Fact]
     public async Task Score_refuses_to_fold_without_the_rubric_archive()

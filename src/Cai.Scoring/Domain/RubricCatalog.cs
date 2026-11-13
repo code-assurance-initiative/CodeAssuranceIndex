@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace Cai.Scoring;
 
-/// <summary>One dimension in a rubric catalog — a definition, not a score. Mirrors the Watchdog engine's
-/// rubric-catalog.json contract so a catalog produced by the engine round-trips through the standard unchanged.</summary>
+/// <summary>One dimension in a rubric catalog — a definition, not a score. Mirrors the
+/// rubric-catalog.json contract so a catalog produced by an analyzer round-trips through the standard unchanged.</summary>
 public sealed record CatalogDimension
 {
     /// <summary>The dimension's stable id (e.g. "D#"), matching the id an evidence bundle reports.</summary>

@@ -58,7 +58,7 @@ public sealed record EvidenceBundle
     [JsonPropertyName("lenses")] public IReadOnlyList<LensInput> Lenses { get; init; } = [];
 
     /// <summary>DESCRIPTIVE, NON-SCORED rebuild-cost estimate — a producer's estimate of what it would cost to rebuild this
-    /// codebase from scratch. Carried verbatim through the signed package so a downstream consumer (e.g. an Assay buyer
+    /// codebase from scratch. Carried verbatim through the signed package so a downstream consumer (e.g. a buyer
     /// report) can ECHO it; it is NEVER folded into the CAI and can NEVER move the headline (<see cref="CaiScorer"/> reads
     /// none of it). Round-trips BOTH shapes the consumer accepts: a plain string (e.g. <c>"€118k–€204k"</c>) and a
     /// <c>{ "low": …, "high": …, "currency": … }</c> object. Held as a raw <see cref="JsonNode"/> so either shape passes
@@ -84,7 +84,7 @@ public sealed record EvidenceBundle
 
     /// <summary>DESCRIPTIVE, NON-SCORED deployment topology — the producer's authoritative "what this system runs and what
     /// it depends on," read from the repo's own declarative deployment sources (Docker Compose / .NET Aspire / Kubernetes /
-    /// Terraform / Bicep / …). Carried VERBATIM through the signed package so a downstream consumer (e.g. an Assay buyer
+    /// Terraform / Bicep / …). Carried VERBATIM through the signed package so a downstream consumer (e.g. a buyer
     /// report) can ECHO it as an Operational Architecture section; it is NEVER folded into the CAI and can NEVER move the
     /// headline (<see cref="CaiScorer"/> reads none of it). Held as a raw <see cref="JsonNode"/> — the producer owns the
     /// topology schema (nodes/edges/provenance); CAI is agnostic to it and simply round-trips it byte-stable through the

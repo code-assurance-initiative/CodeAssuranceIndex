@@ -146,23 +146,16 @@ public sealed record SecurityReading
 /// <summary>
 /// One advisory seen against one package version in one survey.
 /// </summary>
-/// <param name="AdvisoryId">The advisory as the ecosystem names it — <c>GHSA-…</c>, <c>CVE-…</c>,
-/// <c>RUSTSEC-…</c>, <c>GO-…</c> — VERBATIM. ★ Not case-folded: a GHSA id is canonically lower case and a
-/// CVE id upper, so a reader who pastes one from a page into the advisory database has to get back the
-/// string the ecosystem uses. Two spellings of one id are collapsed case-insensitively at the point they
-/// are counted, which is the only place the distinction would do harm.</param>
-/// <param name="Package">The package the advisory is against, verbatim — an npm scope
-/// (<c>@humanfs/node</c>) and a Go module path (<c>google.golang.org/grpc</c>) are part of the name and are
-/// kept.</param>
-/// <param name="PackageVersion">The resolved version the scan found.</param>
-/// <param name="Inherited">The package was pulled in by something else rather than declared by the
-/// codebase.</param>
 public sealed record VisibleAdvisory
 {
-    /// <summary>The advisory id, verbatim.</summary>
+    /// <summary>The advisory as the ecosystem names it (<c>GHSA-…</c>, <c>CVE-…</c>, <c>RUSTSEC-…</c>, <c>GO-…</c>), VERBATIM.
+    /// ★ Not case-folded: a GHSA id is canonically lower case and a CVE id upper, so a reader who pastes one from a page into
+    /// the advisory database has to get back the string the ecosystem uses. Two spellings of one id are collapsed
+    /// case-insensitively at the point they are counted, which is the only place the distinction would do harm.</summary>
     [JsonPropertyName("advisoryId")] public string AdvisoryId { get; init; } = "";
 
-    /// <summary>The package it is against, verbatim.</summary>
+    /// <summary>The package the advisory is against, verbatim: an npm scope (<c>@humanfs/node</c>) and a Go module path
+    /// (<c>google.golang.org/grpc</c>) are part of the name and are kept.</summary>
     [JsonPropertyName("package")] public string Package { get; init; } = "";
 
     /// <summary>The resolved version the scan found.</summary>
