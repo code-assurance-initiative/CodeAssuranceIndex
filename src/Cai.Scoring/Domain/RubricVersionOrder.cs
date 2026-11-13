@@ -17,7 +17,7 @@ namespace Cai.Scoring;
 /// <c>{"latest":"rubric-2026.09.9"}</c> while serving <c>.13</c>. Every consumer resolving "latest" got a
 /// stale rubric and nothing reported it, because a stale-but-valid version verifies perfectly well.</para>
 ///
-/// <para><b>Why it lives here rather than in a consumer.</b> The knowledge existed: kennel had a type
+/// <para><b>Why it lives here rather than in a consumer.</b> The knowledge existed: a consumer had a type
 /// saying exactly this, with a comment that an ordinal sort is not a chronology. It was on one side of the
 /// seam and not the other, and the side that lacked it is the side that SERVES the archive. A rule about
 /// the meaning of the standard's own identifiers belongs in the standard, so there is one definition for

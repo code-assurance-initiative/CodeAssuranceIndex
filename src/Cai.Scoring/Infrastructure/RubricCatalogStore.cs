@@ -5,7 +5,7 @@ namespace Cai.Scoring;
 /// <summary>
 /// Loads + caches the versioned rubric catalogs codeassuranceindex.info owns — the authoritative, archived definitions of the
 /// standard. Reads <c>{root}/&lt;rubricVersion&gt;/rubric-catalog.json</c>. Catalogs are immutable once published, so
-/// each version is parsed once and cached. This is the source the API + UI serve and that the Watchdog surveyor calls
+/// each version is parsed once and cached. This is the source the API + UI serve and that a producer can call
 /// instead of carrying its own copy.
 /// <para><b>Attestation invariant:</b> a catalog is served only when the <c>rubricVersion</c> it declares matches the
 /// directory it is published under. A mismatch means the archive cannot attest which version of the standard the

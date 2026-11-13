@@ -8,7 +8,7 @@
     <RootNamespace>Cai.Scoring</RootNamespace>
   </PropertyGroup>
 
-  <!-- NuGet package: the open CAI reference scorer, so any analyzer (Watchdog included) folds an evidence bundle
+  <!-- NuGet package: the open CAI reference scorer, so any analyzer folds an evidence bundle
        through the SAME implementation rather than re-deriving the math. NOT PUBLISHED YET: publish-packages.yml has
        never run and neither package exists on nuget.org or GitHub Packages, so "read our algorithm and check our
        number" is not yet true for a stranger. nuget.org is the target because GitHub Packages needs an account even
