@@ -1,0 +1,124 @@
+name: release-cli
+
+# Releases the CAI reference tools (`cai`: score, verify, keygen, sign, verify-delivery) as a PROGRAM: one archive per
+# platform on a GitHub release, readable by anyone without an account. Each archive holds the self-contained `cai`
+# executable (no .NET install needed), the published rubric archive (`rubrics/`, which `cai verify` and
+# `cai verify-delivery` read to reproduce a number), the licence and a short README. SHA256SUMS lists every archive.
+#
+# Trigger by pushing a tag like `cli-v1.0.0` (the version is taken from the tag), or run manually.
+
+on:
+  push:
+    tags: ['cli-v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 1.0.0)'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - name: Resolve version
+        id: ver
+        # ★★ Both sources are attacker-chosen (see publish-packages.yml): bound to env:, validated to a shape.
+        env:
+          DISPATCH_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            v="$DISPATCH_VERSION"
+          else
+            v="${GITHUB_REF_NAME#cli-v}"
+          fi
+          if ! printf '%s' "$v" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::could not resolve a semantic version (got '$v')"; exit 1
+          fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68  # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+      - name: Test
+        run: dotnet test tests/Cai.Tests/Cai.Tests.csproj -c Release --nologo
+
+  build:
+    needs: [version, test]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rid: [linux-x64, linux-arm64, osx-x64, osx-arm64, win-x64]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68  # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+      - name: Publish and archive
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          RID: ${{ matrix.rid }}
+        run: |
+          set -euo pipefail
+          name="cai-$VERSION-$RID"
+          dotnet publish src/Cai.Cli/Cai.Cli.csproj -c Release -r "$RID" --self-contained true \
+            -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none \
+            "-p:Version=$VERSION" -o "out/$name" --nologo
+          rm -f "out/$name"/*.xml   # the libraries' API docs: not part of the program
+          cp -r rubrics "out/$name/rubrics"
+          cp LICENSE "out/$name/"
+          cp src/Cai.Cli/README.md "out/$name/README.md"
+          mkdir -p dist
+          if [ "${RID%%-*}" = "win" ]; then
+            (cd out && zip -qr "../dist/$name.zip" "$name")
+          else
+            tar -C out -czf "dist/$name.tar.gz" "$name"
+          fi
+      - name: Smoke test (native platform only)
+        if: matrix.rid == 'linux-x64'
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          dir="out/cai-$VERSION-linux-x64"
+          test "$("$dir/cai" --version)" = "cai $VERSION"
+          "$dir/cai" score examples/evidence.sample.json --rubrics "$dir/rubrics"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: cai-${{ matrix.rid }}
+          path: dist/*
+
+  release:
+    needs: [version, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333  # v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums and release
+        # ★★ The token reaches the process as DATA (env:), never interpolated into the script.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.version.outputs.version }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum cai-* > SHA256SUMS
+          cat SHA256SUMS
+          gh release create "cli-v$VERSION" --repo "$REPO" --target "$SHA" --title "cai $VERSION" \
+            --notes "The CAI reference tools as a program. Download the archive for your platform, unpack it and run \`cai\`; no .NET install is needed. Each archive includes the published rubric archive (\`rubrics/\`) so \`cai verify\` and \`cai verify-delivery\` can reproduce a number offline. Check your download against SHA256SUMS." \
+            cai-* SHA256SUMS

@@ -25,6 +25,16 @@ using var loggerFactory = LoggerFactory.Create(builder => builder
         : LogLevel.Information));
 var log = loggerFactory.CreateLogger("cai");
 
+// ★ A downloaded program says which release it is, so a buyer can name the tools a delivery was verified with.
+if (args is ["--version"])
+{
+    var informational = typeof(Program).Assembly
+        .GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
+        .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion ?? "0.0.0";
+    Console.WriteLine($"cai {informational.Split('+')[0]}");
+    return 0;
+}
+
 var commands = new[] { "score", "verify", "keygen", "sign", "verify-delivery" };
 if (args.Length < 1 || !commands.Contains(args[0]))
 {
@@ -48,6 +58,8 @@ if (args.Length < 1 || !commands.Contains(args[0]))
           meaningful under the criteria it was computed with, so signing folds under the catalog the evidence names
           and verifying re-folds under the one the package names. --no-reproduce checks the signature ALONE and
           needs no archive — it then makes no claim about the number.
+
+        cai --version                                    print which release of the reference tools this is
 
         See codeassuranceindex.info/spec (scoring) and codeassuranceindex.info/spec/delivery (package + registry).
         """);
