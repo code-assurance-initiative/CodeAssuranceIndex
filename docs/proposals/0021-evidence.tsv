@@ -1,0 +1,154 @@
+language	repository	commit	production_files	pairs_today	pairs_proposed	score_today	score_proposed	at_T_today_live_stale_dormant_other	at_T_proposed_live_stale_dormant_other
+csharp	AKlaus/DomainResult	7ae9c56c1df8487d33f303f265c9422482f4d62d	34	0	0	10.0	10.0		
+csharp	BCUninstaller/Bulk-Crap-Uninstaller	f39663316ad5d593c4d160b0445841ce7eb6a35f	546	2	2	9.93	9.93	0/1/0/1	0/0/0/0
+csharp	Bullabs/Qitar	1db93d6c7333accadf613697e71f6d143e0d1d04	270	0	0	10.0	10.0		
+csharp	JustArchiNET/ArchiSteamFarm	480af80b808c84fd08ba60f254340b4e48376de2	342	16	7	9.06	9.59	1/10/4/2	3/8/2/2
+csharp	MarcelMichau/fake-survey-generator	0b211aa84f0e9b3b1cadfec3af16bbe8979a84c0	292	3	3	9.79	9.79	0/1/0/0	0/1/0/0
+csharp	MiniMax-AI/skills	60aaae52bb2af8162732751a4332f62a5fef518b	64	0	0	10.0	10.0		
+csharp	Mo7ammedd/Talabat-APIs	6dd85c2e1edbdeccd0a0e17a03f33fc2f78af96b	87	0	0	10.0	10.0		
+csharp	Perfare/Il2CppDumper	4741d46ba9cd6159c5d853eb9d6fc48b4bfa2b1a	116	6	1	8.97	9.83		
+csharp	Strypper/mauisland	dfb80d2d2e328b4cefe047b188e2d9803d68748f	740	8	4	9.78	9.89	1/4/0/2	1/4/0/2
+csharp	Tmaturano/Bookify	425d1981ed9b7e81ede9a9dfb367ff75c0cff3ed	140	0	0	10.0	10.0		
+csharp	Uahh/ToastFish	2508784a6650862a60e1f3ec3a54dd83efdec98b	22	1	1	9.09	9.09		
+csharp	XerProjects/Xer.Cqrs	da4d8d76850461cebe6921c091b4a6721c7b8de4	204	0	0	10.0	10.0		
+csharp	alsami/MediatR.Extensions.Autofac.DependencyInjection	e40a999310365269e180739a1e32f62e56cfd167	11	0	0	10.0	10.0		
+csharp	anjoy8/ChristDDD	e45025425725e8e9b30f974211d4152314e81a1f	125	0	0	10.0	10.0		
+csharp	damikun/trouble-training	7f84f8cda3c8093556d337238873f004f0dedb0f	436	0	0	10.0	10.0		
+csharp	dzmprt/MitMediator	8393e1a2e74b0d734ae31ff8ce9fc573f170e898	18	0	0	10.0	10.0		
+csharp	evgenirusev/Distributed-eStore	c8442caa62f882e9bfac210c1ab4555a681cafcc	347	26	26	8.5	8.5		
+csharp	jasontaylordev/RapidBlazor	923b6d4537d7c8b499435c7378f4bd8ee69b2271	103	0	0	10.0	10.0		
+csharp	lishilei0523/SD.Framework	1abc7d27657e024fd57705c82153ba10020caacc	923	2	0	9.96	10.0	0/0/2/0	0/0/2/0
+csharp	marlonajgayle/dotnet-web-api-template	d6f5ac9aefb1f3175e1baba82c7131ae3c3c02b5	133	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+csharp	michalkowal/FluentSpecification	96be7fde4e0eb445a512f153816f290e3143ccec	345	0	0	10.0	10.0		
+csharp	microsoft/ailab	89fe2fc62081145ec5408d42059cbcb7c4a033c8	701	0	0	10.0	10.0		
+csharp	nilaoda/N_m3u8DL-CLI	985f6e57c33de552561edd8f7b141a69bd75484c	27	1	0	9.26	10.0		
+csharp	pdevito3/craftsman	2a242a06e4a7ae32f76ce9d1a91f8eb342ad6486	664	21	4	9.37	9.88	1/6/23/0	0/6/12/0
+csharp	ren8179/Qf.Core	d219a13829c3bab418b850a375aac8a4fdd271e7	171	0	0	10.0	10.0		
+csharp	samanazadi1996/Sam.CleanArchitecture	c23d88512a007f17ea834e128daf0d8dedacdf43	191	1	0	9.9	10.0	0/0/0/0	0/0/1/0
+csharp	xhafan/coreddd	07a76c5c92b946f15e2aeb9281abb42147065e0e	921	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+elixir	CuatroElixir/spear	ef870e381f183131e08e7e85ce1159d992f7afc9	62	1	0	9.68	10.0		
+elixir	DockYard-Academy/curriculum	a5e30772dc22ed4da43f039539adcf532626a483	185	1	0	9.89	10.0		
+elixir	ExHammer/hammer	558d238295edf338952f358f53c8c7ef62f2b15a	25	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+elixir	bartblast/hologram	009d92a9def65df7e5679e9284ec868d4974ba48	659	9	5	9.73	9.85	2/4/13/0	1/0/0/0
+elixir	elixir-protobuf/protobuf	058a0c63198b2ef7f12ff2d734b225ae70d9557e	89	3	2	9.33	9.55	0/0/1/1	0/0/1/0
+elixir	fabriziosestito/commanded-spear-adapter	fcf18250f28ce495688ba2257108d9c15e29d8a7	13	0	0	10.0	10.0		
+elixir	firezone/firezone	dec544528e037d88e1c38860f539faa57d2ee235	1758	75	54	9.15	9.39	13/16/25/5	13/15/23/5
+elixir	lucasvegi/Elixir-Code-Smells	2c2ed33646a9c2bb9d8122c71cb2fafffbae6ac0	1	0	0	10.0	10.0		
+elixir	mirego/accent	43872af8578df4121e39ea17c679b5eebb08f3f4	1078	2	2	9.96	9.96	0/0/0/0	0/0/0/0
+elixir	otobus/event_bus	56ecf51ce08153614c03916a5e090c0457b0aa20	27	0	0	10.0	10.0		
+elixir	parroty/excoveralls	e9776c9a59c3067774f9af5e116ef76dbf8af6ab	37	0	0	10.0	10.0		
+elixir	sequinstream/sequin	46ce4e1048437575ce3c40ebb3eb589a4b9e4f27	748	129	103	6.55	7.25	14/21/16/13	17/24/16/16
+elixir	shinyscorpion/wobserver	d2d329214218dc957e328b305c0f84717233b94d	53	0	0	10.0	10.0		
+elixir	sneako/finch	7195844087948994b5d009b337c2b65832f7b50a	34	1	2	9.41	8.82	0/0/0/0	0/0/0/0
+java	Accenture/mercury-composable	b41b63044a1762754409fcc73f041d30e8c91c0e	625	1	0	9.97	10.0	0/1/0/0	0/1/0/0
+java	ContextMapper/context-mapper-dsl	995f486a9cdecb6946257d5c7b6d98ada2978124	376	1	0	9.95	10.0		
+java	JohT/alias	8aafc50ca4d783a9cfb6c99ec4b0dd949c37dc68	41	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+java	YunaiV/ruoyi-vue-pro	c3523cd038c92ade57037725ec9fd221a657b82e	11156	868	227	8.44	9.59	42/105/725/39	43/71/227/35
+java	alibaba/spring-cloud-alibaba	115d5901102009492e05d5ec18c3f79cad4077d0	1059	2	2	9.96	9.96	0/0/0/0	0/0/0/0
+java	android10/Android-CleanArchitecture	4dda6bcd66f6292625ae1dbaf41e0e8431f91e28	0	0	0	None	None		
+java	crossoverJie/JCSprout	fc4c6e5f6d1772c2aec4c0f94cb3c8e7eb04018f	81	0	0	10.0	10.0		
+java	dromara/Sa-Token	977247d2c2af789aac911aa8224f906e90b73715	1076	75	8	8.61	9.85	0/0/94/0	0/0/72/0
+java	egetman/jes	a3bf2ae1e1e67221b938f06528a2344e101f6b2d	129	2	0	9.69	10.0	0/2/0/0	0/1/0/0
+java	finesoft/corantce	19f86be7f414d09a7f011e42caea5c71e60c99c9	2494	4	0	9.97	10.0		
+java	google/guava	0a8e1ec55afe1d9361ebbd0c4149adfbb32ccf9a	1818	353	254	6.12	7.21	105/62/104/13	74/32/65/7
+java	jeecgboot/JeecgBoot	df83f4de76811ea73bf5b37a8fe00cbb59988a1b	2979	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+java	kurrent-io/samples	9f67ac5589c962b0f59f491584d677da78d3ffdd	214	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+java	link-intersystems/clean-architecture-example	6fa4f28ba7c05f008c23372c4dbd4018aff55115	439	1	0	9.95	10.0	0/0/1/0	0/0/1/0
+java	macrozheng/mall	0504e86b1f1b6f1b8aa6a734d37a90fb67346be7	610	0	0	10.0	10.0	0/0/1/0	0/0/0/0
+java	skylot/jadx	e738a26571d02919f01df40de93bc9a44dee4e18	1502	30	14	9.6	9.81	4/10/14/2	8/7/12/3
+java	spring-projects/spring-data-couchbase	732edbea376e0682c592c1ec8d506485584bbc48	394	5	4	9.75	9.8	1/1/5/0	0/0/0/0
+java	spring-projects/spring-data-jpa	c43320e9e31cecec21144d3889770f2e70a49a2b	288	36	21	7.5	8.54	2/6/14/4	1/3/15/3
+java	spring-projects/spring-data-redis	5e76bfb659d53a538381e0dfafdae912ef0d5d07	769	173	154	5.5	5.99	43/34/77/8	45/4/18/8
+java	tk-codes/uno	bf1249a2b5d39a6f8e6bbbf2e4351e5f7ec63f32	66	1	0	9.7	10.0		
+java	vestrel00/business-search-app-java	5864a1789619842ebdc9ba8154056a125517fed1	247	0	0	10.0	10.0		
+kotlin	JiRaska/open-bank-oss	8a5791137a66f7024dbeb0db0407c78d6cf0c276	2291	2	2	9.98	9.98		
+kotlin	azizutku/Modular-Clean-Arch-Movie-App	322f12dd15554d4df9ad3158826fe660569d5b5b	166	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+kotlin	ben-manes/gradle-versions-plugin	21234fb5b123d26c030586dc17ae9b1642a20c48	37	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+kotlin	burhanrashid52/PhotoEditor	8f571947ac0473d8ed41be51a18ab92da975430e	134	0	0	10.0	10.0		
+kotlin	carp-dk/carp.core-kotlin	9727de585cff427f26cf664c6329f8363231b202	422	18	12	9.15	9.43	7/1/22/0	3/0/1/0
+kotlin	celzero/rethink-app	fac1e287e90a1a8bd59f5d089739d52092565bf5	741	101	82	7.27	7.79	31/22/11/19	29/12/4/17
+kotlin	coil-kt/coil	bb64f5f9f6eac6261433f1bd7012b79a0c370ffa	478	13	2	9.46	9.92	0/3/9/1	0/3/9/1
+kotlin	daavsnts/my-movies-android	cc78b816061cf6a685511cd736c0694b0232345d	41	0	0	10.0	10.0		
+kotlin	duckduckgo/Android	9a68a510f49c49cf87d59aae6255ad68f71cb081	5337	169	146	9.37	9.45	25/29/16/26	26/17/6/27
+kotlin	florisboard/florisboard	2a44855c7fcce943a2d3b2092fe45808037ad258	535	47	23	8.24	9.14	1/19/17/11	0/19/14/8
+kotlin	kickstarter/android-oss	fe1b8b22c9ee566052931d2e8b323ae0d57ba7fe	1502	64	27	9.15	9.64	8/19/30/7	7/15/13/5
+kotlin	kizitonwose/Calendar	e88fd087a34557b1c28502d179ceea729b623f81	164	9	5	8.9	9.39	0/1/5/0	0/1/5/0
+kotlin	lysine-dev/okio	5cd1b223f0241a6510991414f77e6cbba986ffc5	286	35	15	7.55	8.95	0/1/20/3	0/1/18/3
+kotlin	nkuppan/expensemanager	879227e1bf653c2fbb7d376b53cba02bb6534cd9	562	47	32	8.33	8.86	3/7/11/9	3/4/3/3
+kotlin	nuhkoca/kotlin-modular-tdd-coroutines-mvvm	8f5c27a26a0e129ce873c538a310a969d6dc2e9e	86	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+kotlin	odaridavid/Clean-MVVM-ArchComponents	641213f53fc148b154465727d4c3246194a11542	212	2	2	9.81	9.81	0/0/0/0	0/0/0/0
+kotlin	princessdharmy/FootballFixturesApp	ed8f7a20f3fea5b1bfd9a295430d36ef12c16106	23	0	0	10.0	10.0		
+kotlin	razaghimahdi/Shopping-By-KMP	e74829bd5a825b3039843a2953f1880d64164556	336	2	2	9.88	9.88	1/0/0/0	1/0/0/0
+kotlin	shiaho777/web-to-app	2a8590fce9c0225a3e838f9e20fddb4aa53eac4a	2282	44	45	9.61	9.61		
+kotlin	shinhyo/Compose-BreakingBad	ba5b3aad9751ae33a1c4815d4c9047d12530ab46	110	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+php	Intervention/image	0a5aa57ad56887f24967d735457471db7c0ea1f5	625	123	103	6.06	6.7	30/19/8/8	19/6/2/1
+php	KoalaFacade/ddd-console	437b74afed5ccfc4fd5bc93d2f26d33eeef299d6	62	1	0	9.68	10.0		
+php	composer/composer	c435d285c9120efdca35696769c72ea9fdcc0466	374	7	7	9.63	9.63	2/1/2/2	2/0/1/0
+php	gpslab/cqrs	31c624f5348fdd32a408911ae4a3a3c8d3954110	35	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+php	grifart/enum	414c0b6b5a636c5a70f87c8c6bfe22de00132e72	6	0	0	10.0	10.0		
+php	jaspertey/laravel-ddd	2c6f9a67ce71c5eadd3ecc6ececd6fa7c1574759	91	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+php	kreta/Kreta	d226efe23302a34e298a80da1a5e10f5361091a8	1176	18	6	9.69	9.9	0/0/12/0	0/0/10/0
+php	laravel/tinker	a1fd59c74a05f93a8343d1ff002972aebc6aaa5e	6	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+php	myclabs/DeepCopy	1a0a9857945c4a6620d9102128da1de013852703	29	0	0	10.0	10.0		
+php	neos/Neos.EventSourcing	dc9000410fa5edf18be25a95c5a321dab9411455	171	1	1	9.88	9.88		
+php	pestphp/pest	2e4f8ad56fa1c373c82238a81dacc416b1f7181f	369	19	10	8.97	9.46	1/7/7/2	1/3/6/3
+php	prooph/event-store-bus-bridge	8df1c8ab6ea3ad9254117e40af827bdd8841c7e4	8	0	0	10.0	10.0		
+php	proophsoftware/event-machine	4f48d1d744b6fd1aabaffb894c4a72e6faa49a02	170	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+php	rectorphp/rector	6b81a3b42483e1337f406fa414c3844e6f3d961e	4893	365	267	8.51	8.91	133/133/12/63	106/59/2/47
+php	wallabag/wallabag	3479b3de074d07815cd9035009945041db75c363	952	4	0	9.92	10.0	0/1/4/0	0/1/1/0
+python	IvanZaycev0717/microservices-fastapi-vue-mongodb	f76a86659b328e751abc1c904486468aff1b6856	315	7	8	9.56	9.49		
+python	JohnnyFiv3r/Core-Memory	b3857ff5c771d8c2b17ed2d19326de1fac19dbfd	399	13	13	9.35	9.35		
+python	RVC-Boss/GPT-SoVITS	d523079fc05d9a8028d6085bffe4a2757c32abb6	190	0	0	10.0	10.0	0/0/1/0	0/0/1/0
+python	Textualize/textual	84674538f1ddcf88a2e8398ef2219c54bd4ad6cb	372	31	23	8.33	8.76	4/24/8/6	8/18/5/12
+python	ageitgey/face_recognition	b483acefc150ee98248aeddea5469ff8c762560e	6	0	0	10.0	10.0		
+python	docling-project/docling	8050c42be2b179504445cb8f3c75655e27cbb662	263	12	12	9.09	9.09	0/0/0/1	0/0/0/1
+python	enricostara/eventure	e4cf13016770bd95f8f441860742a0a44a1f8af3	5	0	0	10.0	10.0		
+python	hankcs/HanLP	942ce9306c953cc9f445a448c8e25584bb561453	1048	7	4	9.87	9.92	2/4/3/1	1/1/0/1
+python	jingyaogong/minimind	393e387e9ad99f0f04c296e4c5e7353f4444629f	42	1	0	9.52	10.0	0/0/1/0	0/0/1/0
+python	keras-team/keras	5f5bf6f3ebfdbd3cc08c72f4ed16591263cbc9bd	1024	165	128	6.78	7.5	78/54/21/16	87/48/10/11
+python	nextlevelbuilder/ui-ux-pro-max-skill	abb7f2fd5a083fa1ff55c326a963ff0d95c33f99	140	1	1	9.86	9.86		
+python	openai/whisper	5f86d1d86363843179951550570367b37c5d6f78	15	0	0	10.0	10.0		
+python	proteanhq/protean	c39ba3fa17a6e82e0de4533336056013dd62ea85	435	25	28	8.85	8.71	7/7/0/6	7/5/0/2
+python	roboflow/supervision	7d325d23e3eaa6d822c1a1eea7707a0b1d8f74c1	129	8	4	8.76	9.38	0/3/2/0	0/1/1/0
+ruby	CanCanCommunity/cancancan	8c1bf153a3da7b2261d6fa4a5f84eb28e2feb828	51	0	0	10.0	10.0		
+ruby	Homebrew/brew	846833c5f75f305eea87de789c6946cd7375e979	1086	31	33	9.43	9.39	3/6/0/4	2/5/0/4
+ruby	ankane/ahoy	d13567162a901a5cc22e64b43fd650b4f9232180	81	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+ruby	antiwork/gumroad	dc3f76dc2d44b12b18da73979b230c5dcc93e869	4385	36	37	9.84	9.83	0/0/0/0	0/0/0/0
+ruby	drapergem/draper	7fc015f80ccb1f0aa7b8ffaa7a50db76d0cc946c	59	0	0	10.0	10.0		
+ruby	fluent/fluentd	ff8682d797436bdadca8da39b862eb23f6700515	250	14	7	8.88	9.44	0/3/5/1	0/3/5/1
+ruby	github-changelog-generator/github-changelog-generator	5a0cbdb6860ffc449e838541faf3f24e10d75722	28	0	0	10.0	10.0		
+ruby	gollum/gollum	d00fefc89be0ab22ab862a51299120a55ccd9280	2704	2	0	9.99	10.0	0/0/4/0	0/0/1/0
+ruby	heartcombo/simple_form	18f38aad0bdeca2ba1815043b94d96fdbbe6a325	88	0	0	10.0	10.0	0/0/1/0	0/0/0/0
+ruby	jekyll/jekyll	74d751339d3e534aa51d5d7b0640e9bd743509e4	150	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+ruby	omniauth/omniauth	2ad2d0dd9e15f8fd89814e00d3f50c61886d81cd	154	0	0	10.0	10.0		
+ruby	rails/jbuilder	26c6dcba2e98466df2e8e266a039b2fa1ca395a4	16	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+ruby	rails/webpacker	7b71ce0a3155f0e23a7ab54023a923d6a605debf	92	0	0	10.0	10.0		
+ruby	resque/resque	bb0f097121f14ab1a77b06cbe8fc0606a8a2f2c7	35	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+ruby	rmosolgo/graphql-ruby	f663827d99b1a08c41b7e8ce67ea7c4b89119941	1208	31	21	9.49	9.65	4/11/9/3	2/6/10/2
+ruby	venmo/synx	e22f20ac62105365d3e780dc12d6268b546858ce	11	0	0	10.0	10.0		
+typescript	0xb4lamx/nestjs-boilerplate-microservice	2f5c31e647da88ac9a665694bd916aac14ae44c9	72	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+typescript	4lessandrodev/finance-project-ddd	9f0725a83be4863db3da230e3bf9c5fa3f6c9a7d	217	12	12	8.89	8.89	0/0/0/0	0/0/0/0
+typescript	4lessandrodev/rich-domain	ce08be3bd6568cad2f73c30905db1cee7e7cefd6	51	0	0	10.0	10.0		
+typescript	4lessandrodev/type-ddd	996145549e60bc7a7e6d6d744fd8bde9f65f08d5	102	0	0	10.0	10.0		
+typescript	AdilsonFuxe/auth-microservice	29fa2287443736b1dac06dce7c55eb5178aedfc3	208	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+typescript	Ahoo-Wang/wow-project-template	ee9d8e25eb212f663771ae8685cc5a5833351e2d	17	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+typescript	AykutSarac/jsoncrack.com	3c9af69e23c635356293b6b28cf4cd0af10d1059	401	32	7	8.4	9.65	0/8/36/1	0/3/27/3
+typescript	Baroshem/microservice-template	be9fa7cb150a8558274f6765164a13f4d1f10eaa	108	2	2	9.63	9.63		
+typescript	CopilotKit/CopilotKit	47a4a848961f3f6cb8b30f60a858f54ed2ec1e9e	4933	59	52	9.76	9.79	3/4/3/2	4/4/3/2
+typescript	Jannael/Glinter	4de7682af241919267ecfea711088e08ee16c9f2	68	0	0	10.0	10.0		
+typescript	Sairyss/domain-driven-hexagon	5c2d15a7e2d69e83dfddf28468ee9f30e02c30de	162	0	0	10.0	10.0		
+typescript	Varagos/MinasPhone	c15547b3282ffe74c42e65388fac64f70b8c7d19	2045	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+typescript	abinth11/TutorTrek	4f9ce6a7b908681fbf6b6f704d7a6ac3e826ca6c	377	49	49	7.4	7.4		
+typescript	beep-effect/beep-effect	5398819bf12c812abd25168ffbf6595ba47b7fd4	97434	52	47	9.99	9.99	7/10/2/1	7/10/2/1
+typescript	boostercloud/booster	60434b44ddc719ecbf0409840fa3e796a5015421	773	7	1	9.82	9.97	0/0/17/0	0/0/3/0
+typescript	excalidraw/excalidraw	cf212b2f3354c09bd6f960b53a9cfb0a3ecbfa58	640	87	82	7.28	7.44	25/19/4/26	26/9/2/23
+typescript	gruz0/checkmvp	66ed38a8cffefda2b2aa594c59ca2daf56d02201	345	10	10	9.42	9.42		
+typescript	j5ik2o/cqrs-es-example-js	8435e5a016d433dcc9b2957982731296f74a1e67	73	1	0	9.73	10.0	0/0/1/0	0/0/0/0
+typescript	marcoturi/fastify-boilerplate	10890300674912decbaf89e2dcb6f2b2545c6777	74	0	0	10.0	10.0	0/0/0/0	0/0/0/0
+typescript	microsoft/playwright	c973356ee9e3906260f60da5e3e04442e069a0d4	1090	304	305	4.42	4.4	93/41/9/42	86/37/0/46
+typescript	node-ts/ddd	fe1a37d353b9ec97c1245def50b727894e8b276c	50	0	0	10.0	10.0		
+typescript	numq/ecommerce-backend	ef9536cd62cb19cc65e70e275b3e8355ebfee8ad	217	0	0	10.0	10.0		
+typescript	pvarentsov/typescript-clean-architecture	5c29c39e402c67105ca66ec4dd2a4cf84b285e39	208	0	0	10.0	10.0		
+typescript	sengac/fspec	e7982fd1766f627c80df556c9d99e7a3479562a4	521	4	4	9.85	9.85		
+typescript	simnova/sharethrift	ffe7637ee4926e0da829b5600a15ed7cf004b235	1521	34	34	9.55	9.55		
+typescript	vuejs/core	8f89be88faaadd9e1025f7dc1430b3854341fb72	448	14	8	9.38	9.64	2/6/4/0	3/2/4/0
