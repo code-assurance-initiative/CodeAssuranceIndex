@@ -1,0 +1,26 @@
+id	what the definition says that CCA's reading does not inspect
+AC2	links' accessible names; names of elements made controls by a click handler; UI-library field components' label property; that a legend is non-empty
+AC4	pointer-cursor elements; mouse-only bindings; placeholder-destination links acting as buttons
+AC6	a replacement focus style; colours in in-repo .css files, tokens and utility classes (reading sees inline styles and in-repo CSS literals)
+DM6	web-framework types (for example ASP.NET) are not among the infrastructure types the reading checks
+IC1	members that only throw a not-implemented error are not among the shapes the reading lists
+R6	tools invoked only in CI workflows; the reading inspects package.json scripts only
+SC1	reproducibility of the build beyond dependency pinning; the reading checks only that a lockfile or central package management is present
+X2	outside .NET the reading counts only named async functions that themselves make a request a signal can cancel, not every async function
+X6	outside C#, string operations other than an extraction regex encoding a JSON key or XML tag (replace, split, slicing)
+X9	implications other than string-literal containment on the same side-effect-free value under the same test, or nested numeric bounds
+X10	boolean expressions that are not a logical and/or chain
+X12	earlier arms that subsume a later one other than by a containment test on a literal
+X16	loops that shorten the string by more than its last character per pass
+X21	side effects the guard's own operators cannot skip, and side effects other than an increment, decrement or assignment
+AXH1	security headers outside its six-header baseline (for example Cross-Origin-Opener-Policy, Cross-Origin-Resource-Policy)
+AXR1	WCAG success criteria that a static reading can also reach (it audits only those the static pass cannot)
+AXS1	undeclared ports that are opened but not published to the host (it calls out only published ports)
+R9	frontend code in languages other than JavaScript and TypeScript
+X10	repeated boolean expressions that contain no string literal or no call
+X2	asynchronous methods whose signature a framework fixes (overrides, UI event handlers, route and lifecycle exports, request handlers) are not counted
+X22	flags held outside a local variable (fields, captured or parameter flags), and returns whose value is not a literal
+X5	nullable context enabled per file or per region by a `#nullable` directive
+X6	outside C#, hand-parsing of one format where only a parser for the other format is referenced (the reading matches by format)
+X10	the one existing reading also requires the expression to contain a string literal and a call (a narrowing filter of the reading, not part of the definition)
+X20	(reverse) CCA's reading also reports range guards whose bound rejects every value or admits an index one past the end; the definition does not name them

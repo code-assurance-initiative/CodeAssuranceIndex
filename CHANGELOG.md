@@ -11,6 +11,30 @@ move a score for unchanged evidence mints a new rubric version (see
 ## [Unreleased]
 
 ### Governance
+- **A definition says what is measured and how it is scored, never how an engine finds it** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md)).
+  A dimension's definition states the property, its unit, denominator, thresholds, score curve, population and what
+  the result is not, never how an engine finds it (its method, a tool as the means, one language's syntax for a
+  property of several, its name or decision numbers, or which languages it covers). Moves no score.
+  - *Now:* ENGINE-QUALIFICATION.md Part B loses its pass rule, *undecided* result, grades, recall threshold, noise
+    ceiling and pooled grade of record; until the first covering window (below), holdout results are published as
+    provisional figures with no pass, grade or ceiling. Engines register to be measured by an
+    issue titled *Engine registration* in this repository. A product may quote CAI's measurement of it only as its
+    engine report states it, and may not call itself qualified or certified by CAI.
+  - *With the rubric version published after the pages of every scored dimension (`docs/spec/dimensions/`) and the
+    production-lines list (`docs/spec/production-lines.md`):* 48 definitions rewritten to that rule; an engine
+    publishes no CAI where the languages it reads hold under 95 % of the repository's production lines (non-blank,
+    non-comment lines in the languages on CAI's production-lines list: general-purpose programming languages, HTML and
+    CSS; tests, generated and vendored code excluded), and states the share in each CAI (for CCA, today the only
+    engine publishing CAI, about 6.6 % of the 11,739 scanned corpus repositories by today's measurement).
+  - *From the first window (quarterly test round) whose holdout (CAI's sealed synthetic test repositories) covers the
+    platform family of every language supported by an engine that publishes CAI or is registered, the web front
+    (JavaScript, TypeScript, HTML, CSS), and C, C++, Objective-C and R (planned for the first window of 2027, else the
+    first window that has one):* CAI measures every engine itself each quarter and publishes its noise, recall and an
+    F0.5 engine score (precision weighed twice as much as recall); each engine submits its current release to every
+    window and publishes CAI only from a release CAI has measured (no new CAI after two missed windows in a row); and
+    an engine may list a language as supported
+    only if it reads that language's whole platform family (for example .NET: C#, F#, Visual Basic .NET) and the web
+    front.
 - **Defect correction: vulnerability-database findings are advisory** ([decision 0006](docs/decisions/0006-vulnerability-database-findings-are-advisory.md)).
   `rubric-2026.11.2` declares D30 Dependency Vulnerabilities and D43 Malicious Dependencies `advisory: true`, and
   cai-scoring.md §2.1 makes any reading matched against a vulnerability or malicious-package database advisory: the
