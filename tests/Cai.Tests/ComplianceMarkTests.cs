@@ -98,6 +98,18 @@ public sealed class ComplianceMarkTests
     }
 
     [Fact]
+    public void STAR_A_Vendor_Run_Is_Labelled_Self_Measured_Never_As_The_Standards_Measurement()
+    {
+        // ★★ Decision 0024 (ruling 2): a product may not present its own figures as CAI's, and CAI's own measurement of
+        // an engine is the one that counts. A vendor's run under the noise method is that vendor's measurement, so the
+        // mark must say so, and nothing it publishes may read as "CAI measured this".
+        Assert.Contains("self-measured", ComplianceMark.Label, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("CAI-measured", ComplianceMark.Label, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("self-measured", ComplianceMark.WordingRule, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("0024", ComplianceMark.WordingRule, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void STAR_The_WORDING_Is_Measured_Never_Certified()
     {
         // ★★ Certification implies an audit of the tool; this is a record that a run was measured under a
