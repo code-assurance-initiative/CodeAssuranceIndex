@@ -7,8 +7,9 @@ implementation that lets anyone compute and verify the number.
 
 The model is **method open, judgment separate**: the *standard* (how a codebase is measured) is open and free; an
 independent, signed *survey* (the deductions and what to do) is the work of whoever issues it. Engines that produce CAI
-evidence qualify against the standard ([docs/ENGINE-QUALIFICATION.md](docs/ENGINE-QUALIFICATION.md)); the standard owns
-none of them. How the standard is governed and licensed: [docs/GOVERNANCE.md](docs/GOVERNANCE.md),
+evidence are measured by the Initiative itself every quarter, from the window decision 0024 names (planned for
+2027; provisional figures until then), and their measured noise and recall per dimension are published
+([docs/ENGINE-QUALIFICATION.md](docs/ENGINE-QUALIFICATION.md)); the standard owns none of them. How the standard is governed and licensed: [docs/GOVERNANCE.md](docs/GOVERNANCE.md),
 [docs/IPR.md](docs/IPR.md); the normative documents: [docs/spec/](docs/spec/); research and thesis topics:
 [docs/RESEARCH-TOPICS.md](docs/RESEARCH-TOPICS.md).
 

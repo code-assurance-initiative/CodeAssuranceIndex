@@ -104,3 +104,5 @@ Anything the proposer cannot settle alone. The decision answers each one.
 | [0019](0019-the-comment-period-is-paused-until-the-steering-group-exists.md) | The comment period is paused until the steering group exists | 2026-11-11 | Accepted by [decision 0019](../decisions/0019-the-comment-period-is-paused-until-the-steering-group-exists.md) |
 | [0020](0020-d4-and-r10-score-the-share-of-lines-in-a-copy.md) | D4 and R10 score the share of lines in a copy | 2026-11-13 | Accepted by [decision 0020](../decisions/0020-d4-and-r10-score-the-share-of-lines-in-a-copy.md) |
 | [0021](0021-d35-reads-recent-history.md) | D35 reads the recent history, so a broken coupling leaves the reading | 2026-11-21 | Accepted by [decision 0021](../decisions/0021-d35-reads-recent-history.md) |
+| 0022, 0023 | Held for two drafts in preparation (D16 Bus Factor, D6 Cohesion), filed when ready | | |
+| [0024](0024-a-definition-says-what-not-how.md) | A definition says what is measured and how it is scored, never how an engine finds it | 2026-11-24 | Accepted by [decision 0024](../decisions/0024-a-definition-says-what-not-how.md) |

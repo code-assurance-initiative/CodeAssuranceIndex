@@ -84,6 +84,18 @@ candidate on its way to being scored, or a descriptive reading that readers comp
 needs no comparison across producers — advice, remediation tasks, a producer's own signals — is the producer's
 extension on top of the standard, outside the catalog, and is never read as a CAI result.
 
+**How a definition is written** ([decision 0024](decisions/0024-a-definition-says-what-not-how.md); applies from the
+first rubric version that carries its rewritten definitions, published after the dimension pages). A dimension's
+definition says what is measured and how it is scored, never how an engine finds it. It states the property, the unit
+and denominator, any threshold at which something counts, the score curve and population, and what the result is
+not; it never states an engine's method, a tool as the means, one language's syntax for a property of several, an
+engine's name, voice, components or decision numbers, or an engine's coverage. The test for any sentence: would an
+engine that finds the same property better have to ask CAI first? If yes, the sentence does not belong in the
+definition. The catalog's one-paragraph definition holds the property, the population (what is excluded), any
+threshold that decides what is found, and what the result is not; the unit, denominator, every threshold, the curve
+and the languages a dimension applies to are on its page in [spec/dimensions/](spec/dimensions/). An engine's method lives in its own, public documentation, and is judged by
+CAI's measurement of its results ([ENGINE-QUALIFICATION.md](ENGINE-QUALIFICATION.md)), never by its recipe.
+
 **Evidence before a proposal.** A proposal to add a dimension, re-define one or retire one is filed with a measurement
 of an implementation of exactly that definition over a corpus whose repositories and commits are named, so that
 another producer can reproduce it; evidence from any producer counts. It reports, per language:
@@ -123,12 +135,12 @@ Until it is founded, the steering group is appointed by invitation and says so h
 ## Conflicts of interest
 
 - **A member whose organisation supplies an engine** (a tool that produces CAI evidence) does not take part in
-  decisions about engine qualification, and does not vote on a proposal that particularly affects its own engine. The
+  decisions about engine measurement, and does not vote on a proposal that particularly affects its own engine. The
   recusal is recorded in the decision.
 - **Every declared interest is public**, here, in the proposal and in the decision.
 - The standard **does not own an engine.** The reference implementation is a separate community project
   ([open-assurance/reference-implementation](https://github.com/open-assurance/reference-implementation)) and is
-  qualified like any other engine ([ENGINE-QUALIFICATION.md](ENGINE-QUALIFICATION.md)).
+  measured like any other engine ([ENGINE-QUALIFICATION.md](ENGINE-QUALIFICATION.md)).
 
 ## The bar this page will be held to
 

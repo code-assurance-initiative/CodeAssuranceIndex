@@ -27,8 +27,9 @@ to submit it under the licences above. There is no contributor licence agreement
 "Code Assurance Index" and "CAI" name the standard. Anyone may use them to **refer** to it and to **state a score**,
 provided the score names its rubric version and can be reproduced from its evidence ([CHALLENGE.md](CHALLENGE.md)).
 
-- A product may say it **implements** CAI. It may say it is **qualified** only for what its current qualification
-  record states ([ENGINE-QUALIFICATION.md](ENGINE-QUALIFICATION.md)).
+- A product may say it **implements** CAI. It may quote CAI's measurement of it only as its current engine report
+  states it ([ENGINE-QUALIFICATION.md](ENGINE-QUALIFICATION.md)). It may not call itself *qualified* or *certified*
+  by CAI, and may not present its own figures as CAI's.
 - A badge must link to the record it claims ([codeassuranceindex.info/badge](https://codeassuranceindex.info/badge/)).
 - No one may present a modified rule set as "CAI". A fork is welcome under its own name.
 
