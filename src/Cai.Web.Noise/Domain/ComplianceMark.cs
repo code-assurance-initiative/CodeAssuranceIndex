@@ -48,7 +48,7 @@ internal sealed record MarkState(
 internal static class ComplianceMark
 {
     /// <summary>The words the mark is published under.</summary>
-    public const string Label = "CAI-measured";
+    public const string Label = "Self-measured under the published protocol";
 
     public const string RanAgainstTheHoldout = "ran-against-the-published-holdout";
     public const string SubmittedBeforeTheDeadline = "submitted-before-the-deadline";
@@ -72,9 +72,13 @@ internal static class ComplianceMark
 
     /// <summary>The wording rule, published so it binds our own copy as much as anybody's.</summary>
     public const string WordingRule =
-        "The mark is 'CAI-measured'. It is never 'CAI-approved' and never the c-word for an audit: this is a "
-      + "record that a run was measured under a published method, not an examination of the tool that produced "
-      + "it. The distinction is the whole liability position, and it binds what CAI publishes first.";
+        "The mark is 'Self-measured under the published protocol'. The participant ran and judged its own tool; the "
+      + "standard checked that the run used the published holdout, was submitted before the deadline, reproduces and "
+      + "is published in full, and computed the rate from the participant's own judgements. It did not measure or "
+      + "examine the tool. The rate is the participant's own measurement, and under decision 0024, ruling 2, it is "
+      + "never presented as CAI's measurement of the tool. The mark is never called 'CAI-approved', 'CAI-measured' or "
+      + "'CAI-qualified', nor by any word for an audit or attestation of the tool, and this binds what CAI publishes "
+      + "first.";
 
     /// <summary>Where a withheld or revoked mark is argued.</summary>
     /// <remarks>
