@@ -132,6 +132,34 @@ public sealed class ProductionLineShareTests
     }
 
     [Fact]
+    public void The_minimum_is_held_to_the_share_the_lines_give_not_to_a_rounded_statement()
+    {
+        // 9,496 of 10,000 lines read: 0.9496, which a producer could round to 0.950 within the tolerance.
+        var b = Bundle(0.97) with
+        {
+            ProductionLineShare = new ProductionLineShare
+            {
+                Share = 0.950,
+                LinesByLanguage = new Dictionary<string, long> { ["C#"] = 9_496, ["Ruby"] = 504 },
+                ReadLanguages = ["C#"],
+                ListVersion = "1",
+            },
+        };
+
+        var ex = Assert.Throws<ArgumentException>(() => CaiScorer.Score(b, Catalog(0.95)));
+        Assert.Contains("94.96", ex.Message);
+    }
+
+    [Fact]
+    public void Language_names_match_exactly()
+    {
+        var bundle = Bundle(0.97);
+        var b = bundle with { ProductionLineShare = bundle.ProductionLineShare! with { ReadLanguages = ["c#"] } };
+
+        Assert.Throws<ArgumentException>(() => CaiScorer.Score(b, Catalog(0.95)));
+    }
+
+    [Fact]
     public void A_share_rounded_to_three_decimals_is_accepted()
     {
         var b = Bundle(0.97) with

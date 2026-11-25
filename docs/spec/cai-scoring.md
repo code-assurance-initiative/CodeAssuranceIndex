@@ -44,7 +44,7 @@ A meta-dimension with `score` absent (null) is not measured and contributes noth
 | `dimensions[]` | Every contributor the rubric defines: `{id, lens, family, category?, evaluator, advisory?, …}`. `family` is `dimension` or `meta`. |
 | `scoring` | The score-moving constants (§4–§6). Absent ⇒ the defaults listed with each rule below. |
 | `rejectUnknownContributors` | `true` ⇒ the catalog is **closed** (§2.2). |
-| `minProductionLineShare` | The least `productionLineShare.share` a bundle must state (§1.3). |
+| `minProductionLineShare` | The least share of the repository's production lines the engine must read (§1.3). |
 
 Fields marked `?` are declarations a catalog may or may not make. Each rule below says what applies when a catalog
 does not make one; in every case that is the behaviour the rubric versions published before the field were computed
@@ -63,10 +63,18 @@ where the languages it reads hold at least 95 % of the repository's production l
 | `readLanguages` | The languages the engine reads, each a key of `linesByLanguage`. |
 | `listVersion` | The version of the production-lines list the lines were counted under, as production-code.md states it. |
 
-**Which languages count as read.** Until the first window whose holdout covers the languages decision 0024 §3 names
-(planned for the first window of 2027): the languages the engine parses and names in `readLanguages`. From that
-window: only the languages the engine lists as supported under decision 0024 §5.1-5.3 (whole platform family and the
-web front); a language it parses but may not list does not count.
+Language names are written exactly as the production-lines list of that `listVersion` writes them (for example `C#`,
+`Visual Basic .NET`); `readLanguages` entries are matched to `linesByLanguage` keys exactly, letter case included, and
+a name repeated in `readLanguages` counts once.
+
+**Which languages count as read.** CAI's *holdout* is its sealed set of synthetic test repositories with an exact
+answer key, renewed each quarter; each quarter is a *window*. The *covering window* is the first window whose holdout
+covers the languages decision 0024 §3 names (planned for the first window of 2027). Until then, the languages read are
+those the engine parses and names in `readLanguages`. From then, only the languages the engine may list as supported
+count: under decision 0024 §5.1-5.3 an engine lists a language only when it also reads the language's whole platform
+family (.NET: C#, F#, Visual Basic .NET; JVM: Java, Kotlin, Scala; BEAM: Erlang, Elixir; Apple: Swift, Objective-C;
+every other language a family of one) and the web front (JavaScript, TypeScript, HTML and CSS). A language it parses
+but may not list does not count.
 
 **What the scorer checks.** When the catalog declares `minProductionLineShare` (0.95 from the first rubric version
 that applies decision 0024), the fold is **refused** when:
@@ -79,7 +87,8 @@ that applies decision 0024), the fold is **refused** when:
 - `share` differs by more than 0.0005 from the share the stated lines give (the lines of the distinct languages in
   `readLanguages` divided by the sum of `linesByLanguage`; 0 when that sum is 0), so a share rounded to three decimals
   is accepted;
-- `share` is under the minimum.
+- the share the stated lines give is under the minimum. The minimum is held to that computed share, not to the stated
+  `share`, so rounding never lifts a repository over it.
 
 A refused fold is not a low score: no CAI exists for that repository from that engine. A share that passes does not
 enter the fold; the number is the one the bundle would fold to without the rule. The scorer cannot check that the
@@ -88,8 +97,8 @@ provisional run until the covering window). When the catalog does not declare `m
 not read, and every rubric version published before it folds as it was published.
 
 **The engine's part** (decision 0024, "Engines' part"): from the rubric version that declares the minimum, it emits
-`productionLineShare` in every bundle, states the share in every CAI it publishes, and publishes no CAI under the
-minimum. A CAI published below 95 %, or with a share that does not hold, is not a valid CAI.
+`productionLineShare` in every bundle, states the share in every CAI it publishes (a delivery carries it inside its
+evidence bundle, [cai-delivery-package.md](cai-delivery-package.md) §4.2), and publishes no CAI under the minimum. A CAI published below 95 %, or with a share that does not hold, is not a valid CAI.
 
 ## 2. Which contributors count
 

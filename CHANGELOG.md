@@ -14,10 +14,10 @@ move a score for unchanged evidence mints a new rubric version (see
 - **The shared pages and the production-line share** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md) §1, §5.4).
   `docs/spec/production-code.md` defines which files are production code and, in its last section, production lines
   and the production-lines list (list version 1); `docs/spec/people.md` defines how a history's identities count as
-  people and machine accounts. Every dimension page refers to them. The scoring specification adds §1.3: the evidence
+  people and machine accounts. The dimension pages, published next, refer to both. The scoring specification adds §1.3: the evidence
   bundle's `productionLineShare` (`share`, `linesByLanguage`, `readLanguages`, `listVersion`) and the catalog's
   `minProductionLineShare`; the reference scorer refuses a bundle without it, with a share its own lines do not give, or
-  with a share under the minimum, under a catalog that declares one. No published rubric declares it, so no score moves; the first rubric version applying
+  whose lines give a share under the minimum, under a catalog that declares one. No published rubric declares it, so no score moves; the first rubric version applying
   decision 0024 will (0.95). The delivery schema accepts the field. Decision 0024 and ENGINE-QUALIFICATION.md name the
   list's page as published (`production-code.md`, not `production-lines.md`).
 

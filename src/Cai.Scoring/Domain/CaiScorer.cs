@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Buffers;
 
 namespace Cai.Scoring;
@@ -132,35 +133,28 @@ public static class CaiScorer
 
         if (bundle.ProductionLineShare is not { } stated)
         {
-            throw new ArgumentException(
-                $"Rubric '{catalog.RubricVersion}' requires \"productionLineShare\": the share (0-1) of the repository's " +
-                "production lines in languages the engine reads, the lines per language and the list version (decision " +
-                "0024 §5.4). The bundle states none.",
-                nameof(bundle));
+            throw Refused(
+                $"Rubric '{catalog.RubricVersion}' requires \"productionLineShare\": the share (0-1) of the repository's production lines in languages the engine reads, the lines per language and the list version (decision 0024 §5.4). The bundle states none.");
         }
 
         var share = stated.Share;
         if (double.IsNaN(share) || share < 0 || share > 1)
         {
-            throw new ArgumentException(
-                $"\"productionLineShare.share\" is {share}; it must be a share between 0 and 1.", nameof(bundle));
+            throw Refused($"\"productionLineShare.share\" is {share}; it must be a share between 0 and 1.");
         }
 
         if (string.IsNullOrWhiteSpace(stated.ListVersion) || stated.LinesByLanguage.Count == 0 ||
             stated.LinesByLanguage.Values.Any(n => n < 0))
         {
-            throw new ArgumentException(
-                "\"productionLineShare\" must name the production-lines list version it counted under (\"listVersion\") " +
-                "and give the repository's production lines per language (\"linesByLanguage\", none negative).",
-                nameof(bundle));
+            throw Refused(
+                $"\"productionLineShare\" must name the production-lines list version it counted under (\"listVersion\") and give the repository's production lines per language (\"linesByLanguage\", none negative).");
         }
 
         var unknown = stated.ReadLanguages.Where(l => !stated.LinesByLanguage.ContainsKey(l)).ToList();
         if (unknown.Count > 0)
         {
-            throw new ArgumentException(
-                $"\"productionLineShare.readLanguages\" names {string.Join(", ", unknown)}, which \"linesByLanguage\" " +
-                "does not list.", nameof(bundle));
+            throw Refused(
+                $"\"productionLineShare.readLanguages\" names {string.Join(", ", unknown)}, which \"linesByLanguage\" does not list.");
         }
 
         var total = stated.LinesByLanguage.Values.Sum();
@@ -168,19 +162,18 @@ public static class CaiScorer
         var computed = total == 0 ? 0.0 : (double)read / total;
         if (Math.Abs(computed - share) > ShareTolerance)
         {
-            throw new ArgumentException(
-                $"\"productionLineShare.share\" is {share}, but the lines it states give {computed:0.####} " +
-                $"({read} of {total} production lines in the languages read).", nameof(bundle));
+            throw Refused(
+                $"\"productionLineShare.share\" is {share}, but the lines it states give {computed:0.####} ({read} of {total} production lines in the languages read).");
         }
 
-        if (share < minimum)
+        if (computed < minimum)
         {
-            throw new ArgumentException(
-                $"The engine reads {share * 100:0.##} % of this repository's production lines; rubric " +
-                $"'{catalog.RubricVersion}' requires at least {minimum * 100:0.##} % (decision 0024 §5.4). No CAI is " +
-                "published for this repository.",
-                nameof(bundle));
+            throw Refused(
+                $"The engine reads {computed * 100:0.##} % of this repository's production lines; rubric '{catalog.RubricVersion}' requires at least {minimum * 100:0.##} % (decision 0024 §5.4). No CAI is published for this repository.");
         }
+
+        static ArgumentException Refused(FormattableString message) =>
+            new(message.ToString(CultureInfo.InvariantCulture), nameof(bundle));
     }
 
     /// <summary>The category a dimension folds into: the published catalog's assignment when this rubric version
