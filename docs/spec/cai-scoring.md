@@ -61,11 +61,12 @@ where the languages it reads hold at least 95 % of the repository's production l
 | `share` | The production lines in the languages read, divided by all the repository's production lines: 0–1. |
 | `linesByLanguage` | The repository's production lines per language on the list, read or not, by language name. |
 | `readLanguages` | The languages the engine reads, each a key of `linesByLanguage`. |
-| `listVersion` | The list's version number as a string, as production-code.md states it (today `"1"`). The scorer does not check it against known versions; CAI does, in its window runs. |
+| `listVersion` | The list's version number as a string, as production-code.md states it (today `"1"`). The scorer checks only that it is present and not blank, not that it names a published version. |
 
 Language names are written exactly as the production-lines list of that `listVersion` writes them (for example `C#`,
-`Visual Basic .NET`); `readLanguages` entries are matched to `linesByLanguage` keys exactly, letter case included, and
-a name repeated in `readLanguages` counts once.
+`Visual Basic .NET`); `readLanguages` entries are matched to `linesByLanguage` keys exactly, letter case included.
+`readLanguages` must not repeat a name: the delivery schema rejects a repeat, and the reference scorer, given a bundle
+outside the schema, counts a repeated name once.
 
 **Which languages count as read.** CAI's *holdout* is its sealed set of synthetic test repositories with an exact
 answer key, renewed each quarter; each quarter is a *window*. The *covering window* is the first window whose holdout
