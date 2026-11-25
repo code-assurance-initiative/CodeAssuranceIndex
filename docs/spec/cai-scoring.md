@@ -70,11 +70,11 @@ a name repeated in `readLanguages` counts once.
 **Which languages count as read.** CAI's *holdout* is its sealed set of synthetic test repositories with an exact
 answer key, renewed each quarter; each quarter is a *window*. The *covering window* is the first window whose holdout
 covers the languages decision 0024 §3 names (planned for the first window of 2027). Until then, the languages read are
-those the engine parses and names in `readLanguages`. From then, only the languages the engine may list as supported
-count: under decision 0024 §5.1-5.3 an engine lists a language only when it also reads the language's whole platform
+those the engine parses and names in `readLanguages`. From then, only the languages the engine lists as supported
+count as read. Under decision 0024 §5.1-5.3 an engine may list a language only when it also reads the language's whole platform
 family (.NET: C#, F#, Visual Basic .NET; JVM: Java, Kotlin, Scala; BEAM: Erlang, Elixir; Apple: Swift, Objective-C;
 every other language a family of one) and the web front (JavaScript, TypeScript, HTML and CSS). A language it parses
-but may not list does not count.
+but does not list, or may not list, does not count.
 
 **What the scorer checks.** When the catalog declares `minProductionLineShare` (0.95 from the first rubric version
 that applies decision 0024), the fold is **refused** when:
