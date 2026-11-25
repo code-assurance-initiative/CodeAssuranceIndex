@@ -42,6 +42,11 @@ public sealed record EvidenceBundle
     /// Optional.</summary>
     [JsonPropertyName("headlineScore")] public double? HeadlineScore { get; init; }
 
+    /// <summary>How much of the repository's production lines are in languages the producing engine reads (decision 0024
+    /// §5.4; production lines as <c>docs/spec/production-code.md</c> defines them). Required, and its share held to the
+    /// catalog's <see cref="RubricCatalog.MinProductionLineShare"/>, under a rubric that declares one.</summary>
+    [JsonPropertyName("productionLineShare")] public ProductionLineShare? ProductionLineShare { get; init; }
+
     /// <summary>The measured deterministic dimensions — the PRIMARY evidence. The scorer folds them into category
     /// scores (confidence-weighted), then lenses, then the headline. A dimension measured at confidence 0 must be
     /// ABSENT, never a raw 0.0.</summary>
@@ -208,4 +213,20 @@ public sealed record SurveyFit
     /// and a clarity that could not be computed are different claims, and only the first says anything about the
     /// survey. Derived, never on the wire.</summary>
     [JsonIgnore] public double? Depth => DepthApplicable > 0 ? (double)DepthFired / DepthApplicable : null;
+}
+
+/// <summary>Decision 0024 §5.4: the share of a repository's production lines in languages the engine reads, the
+/// production lines per language it was computed from, and the version of CAI's production-lines list it used.</summary>
+public sealed record ProductionLineShare
+{
+    /// <summary>Production lines in languages the engine reads, divided by all production lines: 0–1.</summary>
+    [JsonPropertyName("share")] public double Share { get; init; }
+
+    /// <summary>The repository's production lines per language on the list, read or not, keyed by language name.</summary>
+    [JsonPropertyName("linesByLanguage")] public IReadOnlyDictionary<string, long> LinesByLanguage { get; init; } =
+        new Dictionary<string, long>();
+
+    /// <summary>The version of the production-lines list in <c>docs/spec/production-code.md</c> the lines were counted
+    /// under.</summary>
+    [JsonPropertyName("listVersion")] public string ListVersion { get; init; } = "";
 }

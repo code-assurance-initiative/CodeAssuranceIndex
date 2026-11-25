@@ -446,6 +446,37 @@
           "minimum": 0,
           "maximum": 100
         },
+        "productionLineShare": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "share",
+            "linesByLanguage",
+            "listVersion"
+          ],
+          "properties": {
+            "share": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "linesByLanguage": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "listVersion": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
         "rebuildCost": {
           "description": "DESCRIPTIVE, non-scored rebuild-cost estimate echoed by consumers; NEVER folded into the CAI. A plain string (e.g. \"€118k–€204k\") or a { low, high, currency } object. Absent => consumer shows \"Not assessed\".",
           "oneOf": [

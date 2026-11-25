@@ -103,6 +103,7 @@ public static class CaiScorer
     {
         ArgumentNullException.ThrowIfNull(bundle);
         ArgumentNullException.ThrowIfNull(catalog);
+        RequireProductionLineShare(bundle, catalog);
         if (bundle.Dimensions.Count > 0 || bundle.MetaDimensions.Count > 0)
         {
             return ScoreFromEvidence(bundle, catalog);
@@ -114,6 +115,51 @@ public static class CaiScorer
         }
 
         throw new ArgumentException("Evidence bundle carries no dimensions, meta-dimensions or lens scores.", nameof(bundle));
+    }
+
+    /// <summary>Decision 0024 §5.4, under a rubric that declares <see cref="RubricCatalog.MinProductionLineShare"/>: no CAI
+    /// exists for a repository whose production lines the engine reads below the minimum, so the fold is refused rather
+    /// than scored. A catalog without the field leaves the bundle's share unread.</summary>
+    private static void RequireProductionLineShare(EvidenceBundle bundle, RubricCatalog catalog)
+    {
+        if (catalog.MinProductionLineShare is not { } minimum)
+        {
+            return;
+        }
+
+        if (bundle.ProductionLineShare is not { } stated)
+        {
+            throw new ArgumentException(
+                $"Rubric '{catalog.RubricVersion}' requires \"productionLineShare\": the share (0-1) of the repository's " +
+                "production lines in languages the engine reads, the lines per language and the list version (decision " +
+                "0024 §5.4). The bundle states none.",
+                nameof(bundle));
+        }
+
+        var share = stated.Share;
+        if (double.IsNaN(share) || share < 0 || share > 1)
+        {
+            throw new ArgumentException(
+                $"\"productionLineShare.share\" is {share}; it must be a share between 0 and 1.", nameof(bundle));
+        }
+
+        if (string.IsNullOrWhiteSpace(stated.ListVersion) || stated.LinesByLanguage.Count == 0 ||
+            stated.LinesByLanguage.Values.Any(n => n < 0))
+        {
+            throw new ArgumentException(
+                "\"productionLineShare\" must name the production-lines list version it counted under (\"listVersion\") " +
+                "and give the repository's production lines per language (\"linesByLanguage\", none negative).",
+                nameof(bundle));
+        }
+
+        if (share < minimum)
+        {
+            throw new ArgumentException(
+                $"The engine reads {share * 100:0.##} % of this repository's production lines; rubric " +
+                $"'{catalog.RubricVersion}' requires at least {minimum * 100:0.##} % (decision 0024 §5.4). No CAI is " +
+                "published for this repository.",
+                nameof(bundle));
+        }
     }
 
     /// <summary>The category a dimension folds into: the published catalog's assignment when this rubric version

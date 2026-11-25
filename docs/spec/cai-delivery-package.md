@@ -75,7 +75,8 @@ contribution 2 dp) so the canonical form is stable across machines. Per-lens fie
 #### 4.2 `evidence`
 
 The `Cai.Scoring` evidence bundle verbatim: `rubricVersion`, `commit`, `qualityBar`, `analyzableProjects`,
-`productionLoc`, optional `headlineScore`, and the measured `dimensions` / `metaDimensions` (or a thin `lenses`
+`productionLoc`, optional `headlineScore`, `productionLineShare` (required under a rubric that declares
+`minProductionLineShare`; [cai-scoring.md](cai-scoring.md) §1.3), and the measured `dimensions` / `metaDimensions` (or a thin `lenses`
 fallback). Its presence is what makes the artifact self-verifying — see [ADR-0002](../adr/0002-deterministic-reproducible-scoring.md).
 
 The bundle may also carry two **descriptive, non-scored** metrics. They ride *inside* the signed evidence so a consumer

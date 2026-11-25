@@ -180,7 +180,7 @@ in the 95 % rule like any other code.
   supported count as read for the 95 % rule, and a language it parses but does not list does not count.
 - An engine publishes a repository's CAI only where the languages it reads hold at least 95 % of the repository's
   production lines, and the CAI states that share. Production lines are the non-blank, non-comment lines of files in
-  the languages on CAI's production-lines list (`docs/spec/production-lines.md`): general-purpose programming
+  the languages on CAI's production-lines list (the last section of `docs/spec/production-code.md`): general-purpose programming
   languages, HTML and CSS; SQL, shell, build scripts and data and configuration files are not on it, and the same page
   states the one rule by which test, generated and vendored files are excluded. The engine records the share in the
   evidence bundle's `productionLineShare` field (the share, the production lines per language, and the version of the

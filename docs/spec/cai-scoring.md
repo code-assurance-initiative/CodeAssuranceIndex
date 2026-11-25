@@ -24,6 +24,7 @@ A fold takes two documents and nothing else:
 | `qualityBar` | The quality bar the codebase is judged against (§6). Absent ⇒ `production`. |
 | `analyzableProjects`, `productionLoc` | Inputs to the architecture surface floor (§4.2). |
 | `headlineScore` | The producer's claimed CAI. Never an input to the fold; only compared against it (§7). |
+| `productionLineShare` | `{share, linesByLanguage, listVersion}`: how much of the repository's production lines the engine reads (§1.3). |
 
 **`score`** is 0–10. **`confidence`** and **`coverage`** are 0–1 and mean different things:
 
@@ -43,10 +44,30 @@ A meta-dimension with `score` absent (null) is not measured and contributes noth
 | `dimensions[]` | Every contributor the rubric defines: `{id, lens, family, category?, evaluator, advisory?, …}`. `family` is `dimension` or `meta`. |
 | `scoring` | The score-moving constants (§4–§6). Absent ⇒ the defaults listed with each rule below. |
 | `rejectUnknownContributors` | `true` ⇒ the catalog is **closed** (§2.2). |
+| `minProductionLineShare` | The least `productionLineShare.share` a bundle must state (§1.3). |
 
 Fields marked `?` are declarations a catalog may or may not make. Each rule below says what applies when a catalog
 does not make one; in every case that is the behaviour the rubric versions published before the field were computed
 under, so they keep reproducing.
+
+### 1.3 The production-line share
+
+[Decision 0024](../decisions/0024-a-definition-says-what-not-how.md) §5.4: an engine publishes a repository's CAI only
+where the languages it reads hold at least 95 % of the repository's production lines, as
+[production-code.md](production-code.md) defines them. The bundle states it in `productionLineShare`:
+
+| Field | Meaning |
+|---|---|
+| `share` | The repository's production lines in languages the engine reads, divided by all its production lines: 0–1. |
+| `linesByLanguage` | The repository's production lines per language on the list, read or not, by language name. |
+| `listVersion` | The version of the production-lines list the lines were counted under, as production-code.md states it. |
+
+When the catalog declares `minProductionLineShare` (0.95 from the first rubric version that applies decision 0024), the
+fold is **refused** when the bundle states no `productionLineShare`, a `share` outside 0–1 or under the minimum, no
+`listVersion`, or no `linesByLanguage` (or a negative count in it). A refused fold
+is not a low score: no CAI exists for that repository from that engine. A share at or over the minimum does not enter
+the fold; the number is the one the bundle would fold to without the rule. When the catalog does not declare the
+field, the share is not read, and every rubric version published before it folds as it was published.
 
 ## 2. Which contributors count
 
