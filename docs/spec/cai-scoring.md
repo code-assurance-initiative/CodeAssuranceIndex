@@ -61,7 +61,7 @@ where the languages it reads hold at least 95 % of the repository's production l
 | `share` | The production lines in the languages read, divided by all the repository's production lines: 0–1. |
 | `linesByLanguage` | The repository's production lines per language on the list, read or not, by language name. |
 | `readLanguages` | The languages the engine reads, each a key of `linesByLanguage`. |
-| `listVersion` | The version of the production-lines list the lines were counted under, as production-code.md states it. |
+| `listVersion` | The list's version number as a string, as production-code.md states it (today `"1"`). The scorer does not check it against known versions; CAI does, in its window runs. |
 
 Language names are written exactly as the production-lines list of that `listVersion` writes them (for example `C#`,
 `Visual Basic .NET`); `readLanguages` entries are matched to `linesByLanguage` keys exactly, letter case included, and
