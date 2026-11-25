@@ -226,6 +226,9 @@ public sealed record ProductionLineShare
     [JsonPropertyName("linesByLanguage")] public IReadOnlyDictionary<string, long> LinesByLanguage { get; init; } =
         new Dictionary<string, long>();
 
+    /// <summary>The languages the engine reads, each a key of <see cref="LinesByLanguage"/>.</summary>
+    [JsonPropertyName("readLanguages")] public IReadOnlyList<string> ReadLanguages { get; init; } = [];
+
     /// <summary>The version of the production-lines list in <c>docs/spec/production-code.md</c> the lines were counted
     /// under.</summary>
     [JsonPropertyName("listVersion")] public string ListVersion { get; init; } = "";

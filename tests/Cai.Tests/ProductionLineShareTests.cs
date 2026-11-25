@@ -24,7 +24,8 @@ public sealed class ProductionLineShareTests
             ? new ProductionLineShare
             {
                 Share = s,
-                LinesByLanguage = new Dictionary<string, long> { ["C#"] = 9_500, ["Ruby"] = 500 },
+                LinesByLanguage = new Dictionary<string, long> { ["C#"] = (long)Math.Round(s * 10_000), ["Ruby"] = 10_000 - (long)Math.Round(s * 10_000) },
+                ReadLanguages = ["C#"],
                 ListVersion = "1",
             }
             : null,
@@ -111,14 +112,52 @@ public sealed class ProductionLineShareTests
     }
 
     [Fact]
+    public void A_share_its_own_lines_do_not_give_is_refused()
+    {
+        var bundle = Bundle(0.90);
+        var claimed = bundle with { ProductionLineShare = bundle.ProductionLineShare! with { Share = 0.96 } };
+
+        var ex = Assert.Throws<ArgumentException>(() => CaiScorer.Score(claimed, Catalog(0.95)));
+        Assert.Contains("9000 of 10000", ex.Message);
+    }
+
+    [Fact]
+    public void A_read_language_the_lines_do_not_list_is_refused()
+    {
+        var bundle = Bundle(0.97);
+        var b = bundle with { ProductionLineShare = bundle.ProductionLineShare! with { ReadLanguages = ["C#", "Go"] } };
+
+        var ex = Assert.Throws<ArgumentException>(() => CaiScorer.Score(b, Catalog(0.95)));
+        Assert.Contains("Go", ex.Message);
+    }
+
+    [Fact]
+    public void A_share_rounded_to_three_decimals_is_accepted()
+    {
+        var b = Bundle(0.97) with
+        {
+            ProductionLineShare = new ProductionLineShare
+            {
+                Share = 0.967,
+                LinesByLanguage = new Dictionary<string, long> { ["Go"] = 2, ["Rust"] = 1, ["C"] = 27 },
+                ReadLanguages = ["Go", "C"],
+                ListVersion = "1",
+            },
+        };
+
+        Assert.True(CaiScorer.Score(b, Catalog(0.95)).Headline > 0);
+    }
+
+    [Fact]
     public void The_share_and_the_minimum_round_trip_through_their_wire_names()
     {
-        var bundle = EvidenceBundle.Parse("""{"rubricVersion":"rubric-test","productionLineShare":{"share":0.97,"linesByLanguage":{"Go":970,"Rust":30},"listVersion":"1"},"dimensions":[]}""");
+        var bundle = EvidenceBundle.Parse("""{"rubricVersion":"rubric-test","productionLineShare":{"share":0.97,"linesByLanguage":{"Go":970,"Rust":30},"readLanguages":["Go"],"listVersion":"1"},"dimensions":[]}""");
         var catalog = RubricCatalog.Parse("""{"rubricVersion":"rubric-test","minProductionLineShare":0.95,"lenses":[],"dimensions":[]}""");
 
         Assert.Equal(0.97, bundle.ProductionLineShare!.Share);
         Assert.Equal(970, bundle.ProductionLineShare.LinesByLanguage["Go"]);
         Assert.Equal("1", bundle.ProductionLineShare.ListVersion);
+        Assert.Equal(["Go"], bundle.ProductionLineShare.ReadLanguages);
         Assert.Equal(0.95, catalog.MinProductionLineShare);
     }
 }

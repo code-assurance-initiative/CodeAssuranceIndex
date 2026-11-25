@@ -120,6 +120,9 @@ public static class CaiScorer
     /// <summary>Decision 0024 §5.4, under a rubric that declares <see cref="RubricCatalog.MinProductionLineShare"/>: no CAI
     /// exists for a repository whose production lines the engine reads below the minimum, so the fold is refused rather
     /// than scored. A catalog without the field leaves the bundle's share unread.</summary>
+    /// <summary>How far a stated share may differ from the one its own lines give: rounding to three decimals.</summary>
+    internal const double ShareTolerance = 0.0005;
+
     private static void RequireProductionLineShare(EvidenceBundle bundle, RubricCatalog catalog)
     {
         if (catalog.MinProductionLineShare is not { } minimum)
@@ -150,6 +153,24 @@ public static class CaiScorer
                 "\"productionLineShare\" must name the production-lines list version it counted under (\"listVersion\") " +
                 "and give the repository's production lines per language (\"linesByLanguage\", none negative).",
                 nameof(bundle));
+        }
+
+        var unknown = stated.ReadLanguages.Where(l => !stated.LinesByLanguage.ContainsKey(l)).ToList();
+        if (unknown.Count > 0)
+        {
+            throw new ArgumentException(
+                $"\"productionLineShare.readLanguages\" names {string.Join(", ", unknown)}, which \"linesByLanguage\" " +
+                "does not list.", nameof(bundle));
+        }
+
+        var total = stated.LinesByLanguage.Values.Sum();
+        var read = stated.ReadLanguages.Distinct(StringComparer.Ordinal).Sum(l => stated.LinesByLanguage[l]);
+        var computed = total == 0 ? 0.0 : (double)read / total;
+        if (Math.Abs(computed - share) > ShareTolerance)
+        {
+            throw new ArgumentException(
+                $"\"productionLineShare.share\" is {share}, but the lines it states give {computed:0.####} " +
+                $"({read} of {total} production lines in the languages read).", nameof(bundle));
         }
 
         if (share < minimum)

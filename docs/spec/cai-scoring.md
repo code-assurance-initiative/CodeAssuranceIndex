@@ -24,7 +24,7 @@ A fold takes two documents and nothing else:
 | `qualityBar` | The quality bar the codebase is judged against (§6). Absent ⇒ `production`. |
 | `analyzableProjects`, `productionLoc` | Inputs to the architecture surface floor (§4.2). |
 | `headlineScore` | The producer's claimed CAI. Never an input to the fold; only compared against it (§7). |
-| `productionLineShare` | `{share, linesByLanguage, listVersion}`: how much of the repository's production lines the engine reads (§1.3). |
+| `productionLineShare` | `{share, linesByLanguage, readLanguages, listVersion}`: how much of the repository's production lines the engine reads (§1.3). |
 
 **`score`** is 0–10. **`confidence`** and **`coverage`** are 0–1 and mean different things:
 
@@ -54,20 +54,42 @@ under, so they keep reproducing.
 
 [Decision 0024](../decisions/0024-a-definition-says-what-not-how.md) §5.4: an engine publishes a repository's CAI only
 where the languages it reads hold at least 95 % of the repository's production lines, as
-[production-code.md](production-code.md) defines them. The bundle states it in `productionLineShare`:
+[production-code.md](production-code.md) defines them. The bundle states this in `productionLineShare`:
 
 | Field | Meaning |
 |---|---|
-| `share` | The repository's production lines in languages the engine reads, divided by all its production lines: 0–1. |
+| `share` | The production lines in the languages read, divided by all the repository's production lines: 0–1. |
 | `linesByLanguage` | The repository's production lines per language on the list, read or not, by language name. |
+| `readLanguages` | The languages the engine reads, each a key of `linesByLanguage`. |
 | `listVersion` | The version of the production-lines list the lines were counted under, as production-code.md states it. |
 
-When the catalog declares `minProductionLineShare` (0.95 from the first rubric version that applies decision 0024), the
-fold is **refused** when the bundle states no `productionLineShare`, a `share` outside 0–1 or under the minimum, no
-`listVersion`, or no `linesByLanguage` (or a negative count in it). A refused fold
-is not a low score: no CAI exists for that repository from that engine. A share at or over the minimum does not enter
-the fold; the number is the one the bundle would fold to without the rule. When the catalog does not declare the
-field, the share is not read, and every rubric version published before it folds as it was published.
+**Which languages count as read.** Until the first window whose holdout covers the languages decision 0024 §3 names
+(planned for the first window of 2027): the languages the engine parses and names in `readLanguages`. From that
+window: only the languages the engine lists as supported under decision 0024 §5.1-5.3 (whole platform family and the
+web front); a language it parses but may not list does not count.
+
+**What the scorer checks.** When the catalog declares `minProductionLineShare` (0.95 from the first rubric version
+that applies decision 0024), the fold is **refused** when:
+
+- the bundle has no `productionLineShare`, or it is null;
+- `share` is not a number, or is below 0 or above 1;
+- `listVersion` is missing, empty or only white space;
+- `linesByLanguage` is missing or has no entries, or any count in it is negative;
+- `readLanguages` names a language `linesByLanguage` does not list;
+- `share` differs by more than 0.0005 from the share the stated lines give (the lines of the distinct languages in
+  `readLanguages` divided by the sum of `linesByLanguage`; 0 when that sum is 0), so a share rounded to three decimals
+  is accepted;
+- `share` is under the minimum.
+
+A refused fold is not a low score: no CAI exists for that repository from that engine. A share that passes does not
+enter the fold; the number is the one the bundle would fold to without the rule. The scorer cannot check that the
+lines were counted correctly or that `readLanguages` is true; CAI checks those in each window's run on the holdout (a
+provisional run until the covering window). When the catalog does not declare `minProductionLineShare`, the field is
+not read, and every rubric version published before it folds as it was published.
+
+**The engine's part** (decision 0024, "Engines' part"): from the rubric version that declares the minimum, it emits
+`productionLineShare` in every bundle, states the share in every CAI it publishes, and publishes no CAI under the
+minimum. A CAI published below 95 %, or with a share that does not hold, is not a valid CAI.
 
 ## 2. Which contributors count
 
