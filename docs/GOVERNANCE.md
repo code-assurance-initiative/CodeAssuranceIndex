@@ -96,6 +96,17 @@ threshold that decides what is found, and what the result is not; the unit, deno
 and the languages a dimension applies to are on its page in [spec/dimensions/](spec/dimensions/). An engine's method lives in its own, public documentation, and is judged by
 CAI's measurement of its results ([ENGINE-QUALIFICATION.md](ENGINE-QUALIFICATION.md)), never by its recipe.
 
+**A definition decides no noise** ([decision 0025](decisions/0025-a-definition-decides-no-noise.md)). Whether a
+finding is noise (a report a maintainer should not act on, in that code base, its architecture, its conventions or its
+context) is a judgement, and an engine makes it. A definition never exempts something because reporting it would be
+noise somewhere: no exemption by architecture, style, framework, intent or kind of code base ("in a vertical-slice code
+base, repeated wiring is not counted"). Such a sentence fails 0024's test, since an engine that judges noise better
+would have to ask CAI first. A definition may still bound its population and set a threshold at which something counts
+(tests, generated and vendored code excluded; a block of at least so many lines), as long as they apply to every code
+base alike and say what the property is, not when reporting it is useful. CAI measures each engine's judgement of
+noise as its precision ([ENGINE-QUALIFICATION.md](ENGINE-QUALIFICATION.md)), and publishes it beside the engine's
+results. A change motivated by findings being noise is an engine change, and is not a proposal.
+
 **Evidence before a proposal.** A proposal to add a dimension, re-define one or retire one is filed with a measurement
 of an implementation of exactly that definition over a corpus whose repositories and commits are named, so that
 another producer can reproduce it; evidence from any producer counts. It reports, per language:

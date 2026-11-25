@@ -65,6 +65,9 @@ What is wrong or missing today, with evidence. Link the issue.
 
 Exactly what the standard or process would say after this proposal. Quote the text being replaced and the text
 replacing it.
+Check every sentence of a changed definition against GOVERNANCE.md, *How a definition is written*: it states no
+method and decides no noise. If the problem is that correct reports are noise somewhere, fix the engine instead; it is
+not a proposal.
 
 ## Effect on published scores
 
@@ -106,3 +109,4 @@ Anything the proposer cannot settle alone. The decision answers each one.
 | [0021](0021-d35-reads-recent-history.md) | D35 reads the recent history, so a broken coupling leaves the reading | 2026-11-21 | Accepted by [decision 0021](../decisions/0021-d35-reads-recent-history.md) |
 | 0022, 0023 | Held for two drafts in preparation (D16 Bus Factor, D6 Cohesion), filed when ready | | |
 | [0024](0024-a-definition-says-what-not-how.md) | A definition says what is measured and how it is scored, never how an engine finds it | 2026-11-24 | Accepted by [decision 0024](../decisions/0024-a-definition-says-what-not-how.md) |
+| [0025](0025-a-definition-decides-no-noise.md) | A definition decides no noise | 2026-11-25 | Accepted by [decision 0025](../decisions/0025-a-definition-decides-no-noise.md) |
