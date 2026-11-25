@@ -10,6 +10,21 @@ move a score for unchanged evidence mints a new rubric version (see
 
 ## [Unreleased]
 
+### Specification
+- **The shared pages and the production-line share** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md) §1, §5.4).
+  `docs/spec/production-code.md` defines which files are production code and, in its last section, production lines
+  and the production-lines list (list version 1); `docs/spec/people.md` defines how a history's identities count as
+  people and machine accounts. The dimension pages, published next, refer to both. The scoring specification adds §1.3: the evidence
+  bundle's `productionLineShare` (`share`, `linesByLanguage`, `readLanguages`, `listVersion`) and the catalog's
+  `minProductionLineShare`; the reference scorer refuses a bundle without it, with a share its own lines do not give, or
+  whose lines give a share under the minimum, under a catalog that declares one. No published rubric declares it, so no score moves; the first rubric version applying
+  decision 0024 will (0.95). The delivery schema accepts the field. Decision 0024 and ENGINE-QUALIFICATION.md name the
+  list's page as published (`production-code.md`, not `production-lines.md`).
+
+### Tests
+- The test hosts watch no configuration files: a full run beside other work on a shared Linux box failed at random on
+  the per-user inotify limit.
+
 ### Governance
 - **A definition says what is measured and how it is scored, never how an engine finds it** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md)).
   A dimension's definition states the property, its unit, denominator, thresholds, score curve, population and what
@@ -21,7 +36,7 @@ move a score for unchanged evidence mints a new rubric version (see
     issue titled *Engine registration* in this repository. A product may quote CAI's measurement of it only as its
     engine report states it, and may not call itself qualified or certified by CAI.
   - *With the rubric version published after the pages of every scored dimension (`docs/spec/dimensions/`) and the
-    production-lines list (`docs/spec/production-lines.md`):* 48 definitions rewritten to that rule; an engine
+    production-lines list (`docs/spec/production-code.md`):* 48 definitions rewritten to that rule; an engine
     publishes no CAI where the languages it reads hold under 95 % of the repository's production lines (non-blank,
     non-comment lines in the languages on CAI's production-lines list: general-purpose programming languages, HTML and
     CSS; tests, generated and vendored code excluded), and states the share in each CAI (for CCA, today the only

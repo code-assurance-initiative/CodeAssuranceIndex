@@ -94,7 +94,7 @@ own environment, not a property of any repository, and its removal is a correcti
 ## What did not yet take effect
 
 - **The dimension pages and the production-lines list** (§1, §5.4): written, judged and published in
-  `docs/spec/dimensions/` and `docs/spec/production-lines.md`, every scored dimension first. Each page states the unit,
+  `docs/spec/dimensions/` and `docs/spec/production-code.md` (whose last section is the production-lines list), every scored dimension first. Each page states the unit,
   denominator, thresholds and curve that produce today's published scores; a parameter of the one reading's model that
   a page must state is marked *pending re-definition*, and for each such page a re-definition under decision 0013
   follows; the score does not change until it is decided.

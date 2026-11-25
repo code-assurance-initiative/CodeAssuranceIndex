@@ -106,6 +106,13 @@ public sealed record RubricCatalog
     /// </summary>
     [JsonPropertyName("rejectUnknownContributors")] public bool? RejectUnknownContributors { get; init; }
 
+    /// <summary>
+    /// The least share of a repository's production lines the producing engine must read for a CAI to exist (decision
+    /// 0024 §5.4: 0.95). When set, the scorer refuses a bundle that states no <c>productionLineShare</c>, one outside
+    /// 0–1, and one under this value. Null for every catalog published before the field, which keeps folding as it did.
+    /// </summary>
+    [JsonPropertyName("minProductionLineShare")] public double? MinProductionLineShare { get; init; }
+
     private static readonly JsonSerializerOptions Options = new()
     {
         PropertyNameCaseInsensitive = true,
