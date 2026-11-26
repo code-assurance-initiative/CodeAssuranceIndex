@@ -164,6 +164,7 @@ public sealed class RubricCategoryContractTests
             RubricVersion = catalog.RubricVersion,
             AnalyzableProjects = 5,
             ProductionLoc = 5000,
+            ProductionLineShare = FullShare,
             Dimensions = [new DimensionScore(moved.Id, "security-compliance", 7.0, 1.0)],
         };
 
@@ -257,11 +258,22 @@ public sealed class RubricCategoryContractTests
 
     /// <summary>Evidence that exercises every scored dimension in a catalog, declaring the category the catalog
     /// publishes, with spread-out scores so the fold is non-degenerate.</summary>
+    /// <summary>A conforming producer's statement that it reads every production line (decision 0024 §5.4): required by
+    /// a rubric that declares <c>minProductionLineShare</c>, read by none before it, so it moves no number here.</summary>
+    private static readonly ProductionLineShare FullShare = new()
+    {
+        Share = 1.0,
+        LinesByLanguage = new Dictionary<string, long> { ["C#"] = 5000 },
+        ReadLanguages = ["C#"],
+        ListVersion = "1",
+    };
+
     private static EvidenceBundle BundleFrom(RubricCatalog catalog) => new()
     {
         RubricVersion = catalog.RubricVersion,
         AnalyzableProjects = 5,
         ProductionLoc = 5000,
+        ProductionLineShare = FullShare,
         // Flagged the way a conforming producer flags them: a contributor the catalog declares advisory is sent as
         // advisory. Without it, the legacy fold below (no catalog) would count readings the published one leaves out,
         // and this test would measure the advisory rule instead of the category map it is about.
