@@ -7,7 +7,8 @@
 Three classes, decided only from the two documents:
 
   score-relevant  something Cai.Scoring reads differs: the `scoring` block, the `lenses`,
-                  `rejectUnknownContributors`, the set of dimension ids, or a dimension's
+                  `rejectUnknownContributors`, `minProductionLineShare` (a repository under it gets no
+                  CAI at all, so it moves numbers), the set of dimension ids, or a dimension's
                   lens / category / advisory / family. Further split into
                     moves-numbers    a scored (non-advisory) dimension is added, removed or re-filed,
                                      or the scoring block or lenses change
@@ -25,7 +26,7 @@ import os
 import sys
 
 SCORED_DIMENSION_FIELDS = ("lens", "category", "advisory", "family")
-SCORED_TOP_LEVEL = ("scoring", "lenses", "rejectUnknownContributors")
+SCORED_TOP_LEVEL = ("scoring", "lenses", "rejectUnknownContributors", "minProductionLineShare")
 
 
 def load(path):
