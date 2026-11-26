@@ -11,6 +11,27 @@ move a score for unchanged evidence mints a new rubric version (see
 ## [Unreleased]
 
 ### Specification
+- **The dimension pages** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md) §1): one page per scored
+  dimension, 146 in all. A dimension is scored unless the catalog declares it advisory; an advisory dimension is
+  reported but never counted in the CAI. The pages are in
+  `docs/spec/dimensions/<id>.md`. Each page states the property, the languages it applies to, its population
+  (production code as `production-code.md` defines it, and what the dimension does differently), its unit and
+  denominator, every threshold, and the score curve that produces today's published scores where such a curve exists,
+  when the dimension is not measured and what the result is not. A parameter of the model that today's engine uses to
+  measure the dimension is marked *pending re-definition*. No page states how an engine finds the property; where
+  today's engine does something that is not a property of the code, the page states the property, and the difference
+  is recorded in the drafting notes, not on the page. Each page was read by five blind judges and passed (at least four
+  of five on correct, complete and understandable), its blocking issues fixed. Publishing the pages moves no score:
+  they govern from the first rubric version published after the pages of every scored dimension and the
+  production-lines list (the last section of `production-code.md`, merged on 2026-11-25), which brings in the changes
+  decision 0024 ties to that version.
+  - 38 dimensions are not declared advisory in the catalog, so the standard counts them as scored, while the one
+    engine publishing CAI reports them advisory: in the corpus snapshot of 2026-11-25 every one of their readings is
+    flagged advisory or unknown, none scored. Their pages say so. For 18 of them that snapshot holds no 0-10 reading
+    at all, so their pages state no score curve and mark the dimension's status as open: a decision must either
+    declare it advisory or set its curve. Of these 18, only X31 is among the dimensions proposal 0025 (a draft) retires
+    into five new dimensions, and its question 5 asks whether to declare those five new dimensions advisory; for the other 17 (ten architecture dimensions, P12,
+    SC1 and X6 to X10) the decision is still to be proposed.
 - **The shared pages and the production-line share** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md) §1, §5.4).
   `docs/spec/production-code.md` defines which files are production code and, in its last section, production lines
   and the production-lines list (list version 1); `docs/spec/people.md` defines how a history's identities count as
