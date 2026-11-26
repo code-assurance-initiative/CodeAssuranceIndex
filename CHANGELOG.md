@@ -10,6 +10,19 @@ move a score for unchanged evidence mints a new rubric version (see
 
 ## [Unreleased]
 
+### Rubric
+- **rubric-2026.11.6** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md)): the 48 rewritten
+  definitions of [0024-rewrites.tsv](docs/proposals/0024-rewrites.tsv), and `minProductionLineShare: 0.95`. Nothing
+  else differs from rubric-2026.11.5. Under a rubric version that declares the minimum, every evidence bundle must state its `productionLineShare`
+  ([cai-scoring.md](docs/spec/cai-scoring.md) §1.3): the share of the repository's production lines (as
+  [production-code.md](docs/spec/production-code.md) defines them) in the languages the engine reads. The reference
+  scorer refuses a bundle that states none, fails its checks, or whose lines give a share under 95 %: such a repository
+  gets no CAI under this version. A repository at or over 95 % folds to the same number as under 11.5; what changes is
+  that some repositories get no number. The rubric gate first classified the version as descriptive (prose only),
+  because its classifier did not know the new field; the classifier now counts `minProductionLineShare` as a change
+  that can change which repositories get a number, and the gate runs the classifier's tests
+  (`tools/rubric/test_classify_rubric_change.py`).
+
 ### Specification
 - **The dimension pages** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md) §1): one page per scored
   dimension, 146 in all. A dimension is scored unless the catalog declares it advisory; an advisory dimension is
