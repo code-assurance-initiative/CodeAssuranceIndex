@@ -24,6 +24,10 @@ move a score for unchanged evidence mints a new rubric version (see
   (`tools/rubric/test_classify_rubric_change.py`).
 
 ### Specification
+- **D29's page says what the dimension measures, not how** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md)):
+  its *Property* section said "Real static-analysis (SAST) findings", a method. It now states the property itself (security
+  weaknesses of a recognised kind in the repository's own code and the files that run it) and names the kinds measured
+  elsewhere, matching the page's *Unit* and *What the result is not* sections. No threshold, curve or count changes.
 - **The dimension pages** ([decision 0024](docs/decisions/0024-a-definition-says-what-not-how.md) §1): one page per scored
   dimension, 146 in all. A dimension is scored unless the catalog declares it advisory; an advisory dimension is
   reported but never counted in the CAI. The pages are in
